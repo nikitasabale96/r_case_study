@@ -124,7 +124,7 @@ function r_case_study_menu()
         'file' => 'manage_proposal.inc',
     );
     $items['case-study-project/abstract-approval/bulk'] = array(
-        'title' => 'CS Manage Code',
+        'title' => 'Manage Case Study Project Files',
         'description' => 'Bulk Mangage',
         'page callback' => 'drupal_get_form',
         'page arguments' => array(
@@ -206,7 +206,7 @@ function r_case_study_menu()
         'access arguments' => array(
             'Case Study download code',
         ),
-        'file' => 'r_case_study_details.inc',
+        'file' => 'case_study_details.inc',
     );
     /* LABS IN PROGRESS */
     $items['case-study-project/case-study-progress'] = array(
@@ -215,7 +215,7 @@ function r_case_study_menu()
         'access arguments' => array(
             'Case Study download code',
         ),
-        'file' => 'r_case_study_details.inc',
+        'file' => 'case_study_details.inc',
     );
     $items['case-study-project/list-of-project-titles'] = array(
         'title' => 'List of available Project titles',
@@ -393,7 +393,7 @@ function r_case_study_permission()
             'title' => t('Case Study bulk manage abstract'),
             'restrict access' => true,
         ),
-        'Case Study bulk delete abstract' => array(
+        'Case Study bulk delete code' => array(
             'title' => t('Case Study bulk delete code'),
             'restrict access' => true,
         ),

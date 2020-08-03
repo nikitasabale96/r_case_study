@@ -195,11 +195,6 @@ function r_case_study_proposal_approval_form($form, &$form_state)
     $query->fields('case_study_proposal');
     $query->condition('id', $proposal_id);
     $proposal_q = $query->execute();
-    $query_abstract = db_select('case_study_submitted_abstracts_file');
-    $query_abstract->fields('case_study_submitted_abstracts_file');
-    $query_abstract->condition('proposal_id', $proposal_id);
-    $query_abstract->condition('filetype', 'A');
-    $query_abstract_pdf = $query_abstract->execute()->fetchObject();
     if ($proposal_q) {
         if ($proposal_data = $proposal_q->fetchObject()) {
             /* everything ok */
@@ -496,11 +491,6 @@ function r_case_study_proposal_status_form($form, &$form_state)
     $query->fields('case_study_proposal');
     $query->condition('id', $proposal_id);
     $proposal_q = $query->execute();
-    $query_abstract = db_select('case_study_submitted_abstracts_file');
-    $query_abstract->fields('case_study_submitted_abstracts_file');
-    $query_abstract->condition('proposal_id', $proposal_id);
-    $query_abstract->condition('filetype', 'A');
-    $query_abstract_pdf = $query_abstract->execute()->fetchObject();
     if ($proposal_q) {
         if ($proposal_data = $proposal_q->fetchObject()) {
             /* everything ok */
@@ -531,25 +521,11 @@ function r_case_study_proposal_status_form($form, &$form_state)
     } else {
         $faculty_email = $proposal_data->faculty_email;
     }
-    $query = db_select('case_study_software_version');
-    $query->fields('case_study_software_version');
-    $query->condition('id', $proposal_data->version_id);
-    $version_data = $query->execute()->fetchObject();
-    if(!$version_data){
-        $version = 'NA';
+     if($proposal_data->reference == ''){
+        $reference = 'NA';
     }
     else{
-    $version = $version_data->case_study_version;
-    }
-    $query = db_select('case_study_simulation_type');
-    $query->fields('case_study_simulation_type');
-    $query->condition('id', $proposal_data->simulation_type_id);
-    $simulation_type_data = $query->execute()->fetchObject();
-    if(!$simulation_type_data){
-        $simulation_type = 'NA';
-    }
-    else{
-    $simulation_type = $simulation_type_data->simulation_type;
+        $reference = $proposal_data->reference;
     }
     $form['contributor_name'] = array(
         '#type' => 'item',
@@ -562,10 +538,20 @@ function r_case_study_proposal_status_form($form, &$form_state)
         '#markup' => user_load($proposal_data->uid)->mail,
         '#title' => t('Email'),
     );
+    $form['contributor_contact_no'] = array(
+        '#title' => t('Contact No.'),
+        '#type' => 'item',
+        '#markup' => $proposal_data->contact_no,
+    );
     $form['university'] = array(
         '#type' => 'item',
         '#markup' => $proposal_data->university,
         '#title' => t('University/Institute'),
+    );
+    $form['department'] = array(
+        '#type' => 'item',
+        '#markup' => $proposal_data->department,
+        '#title' => t('Department'),
     );
     $form['how_did_you_know_about_project'] = array(
         '#type' => 'item',
@@ -607,52 +593,56 @@ function r_case_study_proposal_status_form($form, &$form_state)
         '#markup' => $proposal_data->pincode,
         '#title' => t('Pincode/Postal code'),
     );
+    $form['r_version'] = array(
+        '#type' => 'item',
+        '#markup' => $proposal_data->r_version,
+        '#title' => t('R Version used'),
+    );
+    $form['r_studio_version'] = array(
+        '#type' => 'item',
+        '#markup' => $proposal_data->r_studio_version,
+        '#title' => t('R Studio Version used'),
+    );
     $form['project_title'] = array(
         '#type' => 'item',
         '#markup' => $proposal_data->project_title,
         '#title' => t('Title of the Case Study Project'),
     );
-    $form['version'] = array(
+    $form['description'] = array(
         '#type' => 'item',
-        '#markup' => $version,
-        '#title' => t('Version used'),
+        '#markup' => $proposal_data->description,
+        '#title' => t('Description')
     );
-    $form['simulation_type'] = array(
+    /*$url = '~(?:(https?)://([^\s<]+)|(www\.[^\s<]+?\.[^\s<]+))(?<![\.,:])~i';
+    $reference = preg_replace($url, '<a href="$0" target="_blank" title="$0">$0</a>', $re);*/
+    $form['reference'] = array(
         '#type' => 'item',
-        '#markup' => $simulation_type,
-        '#title' => t('Simulation Type'),
+        '#markup' => $reference,
+        '#title' => t('Reference')
     );
-    $form['solver_used'] = array(
+    $form['abstract_file'] = array(
         '#type' => 'item',
-        '#markup' => $proposal_data->solver_used,
-        '#title' => t('Solver used'),
+        '#markup' => l('View abstract', 'case-study-project/download/proposal-abstract-files/' . $proposal_data->id),
+        '#title' => t('Abstract File')
     );
-    /************************** reference link filter *******************/
-    $url = '~(?:(https?)://([^\s<]+)|(www\.[^\s<]+?\.[^\s<]+))(?<![\.,:])~i';
-    $reference = preg_replace($url, '<a href="$0" target="_blank" title="$0">$0</a>', $proposal_data->reference);
-    /******************************/
-    /*$form['reference'] = array(
-    '#type' => 'item',
-    '#markup' => $reference,
-    '#title' => t('References')
-    );*/
-    if (($query_abstract_pdf->filename != "") && ($query_abstract_pdf->filename != 'NULL')) {
-        $str = substr($query_abstract_pdf->filename, strrpos($query_abstract_pdf->filename, '/'));
-        $resource_file = ltrim($str, '/');
-
-        $form['abstract_file_path'] = array(
-            '#type' => 'item',
-            '#title' => t('Abstract file '),
-            '#markup' => l($resource_file, 'case-study-project/download/project-file/' . $proposal_id) . "",
-        );
-    } //$proposal_data->user_defined_compound_filepath != ""
-    else {
-        $form['abstract_file_path'] = array(
-            '#type' => 'item',
-            '#title' => t('Abstract file '),
-            '#markup' => "Not uploaded<br><br>",
-        );
-    }
+    $form['rawdata_file'] = array(
+        '#type' => 'item',
+        '#markup' => l('View raw data', 'case-study-project/download/proposal-rawdata-files/' . $proposal_data->id),
+        '#title' => t('Raw Data File')
+    );
+    $form['date_of_proposal'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Date of Proposal'),
+        '#default_value' => date('d/m/Y', $proposal_data->creation_date),
+        '#disabled' => true,
+    );
+    $form['expected_completion_date'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Expected Date of Completion'),
+        '#default_value' => date('d/m/Y', $proposal_data->expected_date_of_completion),
+        '#disabled' => true,
+    );
+    
     $proposal_status = '';
     switch ($proposal_data->approval_status) {
         case 0:

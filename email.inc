@@ -237,7 +237,7 @@ FOSSEE, IIT Bombay', array(
             $proposal_data = $query->execute()->fetchObject();
 
             $user = user_load($params['abstract_uploaded']['user_id']);
-            $message['subject'] = t('[!site_name][Case Study Project] You have uploaded  Case Study project files', array(
+            $message['subject'] = t('[!site_name][Case Study Project] You have uploaded Case Study project files', array(
                 '!site_name' => variable_get('site_name', ''),
             ), array(
                 'language' => $language->language,
@@ -247,12 +247,12 @@ FOSSEE, IIT Bombay', array(
                 'body' => t('
 Dear ' . $proposal_data->contributor_name .  ',
 
-You have uploaded the following Abstract and Project files:
+You have uploaded the Report and Code files for the following project:
 
 Project Title: ' . $proposal_data->project_title . '
 
 
-The abstract and project files are under review. You will be notified when it has been approved.
+The report and code files are under review. You will be notified when it has been approved.
 
 Best Wishes,
 
@@ -278,7 +278,7 @@ FOSSEE, IIT Bombay', array(
             $abs_file_name = $params['abstract_edit_file_uploaded']['abs_file'];
             $proj_file_name = $params['abstract_edit_file_uploaded']['proj_file'];
 
-            $message['subject'] = t('[!site_name][Case Study Project] You have updated project files/abstract of a case study', array(
+            $message['subject'] = t('[!site_name][Case Study Project] You have updated code files/report of a case study', array(
                 '!site_name' => variable_get('site_name', ''),
             ), array(
                 'language' => $language->language,
@@ -288,7 +288,7 @@ FOSSEE, IIT Bombay', array(
                 'body' => t('
 Dear ' . $proposal_data->contributor_name .  ',
 
-You have updated the abstract/ project files for the following case study:
+You have updated the report/ code files for the following case study:
 
 Project Title: ' . $proposal_data->project_title . '
 
