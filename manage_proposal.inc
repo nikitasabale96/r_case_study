@@ -94,7 +94,7 @@ function r_case_study_proposal_all()
     } //!$proposal_rows
     $proposal_header = array(
         'Date of Submission',
-        'Student Name',
+        'Name of the contributor',
         'Title of the case-study project',
         'Date of Approval',
         'Date of Project Completion',
@@ -302,11 +302,6 @@ function r_case_study_proposal_approval_form($form, &$form_state)
         '#markup' => $proposal_data->r_version,
         '#title' => t('R Version used'),
     );
-    $form['r_studio_version'] = array(
-        '#type' => 'item',
-        '#markup' => $proposal_data->r_studio_version,
-        '#title' => t('R Studio Version used'),
-    );
     $form['project_title'] = array(
         '#type' => 'item',
         '#markup' => $proposal_data->project_title,
@@ -346,7 +341,7 @@ function r_case_study_proposal_approval_form($form, &$form_state)
     );
     $form['approval'] = array(
         '#type' => 'radios',
-        '#title' => t('CFD Case Study proposal'),
+        '#title' => t('Select an action on the R Case Study proposal'),
         '#options' => array(
             '1' => 'Approve',
             '2' => 'Disapprove',
@@ -440,7 +435,7 @@ function r_case_study_proposal_approval_form_submit($form, &$form_state)
             drupal_set_message('Error sending email message.', 'error');
         }
 
-        drupal_set_message('CFD Case Study proposal No. ' . $proposal_id . ' approved. User has been notified of the approval.', 'status');
+        drupal_set_message('R Case Study proposal No. ' . $proposal_id . ' approved. User has been notified of the approval.', 'status');
         drupal_goto('case-study-project/manage-proposal');
         return;
     } //$form_state['values']['approval'] == 1
@@ -474,7 +469,7 @@ function r_case_study_proposal_approval_form_submit($form, &$form_state)
             drupal_set_message('Error sending email message.', 'error');
         }
 
-        drupal_set_message('CFD Case Study proposal No. ' . $proposal_id . ' dis-approved. User has been notified of the dis-approval.', 'error');
+        drupal_set_message('R Case Study proposal No. ' . $proposal_id . ' dis-approved. User has been notified of the dis-approval.', 'error');
         drupal_goto('case-study-project/manage-proposal');
         return;
     } //$form_state['values']['approval'] == 2
@@ -597,11 +592,6 @@ function r_case_study_proposal_status_form($form, &$form_state)
         '#type' => 'item',
         '#markup' => $proposal_data->r_version,
         '#title' => t('R Version used'),
-    );
-    $form['r_studio_version'] = array(
-        '#type' => 'item',
-        '#markup' => $proposal_data->r_studio_version,
-        '#title' => t('R Studio Version used'),
     );
     $form['project_title'] = array(
         '#type' => 'item',
@@ -760,7 +750,7 @@ function r_case_study_proposal_status_form_submit($form, &$form_state)
             drupal_set_message('Error sending email message.', 'error');
         }
 
-        drupal_set_message('Congratulations! CFD Case Study proposal has been marked as completed. User has been notified of the completion.', 'status');
+        drupal_set_message('Congratulations! R Case Study proposal has been marked as completed. User has been notified of the completion.', 'status');
     }
     drupal_goto('case-study-project/manage-proposal');
     return;
@@ -978,12 +968,7 @@ function r_case_study_proposal_edit_form($form, &$form_state)
         '#options' => _cs_list_of_versions(),
         '#default_value' => $proposal_data->r_version
     );
-    $form['r_studio_version'] = array(
-        '#type' => 'select',
-        '#title' => t('Version used'),
-        '#options' => _cs_list_of_r_studio_versions(),
-        '#default_value' => $proposal_data->r_studio_version
-    );
+    
     $form['project_title'] = array(
         '#type' => 'textfield',
         '#title' => t('Title of the Case Study Project'),
@@ -996,7 +981,7 @@ function r_case_study_proposal_edit_form($form, &$form_state)
         '#type' => 'textarea',
         '#title' => t('Description'),
         '#size' => 300,
-        '#maxlength' => 500,
+        '#maxlength' => 1200,
         '#required' => true,
         '#default_value' => $proposal_data->description,
     ); 
@@ -1182,7 +1167,6 @@ function r_case_study_proposal_edit_form_submit($form, &$form_state)
                 description=:description,
                 reference=:reference,
                 r_version=:r_version,
-                r_studio_version=:r_studio_version,
 				directory_name=:directory_name
 				WHERE id=:proposal_id";
     $args = array(
@@ -1201,7 +1185,6 @@ function r_case_study_proposal_edit_form_submit($form, &$form_state)
         ':description' => $v['description'],
         ':reference' => $v['reference'],
         ':r_version' => $v['r_version'],
-        ':r_studio_version' => $v['r_studio_version'],
         ':directory_name' => $directory_name,
         ':proposal_id' => $proposal_id,
     );

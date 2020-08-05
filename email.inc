@@ -55,7 +55,7 @@ FOSSEE, IIT Bombay', array(
             break;
         case 'case_study_proposal_approved':
             /* initializing data */
-            $url = 'http://cfd.fossee.in/case-study-project/abstract-code';
+            $url = 'https://r.fossee.in/case-study-project/abstract-code';
             $query = db_select('case_study_proposal');
             $query->fields('case_study_proposal');
             $query->condition('id', $params['case_study_proposal_approved']['proposal_id']);

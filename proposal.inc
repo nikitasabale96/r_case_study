@@ -277,26 +277,6 @@ function r_case_study_proposal_form($form, &$form_state, $no_js_use = FALSE)
 			)
 		)
 	);
-	$form['r_studio_version'] = array(
-		'#type' => 'select',
-		'#title' => t('Select the R Studio version'),
-		'#options' => _cs_list_of_r_studio_versions(),
-		'#required' => TRUE
-	);
-	$form['r_studio_other_version'] = array(
-		'#type' => 'textfield',
-		'#title' => t('Enter the R Studio version used'),
-		'#description' => t('<span style="color:red">This is a mandatory field</span>'),
-		'#size' => 100,
-		'#maxlength' => 100,
-		'#states' => array(
-			'visible' => array(
-				':input[name="r_studio_version"]' => array(
-					'value' => 'Others'
-				)
-			)
-		)
-	);
 	$form['case_study_title'] = array(
 		'#type' => 'textarea',
 		'#title' => t('Case Study Title'),
@@ -309,8 +289,8 @@ function r_case_study_proposal_form($form, &$form_state, $no_js_use = FALSE)
 		'#type' => 'textarea',
 		'#title' => t('Description'),
 		'#size' => 250,
-		'#maxlength' => 500,
-		'#description' => t('Maximum character limit is 500'),
+		'#maxlength' => 1200,
+		'#description' => t('Maximum character limit is 1200'),
 		'#required' => TRUE,
 	);
 	$form['references'] = array(
@@ -481,18 +461,6 @@ function r_case_study_proposal_form_validate($form, &$form_state)
 			$form_state['values']['r_version'] = $form_state['values']['r_other_version'];
 		}
 	}
-	if ($form_state['values']['r_studio_version'] == 'Others')
-	{
-		if ($form_state['values']['r_other_studio_version'] == '')
-		{
-		form_set_error('r_other_studio_version', t('Please enter the R studio version'));
-		}
-		else
-		{
-			$form_state['values']['r_studio_version'] = $form_state['values']['r_other_studio_version'];
-		}
-	}
-
 	
 if (isset($_FILES['files']))
 	{
@@ -576,7 +544,6 @@ function r_case_study_proposal_form_submit($form, &$form_state)
     state, 
     country,
     r_version,
-    r_studio_version,
     project_title,
     description,
     reference,
@@ -605,7 +572,6 @@ function r_case_study_proposal_form_submit($form, &$form_state)
     :state,  
     :country,
     :r_version,
-    :r_studio_version,
     :project_title, 
     :description,
     :reference,
@@ -634,7 +600,6 @@ function r_case_study_proposal_form_submit($form, &$form_state)
 		":state" => $v['all_state'],
 		":country" => $v['country'],
 		":r_version" => $v['r_version'],
-		":r_studio_version" => $v['r_studio_version'],
 		":project_title" => $project_title,
 		':description' => $v['description'],
 		":reference" => $v['references'],

@@ -605,18 +605,6 @@ function _cs_list_of_versions(){
     return $versions;
 }
 
-function _cs_list_of_r_studio_versions(){
-    $studio_versions = array();
-    $query = db_select('case_study_r_studio_version');
-    $query->fields('case_study_r_studio_version');
-    $studio_version_list = $query->execute();
-    while($studio_version_data = $studio_version_list->fetchObject()){
-        $studio_versions[$studio_version_data->r_studio_version] = $studio_version_data->r_studio_version;
-    }
-    return $studio_versions;
-}
-
-
 function _r_case_study_dir_name($project, $proposar_name)
 {
     $project_title = ucname($project);

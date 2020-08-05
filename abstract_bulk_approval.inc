@@ -124,10 +124,10 @@ function r_case_study_abstract_bulk_approval_form_submit($form, &$form_state)
 					$email_body = array(
 						0 => t('
 
-Dear !user_name,
+Dear ' . $user_info->contributor_name . ',
 
 Congratulations!
-Your simulation and abstract for Power Systems Simulation Project at FOSSEE with the following details have been approved.
+Your report and code files for Case Study Project at FOSSEE with the following details have been approved.
 
 Full Name: ' . $user_info->name_title . ' ' . $user_info->contributor_name . '
 Email : ' . $user_data->mail . '
@@ -135,7 +135,7 @@ University/Institute : ' . $user_info->university . '
 City : ' . $user_info->city . '
 
 Project Title  : ' . $user_info->project_title . '
-Description of the simulation: ' . $user_info->description .'
+Description of the Case Study: ' . $user_info->description .'
 
 Kindly send us the internship forms as early as possible for processing your honorarium on time. In case you have already sent these forms, please share the the consignment number or tracking id with us.
 
@@ -144,8 +144,8 @@ Note: It will take upto 30 days from the time we receive your forms, to process 
 
 Best Wishes,
 
-!site_name Power Systems Team,
-FOSSEE,IIT Bombay', array(
+!site_name Team,
+FOSSEE, IIT Bombay', array(
 							'!site_name' => variable_get('site_name', ''),
 							'!user_name' => $user_data->name
 						))
@@ -208,7 +208,7 @@ FOSSEE,IIT Bombay', array(
 					$email_body = array(
 						0 => t('
 
-Dear !user_name,
+Dear ' . $user_info->contributor_name . ',
 
 Kindly resubmit the project files for the project: ' . $user_info->project_title . '.
 Description of the simulation: ' . $user_info->description . '
@@ -219,8 +219,8 @@ Looking forward for the re-submission from you with the above suggested changes.
 
 Best Wishes,
 
-!site_name Power Systems Team,
-FOSSEE,IIT Bombay', array(
+!site_name Team,
+FOSSEE, IIT Bombay', array(
 							'!site_name' => variable_get('site_name', ''),
 							'!user_name' => $user_data->name
 						))
@@ -267,9 +267,9 @@ FOSSEE,IIT Bombay', array(
 					));
 					$email_body = array(
 						0 => t('
-Dear !user_name,
+Dear ' . $user_info->contributor_name . ',
 
-We regret to inform you that your simulation and abstract for Power Systems Simulation Project at FOSSEE with the following details have been disapproved:
+We regret to inform you that your report and code files for Case Study Project at FOSSEE with the following details have been disapproved:
 
 Full Name: ' . $user_info->name_title . ' ' . $user_info->contributor_name . '
 Email : ' . $user_data->mail . '
@@ -277,18 +277,18 @@ University/Institute : ' . $user_info->university . '
 City : ' . $user_info->city . '
 
 Project Title  : ' . $user_info->project_title . '
-Description of the simulation: ' . $user_info->description .'
+Description of the Case Study: ' . $user_info->description .'
 
 Reason for dis-approval: ' . $form_state['values']['message'] . '
 
 Kindly note that the incorrect files will be deleted from all our databases.
 
-Thank you for participating in the Power Systems Simulation Project. You are welcome to submit a new proposal.
+Thank you for participating in the Case Study Project. You are welcome to submit a new proposal.
 
 Best Wishes,
 
-!site_name Power Systems Team,
-FOSSEE,IIT Bombay', array(
+!site_name Team,
+FOSSEE, IIT Bombay', array(
 						'!site_name' => variable_get('site_name', ''),
 						'!user_name' => $user_data->name
 											))
@@ -348,8 +348,8 @@ function _bulk_list_case_study_actions()
 		0 => 'Please select...'
 	);
 	$case_study_actions[1] = 'Approve Entire Case Study';
-	$case_study_actions[2] = 'Resubmit Project files';
-	$case_study_actions[3] = 'Dis-Approve Entire Case Study (This will delete Case Study)';
+	$case_study_actions[2] = 'Resubmit Project files(This will enable resubmission for the contributor)';
+	$case_study_actions[3] = 'Dis-Approve Entire Case Study (This will delete the Case Study files and the proposal from the db)';
 	//$case_study_actions[4] = 'Delete Entire Case Study Including Proposal';
 	return $case_study_actions;
 }
@@ -390,14 +390,6 @@ function _case_study_details($case_study_proposal_id)
 	$query->fields('case_study_submitted_abstracts');
 	$query->condition('proposal_id', $case_study_proposal_id);
 	$abstracts_q = $query->execute()->fetchObject();
-	if($abstracts_q->other_libraries_used == 1)
-	{
-		$other_libraries_used = "Yes";
-	}
-	else
-	{
-		$other_libraries_used = "No";
-	}
 	if ($abstracts_q)
 	{
 		if ($abstracts_q->is_submitted == 0)

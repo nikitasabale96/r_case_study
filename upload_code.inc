@@ -147,10 +147,14 @@ function r_case_study_upload_abstract_code_form($form, &$form_state)
 		$existing_uploaded_report_file = new stdClass();
 		$existing_uploaded_report_file->filename = "No file uploaded";
 	} //!$existing_uploaded_report_file
-	$form['upload_report'] = array(
+	$form['report_file'] = array(
+		'#type' => 'fieldset',
+		'#title' => t('Upload the report of the project.<span style="color:red">*</span>'),
+		'#collapsible' => FALSE,
+		'#collapsed' => FALSE
+	);
+	$form['report_file']['upload_report'] = array(
 		'#type' => 'file',
-		'#title' => t('Upload an abstract of the project.') ,
-		//'#required' => TRUE,
 		'#description' => t(t('<span style="color:red;">Current File :</span> ' . $existing_uploaded_report_file->filename . '<br />' . t('<span style="color:red;">Allowed file extensions: ') . variable_get('project_report_upload_extensions', '') . '</span>'
 	)));
 	$existing_uploaded_code_file = default_value_for_uploaded_files("C", $proposal_data->id);
@@ -159,10 +163,14 @@ function r_case_study_upload_abstract_code_form($form, &$form_state)
 		$existing_uploaded_code_file = new stdClass();
 		$existing_uploaded_code_file->filename = "No file uploaded";
 	} //!$existing_uploaded_code_file
-	$form['upload_code_file'] = array(
+	$form['code_file'] = array(
+		'#type' => 'fieldset',
+		'#title' => t('Upload the code files of the project.<span style="color:red">*</span>'),
+		'#collapsible' => FALSE,
+		'#collapsed' => FALSE
+	);
+	$form['code_file']['upload_code_file'] = array(
 		'#type' => 'file',
-		'#title' => t('Upload the Project Files'),
-		//'#required' => TRUE,
 		'#description' => t('<span style="color:red;">Current File :</span> ' . $existing_uploaded_code_file->filename . '<br />Separate filenames with underscore. No spaces or any special characters allowed in filename.') . '<br />' . t('<span style="color:red;">Allowed file extensions: ') . variable_get('project_code_file_upload_extensions', '') . '</span>'
 	);
 	$form['prop_id'] = array(
@@ -204,10 +212,10 @@ function r_case_study_upload_abstract_code_form_validate($form, &$form_state)
 		/* check for valid filename extensions */
 		
 		/* check if atleast one source or result file is uploaded */
-		if (!($_FILES['files']['name']['upload_report']))
+		/*if (!($_FILES['files']['name']['upload_report']))
 			form_set_error('upload_report', t('Please upload the abstract file'));
 		if(!($_FILES['files']['name']['upload_code_file']))
-			form_set_error('upload_code_file', t('Please upload the raw data file'));
+			form_set_error('upload_code_file', t('Please upload the raw data file'));*/
 		/* check for valid filename extensions */
 		if ($_FILES['files']['name']['upload_report'] || $_FILES['files']['name']['upload_code_file'])
 	{
