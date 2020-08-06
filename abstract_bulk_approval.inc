@@ -419,7 +419,7 @@ function _case_study_details($case_study_proposal_id)
 	$return_html .= '<strong>Contributor Name:</strong><br />' . $abstracts_pro->name_title . ' ' . $abstracts_pro->contributor_name . '<br /><br />';
 	$return_html .= '<strong>Title of the Case Study:</strong><br />' . $abstracts_pro->project_title . '<br /><br />';
 	$return_html .= '<strong>Uploaded Report of the project:</strong><br />' . $abstract_filename . '<br /><br />';
-	$return_html .= '<strong>Uploaded Code file:</strong><br />' . $abstracts_query_process_filename . '<br /><br />';
+	$return_html .= '<strong>Uploaded data and code files of the project:</strong><br />' . $abstracts_query_process_filename . '<br /><br />';
 	$return_html .= $download_case_study;
 	return $return_html;
 }
