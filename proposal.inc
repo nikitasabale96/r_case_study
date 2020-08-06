@@ -179,7 +179,7 @@ function r_case_study_proposal_form($form, &$form_state, $no_js_use = FALSE)
 	);
 	$form['other_country'] = array(
 		'#type' => 'textfield',
-		'#title' => t('Other than India'),
+		'#title' => t('Other Country'),
 		'#size' => 100,
 		'#attributes' => array(
 			'placeholder' => t('Enter your country name')
@@ -194,7 +194,7 @@ function r_case_study_proposal_form($form, &$form_state, $no_js_use = FALSE)
 	);
 	$form['other_state'] = array(
 		'#type' => 'textfield',
-		'#title' => t('State other than India'),
+		'#title' => t('State'),
 		'#size' => 100,
 		'#attributes' => array(
 			'placeholder' => t('Enter your state/region name')
@@ -209,7 +209,7 @@ function r_case_study_proposal_form($form, &$form_state, $no_js_use = FALSE)
 	);
 	$form['other_city'] = array(
 		'#type' => 'textfield',
-		'#title' => t('City other than India'),
+		'#title' => t('City'),
 		'#size' => 100,
 		'#attributes' => array(
 			'placeholder' => t('Enter your city name')
@@ -313,7 +313,7 @@ function r_case_study_proposal_form($form, &$form_state, $no_js_use = FALSE)
 	);
 	$form['raw_data_file'] = array(
 		'#type' => 'fieldset',
-		'#title' => t('Submit a Raw data file<span style="color:red">*</span>'),
+		'#title' => t('Submit raw data file/s<span style="color:red">*</span>'),
 		'#collapsible' => FALSE,
 		'#collapsed' => FALSE
 	);
@@ -347,7 +347,7 @@ function r_case_study_proposal_form($form, &$form_state, $no_js_use = FALSE)
 		'#type' => 'checkboxes',
 		'#title' => t('Terms And Conditions'),
 		'#options' => array(
-			'status' => t('<a href="/term-and-conditions" target="_blank">I agree to the Terms and Conditions</a>')
+			'status' => t('<a href="case-study-project/term-and-conditions" target="_blank">I agree to the Terms and Conditions</a>')
 		),
 		'#required' => TRUE
 	);

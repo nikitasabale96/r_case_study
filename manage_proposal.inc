@@ -14,7 +14,7 @@ function r_case_study_proposal_pending()
             date('d-m-Y', $pending_data->creation_date),
             l($pending_data->name_title . ' ' . $pending_data->contributor_name, 'user/' . $pending_data->uid),
             $pending_data->project_title,
-            l('Approve', 'case-study-project/manage-proposal/approve/' . $pending_data->id) . ' | ' . l('Edit', 'case-study-project/manage-proposal/edit/' . $pending_data->id),
+            l('Approve', 'case-study-project/manage-proposal/approve/' . $pending_data->id),
         );
     } //$pending_data = $pending_q->fetchObject()
     /* check if there are any pending proposals */

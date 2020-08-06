@@ -62,7 +62,7 @@ function r_case_study_abstract()
 		}
 		if ($abstracts_q->is_submitted == '')
 		{
-			$url = l('Upload abstract', 'case-study-project/abstract-code/upload');
+			$url = l('Upload project files', 'case-study-project/abstract-code/upload');
 		} //$abstracts_q->is_submitted == ''
 		else if ($abstracts_q->is_submitted == 1)
 		{
@@ -75,13 +75,13 @@ function r_case_study_abstract()
 	} //$abstracts_query_process == TRUE
 	else
 	{
-		$url = l('Upload abstract', 'case-study-project/abstract-code/upload');
+		$url = l('Upload project files', 'case-study-project/abstract-code/upload');
 		$abstracts_query_process_filename = "File not uploaded";
 	}
 	$return_html .= '<strong>Contributor Name:</strong><br />' . $proposal_data->name_title . ' ' . $proposal_data->contributor_name . '<br /><br />';
 	$return_html .= '<strong>Title of the Case Study:</strong><br />' . $proposal_data->project_title . '<br /><br />';
 	$return_html .= '<strong>Uploaded Report of the project:</strong><br />' . $abstract_filename . '<br /><br />';
-	$return_html .= '<strong>Uploaded Code file:</strong><br />' . $abstracts_query_process_filename . '<br /><br />';
+	$return_html .= '<strong>Uploaded data and code files of the project:</strong><br />' . $abstracts_query_process_filename . '<br /><br />';
 	$return_html .= $url . '<br />';
 	return $return_html;
 }
@@ -165,7 +165,7 @@ function r_case_study_upload_abstract_code_form($form, &$form_state)
 	} //!$existing_uploaded_code_file
 	$form['code_file'] = array(
 		'#type' => 'fieldset',
-		'#title' => t('Upload the code files of the project.<span style="color:red">*</span>'),
+		'#title' => t('Upload the data and code files of the project.<span style="color:red">*</span>'),
 		'#collapsible' => FALSE,
 		'#collapsed' => FALSE
 	);
