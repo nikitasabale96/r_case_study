@@ -21,7 +21,7 @@ function r_case_study_proposal_abstract_file() {
 	header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
 	header("Cache-Control: public");
 	header("Content-Description: File Transfer");
-	header("Content-Type: application/pdf");
+	header("Content-Type:" . $case_study_abstract_file->filemime);
 	header('Content-disposition: attachment; filename="' . $abstract_file . '"');
 	header("Content-Length: " . filesize($root_path . $directory_name . $abstract_file));
 	header("Content-Transfer-Encoding: binary");
@@ -54,7 +54,7 @@ function r_case_study_proposal_rawdata_file() {
 	header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
 	header("Cache-Control: public");
 	header("Content-Description: File Transfer");
-	header("Content-Type: application/csv");
+	header("Content-Type: " . $case_study_rawdata_files->filemime);
 	header('Content-disposition: attachment; filename="' . $rawdata_file . '"');
 	header("Content-Length: " . filesize($root_path . $directory_name . $rawdata_file));
 	header("Content-Transfer-Encoding: binary");
