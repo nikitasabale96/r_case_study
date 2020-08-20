@@ -35,19 +35,20 @@ function r_case_study_proposal_abstract_file() {
 function r_case_study_proposal_rawdata_file() {
 	$proposal_id = arg(3);
 	$root_path = r_case_study_path();
-	$query = db_select('case_study_proposals_file');
-	$query->fields('case_study_proposals_file');
-	$query->condition('proposal_id', $proposal_id);
-	$query->condition('filetype', 'R');
-	$result = $query->execute();
+	$query_file = db_select('case_study_proposals_file');
+	$query_file->fields('case_study_proposals_file');
+	$query_file->condition('proposal_id', $proposal_id);
+	$query_file->condition('filetype', 'R');
+	$result = $query_file->execute();
 	$case_study_rawdata_files = $result->fetchObject();
-	$query1 = db_select('case_study_proposal');
-	$query1->fields('case_study_proposal');
-	$query1->condition('id', $proposal_id);
-	$result1 = $query1->execute();
-	$case_study = $result1->fetchObject();
+	$query_pro = db_select('case_study_proposal');
+	$query_pro->fields('case_study_proposal');
+	$query_pro->condition('id', $proposal_id);
+	$result_pro = $query_pro->execute();
+	$case_study = $result_pro->fetchObject();
 	$directory_name = $case_study->directory_name . '/';
 	$rawdata_file = $case_study_rawdata_files->filename;
+	//var_dump($directory_name);die;
 	ob_clean();
 	header("Pragma: public");
 	header("Expires: 0");
@@ -61,6 +62,6 @@ function r_case_study_proposal_rawdata_file() {
 	header("Expires: 0");
 	header("Pragma: no-cache");
 	readfile($root_path . $directory_name . $rawdata_file);
-	ob_end_flush();
-	ob_clean();
+		/*ob_end_flush();
+		ob_clean();*/
 }
