@@ -347,7 +347,7 @@ function r_case_study_proposal_form($form, &$form_state, $no_js_use = FALSE)
 		'#type' => 'checkboxes',
 		'#title' => t('Terms And Conditions'),
 		'#options' => array(
-			'status' => t('<a href="case-study-project/term-and-conditions" target="_blank">I agree to the Terms and Conditions</a>')
+			'status' => t('<a href="https://r.fossee.in/case-study-project/term-and-conditions" target="_blank">I agree to the Terms and Conditions</a>')
 		),
 		'#required' => TRUE
 	);
