@@ -122,7 +122,7 @@ Dear ' . $proposal_data->contributor_name .  ',
 We regret to inform you that your  Case Study proposal with following details have been disapproved:
 
 Full Name: ' . $proposal_data->name_title . ' ' . $proposal_data->contributor_name . '
-Email: ' . $user->mail . '
+Email: ' . $user_data->mail . '
 University/Institute: ' . $proposal_data->university . '
 Department: ' . $proposal_data->department . '
 City: ' . $proposal_data->city . '
