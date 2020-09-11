@@ -418,7 +418,7 @@ function r_case_study_proposal_approval_form_submit($form, &$form_state)
         $user_data = user_load($proposal_data->uid);
         $email_to = $user_data->mail;
         $from = variable_get('case_study_from_email', '');
-        $bcc = $user->mail . ', ' . variable_get('case_study_emails', '');
+        $bcc = variable_get('case_study_emails', '');
         $cc = variable_get('case_study_cc_emails', '');
         $params['case_study_proposal_approved']['proposal_id'] = $proposal_id;
         $params['case_study_proposal_approved']['user_id'] = $proposal_data->uid;
@@ -452,7 +452,8 @@ function r_case_study_proposal_approval_form_submit($form, &$form_state)
         $user_data = user_load($proposal_data->uid);
         $email_to = $user_data->mail;
         $from = variable_get('case_study_from_email', '');
-        $bcc = $user->mail . ', ' . variable_get('case_study_emails', '');
+        $bcc = variable_get('case_study_emails', '');
+        var_dump($bcc);die;
         $cc = variable_get('case_study_cc_emails', '');
         $params['case_study_proposal_disapproved']['proposal_id'] = $proposal_id;
         $params['case_study_proposal_disapproved']['user_id'] = $proposal_data->uid;
@@ -733,7 +734,7 @@ function r_case_study_proposal_status_form_submit($form, &$form_state)
         $user_data = user_load($proposal_data->uid);
         $email_to = $user_data->mail;
         $from = variable_get('case_study_from_email', '');
-        $bcc = $user->mail . ', ' . variable_get('case_study_emails', '');
+        $bcc = variable_get('case_study_emails', '');
         $cc = variable_get('case_study_cc_emails', '');
         $params['case_study_proposal_completed']['proposal_id'] = $proposal_id;
         $params['case_study_proposal_completed']['user_id'] = $proposal_data->uid;
