@@ -453,7 +453,6 @@ function r_case_study_proposal_approval_form_submit($form, &$form_state)
         $email_to = $user_data->mail;
         $from = variable_get('case_study_from_email', '');
         $bcc = variable_get('case_study_emails', '');
-        var_dump($bcc);die;
         $cc = variable_get('case_study_cc_emails', '');
         $params['case_study_proposal_disapproved']['proposal_id'] = $proposal_id;
         $params['case_study_proposal_disapproved']['user_id'] = $proposal_data->uid;
