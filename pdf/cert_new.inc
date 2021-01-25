@@ -161,7 +161,7 @@ function generate_pdf()
 	$pdf->Image($image4, $pdf->GetX() +50, $pdf->GetY() + 22, 120, 0);
 	$pdf->SetFont('Arial', 'I', 8);
 	$pdf->SetTextColor(0, 0, 0);
-	$filename = str_replace(' ', '-', $data3->contributor_name) . '-R-Case_Study-Certificate.pdf';
+	$filename = str_replace(' ', '-', $data3->contributor_name) . '-R-Case-Study-Certificate.pdf';
 	$file     = $path . '/pdf/temp_certificate/' . $proposal_id . '_' . $filename;
 	$pdf->Output($file, 'F');
 	ob_clean();
