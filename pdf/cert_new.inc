@@ -49,7 +49,7 @@ function generate_pdf()
 	$pdf->Ln(15);
 	$pdf->Ln(20);
 	$pdf->SetFont('Arial', 'BI', 25);
-	$pdf->Ln(26);
+	$pdf->Ln(20);
 	$pdf->SetFont('Arial', 'BI', 12);
 	$pdf->SetTextColor(0, 0, 0);
 	$pdf->Cell(240, 20, 'This is to certify that', '0', '1', 'C');
@@ -137,8 +137,10 @@ function generate_pdf()
 	$pdf->Ln(30);
 	$pdf->SetX(29);
 	$pdf->SetY(-58);
-	$sign = $path . "/pdf/images/sign.png";
-	$pdf->Image($sign, $pdf->GetX() + 170, $pdf->GetY() - 15, 80, 0);
+	$sign1 = $path . "/pdf/images/sign1.png";
+    $sign2 = $path . "/pdf/images/sign2.png";
+    $pdf->Image($sign1, $pdf->GetX()+10, $pdf->GetY() - 15, 80, 0);
+    $pdf->Image($sign2, $pdf->GetX()+170, $pdf->GetY()  - 15, 80, 0);
 	$pdf->SetX(29);
 	$pdf->SetFont('Arial', 'B', 10);
 	$pdf->SetY(-58);
@@ -150,15 +152,15 @@ function generate_pdf()
 	$image4 = $path . "/pdf/images/bottom_line.png";
 	$pdf->SetY(-50);
 	$pdf->SetX(80);
-	$image3 = $path . "/pdf/images/mhrd.png";
+	$image3 = $path . "/pdf/images/moe.png";
 	$image2 = $path . "/pdf/images/fossee.png"; 
 	
 	$pdf->Ln(8);
 	$pdf->Image($image2, $pdf->GetX() +15, $pdf->GetY() + 7, 40, 0);
 	$pdf->Ln(6);
-	$pdf->Image($pngAbsoluteFilePath, $pdf->GetX() + 102, $pdf->GetY() - 10, 30, 0);
-	$pdf->Image($image3, $pdf->GetX() + 200, $pdf->GetY() -3, 40, 0);
-	$pdf->Image($image4, $pdf->GetX() +50, $pdf->GetY() + 22, 120, 0);
+	$pdf->Image($pngAbsoluteFilePath, $pdf->GetX() + 106, $pdf->GetY() - 10, 25, 0);
+	$pdf->Image($image3, $pdf->GetX() + 200, $pdf->GetY() +6, 40, 0);
+	$pdf->Image($image4, $pdf->GetX() +60, $pdf->GetY() + 23, 120, 0);
 	$pdf->SetFont('Arial', 'I', 8);
 	$pdf->SetTextColor(0, 0, 0);
 	$filename = str_replace(' ', '-', $data3->contributor_name) . '-R-Case-Study-Certificate.pdf';
