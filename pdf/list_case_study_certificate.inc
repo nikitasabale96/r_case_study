@@ -9,7 +9,7 @@ function _list_case_study_certificates()
 	if ($exist_id){
 	if ($exist_id->id) {
 		if ($exist_id->id < 3) {
-			drupal_set_message('<strong>You need to propose a Case-Study <a href="https://r.fossee.in/case-study-project/proposal">Case Study Project</a></strong> or if you have already proposed then your Case-Study is under reviewing process', 'status');
+			drupal_set_message('<strong>You need to propose a <a href="https://r.fossee.in/case-study-project/proposal">Case Study Project</a></strong>. If you have already proposed then your Case-Study is under reviewing process', 'status');
 			return '';
 		} //$exist_id->id < 3
 		else {
@@ -48,7 +48,7 @@ function _list_case_study_certificates()
 		}
 	} //$exist_id->id
 	else {
-		drupal_set_message('<strong>You need to propose a Case-Study <a href="https://r.fossee.in/case-study-project/proposal">Case Study Project</a></strong> or if you have already proposed then your Case-Study is under reviewing process', 'status');
+		drupal_set_message('<strong>You need to propose a <a href="https://r.fossee.in/case-study-project/proposal">Case Study Project</a></strong>. If you have already proposed then your Case-Study is under reviewing process', 'status');
 		$page_content = "<span style='color:red;'> No certificate available </span>";
 		return $page_content;
 	}
