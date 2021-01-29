@@ -152,16 +152,14 @@ function generate_pdf()
 	$image4 = $path . "/pdf/images/bottom_line.png";
 	$pdf->SetY(-50);
 	$pdf->SetX(80);
-	$pdf->Image('https://fossee.in/sites/all/themes/software_responsive_theme/img/mhrd-logo.png', 218, 186, 40, 0,'PNG');
-	/*$image3 = $path . "/pdf/images/moe.png";*/
-	/*$image2 = $path . "/pdf/images/fossee.png"; */
+	$image3 = $path . "/pdf/images/moe.png";
+	$image2 = $path . "/pdf/images/fossee.png"; 
 	
 	$pdf->Ln(8);
-	$pdf->Image('https://fossee.in/sites/all/themes/software_responsive_theme/img/logo.png', 32, 180, 40, 0,'PNG');
-	/*$pdf->Image($image2, $pdf->GetX() +15, $pdf->GetY() + 7, 40, 0);*/
+	$pdf->Image($image2, $pdf->GetX() +15, $pdf->GetY() + 7, 40, 0);
 	$pdf->Ln(6);
 	$pdf->Image($pngAbsoluteFilePath, $pdf->GetX() + 106, $pdf->GetY() - 10, 25, 0);
-	/*$pdf->Image($image3, $pdf->GetX() + 200, $pdf->GetY() +6, 40, 0);*/
+	$pdf->Image($image3, $pdf->GetX() + 200, $pdf->GetY() +6, 40, 0);
 	$pdf->Image($image4, $pdf->GetX() +60, $pdf->GetY() + 23, 120, 0);
 	$pdf->SetFont('Arial', 'I', 8);
 	$pdf->SetTextColor(0, 0, 0);
