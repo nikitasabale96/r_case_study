@@ -298,7 +298,7 @@ function r_case_study_proposal_form($form, &$form_state, $no_js_use = FALSE)
 		'#title' => t("References (Add links to all the data sources, research papers, and textbooks referred for the case study)"),
 		'#size' => 255,
 		'#maxlength' => 2500,
-		'#description' => t('Maximum character limit is 255'),
+		'#description' => t('Maximum character limit is 2500'),
 		'#required' => TRUE
 	);
 	$form['abstract_file'] = array(
