@@ -139,7 +139,7 @@ function r_case_study_menu()
     );
     /* CODE UPLOAD */
     $items['case-study-project/abstract-code/edit-upload-files'] = array(
-        'title' => 'Case Study Project Directory edit uploaded files for proposal',
+        'title' => 'Edit uploaded files during code submission',
         'description' => 'Project Edit Upload',
         'page callback' => 'drupal_get_form',
         'access callback' => 'user_access',
