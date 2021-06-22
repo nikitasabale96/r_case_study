@@ -524,26 +524,21 @@ function r_case_study_edit_upload_abstract_code_form($form, &$form_state)
     );
     /* get current proposal */
     $proposal_id = (int) arg(3);
+    //var_dump($proposal_id);die;
     $uid = $user->uid;
     $query = db_select('case_study_proposal');
     $query->fields('case_study_proposal');
     $query->condition('id', $proposal_id);
     $proposal_q = $query->execute();
-    if ($proposal_q) {
-        if ($proposal_data = $proposal_q->fetchObject()) {
-            /* everything ok */
-        } //$proposal_data = $proposal_q->fetchObject()
-        else {
-            drupal_set_message(t('Invalid proposal selected. Please try again.'), 'error');
-            drupal_goto('case-study-project/manage-proposal/edit-upload-file');
-            return;
-        }
+    $proposal_data = $proposal_q->fetchObject();
+    //var_dump($proposal_data);die;
+
+    if (!$proposal_data) {
+        drupal_set_message(t('Invalid proposal selected. Please try again.'), 'error');
+       // drupal_goto('case-study-project/manage-proposal/edit-upload-file');
+        //return;
     } //$proposal_q
     else {
-        drupal_set_message(t('Invalid proposal selected. Please try again.'), 'error');
-        drupal_goto('case-study-project/manage-proposal/edit-upload-file');
-        return;
-    }
     $query = db_select('case_study_submitted_abstracts');
     $query->fields('case_study_submitted_abstracts');
     $query->condition('proposal_id', $proposal_data->id);
@@ -596,6 +591,7 @@ function r_case_study_edit_upload_abstract_code_form($form, &$form_state)
         '#markup' => l(t('Cancel'), 'case-study-project/manage-proposal/edit-upload-file'),
     );
     return $form;
+	}
 }
 
 ///////////////////////////////////////////////////////////////
@@ -621,10 +617,10 @@ function _case_study_edit_upload_abstract_code_form_validate($form, &$form_state
 
                 $allowed_extensions_str = '';
                 switch ($file_type) {
-                    case 'A':
+                    case 'R':
                         $allowed_extensions_str = variable_get('resource_upload_extensions', '');
                         break;
-                    case 'S':
+                    case 'C':
                         $allowed_extensions_str = variable_get('case_study_project_files_extensions', '');
                         break;
                 } //$file_type
@@ -673,7 +669,7 @@ function r_case_study_edit_upload_abstract_code_form_submit($form, &$form_state)
     $proposal_directory = $proposal_data->directory_name;
     /* create proposal folder if not present */
     //$dest_path = $proposal_directory . '/';
-    $dest_path_project_files = $proposal_directory . '/';
+    $dest_path_project_files = $proposal_directory . '/project_files/';
     $proposal_id = $proposal_data->id;
     foreach ($_FILES['files']['name'] as $file_form_name => $file_name) {
 
@@ -742,5 +738,6 @@ function r_case_study_edit_upload_abstract_code_form_submit($form, &$form_state)
     if (!drupal_mail('case_study', 'abstract_edit_file_uploaded', $email_to, language_default(), $params, $from, true)) {
         drupal_set_message('Error sending email message.', 'error');
     }
-    drupal_goto('case-study-project/abstract-code/edit-upload-files');
+    //drupal_set_message(t('Updated'), 'status');
+    drupal_goto('case-study-project/abstract-code/edit-upload-files/' . $proposal_id);
 }
