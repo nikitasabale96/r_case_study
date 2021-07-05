@@ -65,7 +65,24 @@ function r_case_study_settings_form($form, $form_state)
 		'#required' => TRUE,
 		'#default_value' => variable_get('project_code_file_upload_extensions', '')
 	);
-	
+	$form['extensions']['resource_upload'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Allowed file extensions for uploading resource files'),
+		'#description' => t('A comma separated list WITHOUT SPACE of source file extensions that are permitted to be uploaded on the server'),
+		'#size' => 50,
+		'#maxlength' => 255,
+		'#required' => TRUE,
+		'#default_value' => variable_get('resource_upload_extensions', '')
+	);
+	$form['extensions']['case_study_upload'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Allowed extensions for project files'),
+		'#description' => t('A comma separated list WITHOUT SPACE of pdf file extensions that are permitted to be uploaded on the server'),
+		'#size' => 50,
+		'#maxlength' => 255,
+		'#required' => TRUE,
+		'#default_value' => variable_get('case_study_project_files_extensions', '')
+	);
 	$form['submit'] = array(
 		'#type' => 'submit',
 		'#value' => t('Submit')
@@ -85,5 +102,7 @@ function r_case_study_settings_form_submit($form, &$form_state)
 	variable_set('proposal_raw_data_upload_extensions', $form_state['values']['proposal_raw_data_file']);
 	variable_set('project_report_upload_extensions', $form_state['values']['project_submission_report']);
 	variable_set('project_code_file_upload_extensions', $form_state['values']['project_submission_code_file']);
+	variable_set('resource_upload_extensions', $form_state['values']['resource_upload']);
+	variable_set('case_study_project_files_extensions', $form_state['values']['case_study_upload']);
 	drupal_set_message(t('Settings updated'), 'status');
 }

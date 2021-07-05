@@ -415,19 +415,24 @@ function r_case_study_proposal_form_validate($form, &$form_state)
 		} //$form_state['values']['city'] == ''
 	}
 	//Validation for project title
-	$form_state['values']['project_title'] = trim($form_state['values']['project_title']);
-	if ($form_state['values']['project_title'] != '')
+	$form_state['values']['case_study_title'] = trim($form_state['values']['case_study_title']);
+	if ($form_state['values']['case_study_title'] != '')
 	{
-		if (strlen($form_state['values']['project_title']) < 10)
+		if (strlen($form_state['values']['case_study_title']) > 250)
 		{
-			form_set_error('project_title', t('Minimum charater limit is 10 charaters, please check the length of the project title'));
-		} //strlen($form_state['values']['project_title']) < 10
+			form_set_error('case_study_title', t('Maximum charater limit is 250 charaters only, please check the length of the project title'));
+		} //strlen($form_state['values']['project_title']) > 250
+		else if (strlen($form_state['values']['case_study_title']) < 10)
+		{
+			form_set_error('case_study_title', t('Minimum charater limit is 10 charaters, please check the length of the project title'));
+		}
+		else if(preg_match('/[\^£$%&*()}{@#~?><>.:;`|=_+¬]/', $form_state['values']['case_study_title']))
+			form_set_error('case_study_title', t('Special characters are not allowed for Case Study project title')); //strlen($form_state['values']['project_title']) < 10
 	} //$form_state['values']['project_title'] != ''
-/*
-	if(strtotime(date($form_state['values']['expected_date_of_completion'])) < time())
+	else
 	{
-		form_set_error('expected_date_of_completion', t('Completion date should not be earlier than proposal date'));
-	}*/
+		form_set_error('case_study_title', t('Project title shoud not be empty'));
+	}
 
 	if ($form_state['values']['how_did_you_know_about_project'] == 'Others')
 	{

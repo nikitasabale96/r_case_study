@@ -5,7 +5,7 @@ function r_case_study_download_full_project()
 	global $user;
 	$id = arg(3);
 	$root_path = r_case_study_path();
-	//var_dump($root_path);die;
+	//var_dump($_SERVER['DOCUMENT_ROOT'] . base_path());die;
 	$query = db_select('case_study_proposal');
 	$query->fields('case_study_proposal');
 	$query->condition('id', $id);
@@ -20,7 +20,7 @@ function r_case_study_download_full_project()
 	$query = db_select('case_study_proposal');
 	$query->fields('case_study_proposal');
 	$query->condition('id', $id);
-	$case_study_proposal = $query->execute();
+	$case_study_udc_q = $query->execute();
 	$query_proposal_files = db_select('case_study_proposals_file');
 	$query_proposal_files->fields('case_study_proposals_file');
 	$query_proposal_files->condition('proposal_id', $id);
@@ -32,7 +32,9 @@ function r_case_study_download_full_project()
 	$query->fields('case_study_submitted_abstracts_file');
 	$query->condition('proposal_id', $id);
 	$project_files = $query->execute();
+        //var_dump($project_files->rowCount());die;
 	while ($cs_project_files = $project_files->fetchObject()) {
+                //var_dump($root_path . $CS_PATH . 'project_files/' . $cs_project_files->filepath);die;
 		$zip->addFile($root_path . $CS_PATH . 'project_files/' . $cs_project_files->filepath, $CS_PATH . 'project_files/' . str_replace(' ', '_', basename($cs_project_files->filename)));
 	}
 	$zip_file_count = $zip->numFiles;
@@ -65,8 +67,8 @@ function r_case_study_download_full_project()
 		}
 	} //$zip_file_count > 0
 	else {
-		drupal_set_message("There are no power system simulation project in this proposal to download", 'error');
-		drupal_goto('powersystems');
+		drupal_set_message("There is no Case Study in this proposal to download", 'error');
+		drupal_goto('case-study-project/completed-case-studies');
 	}
 }
 function case_study_download_completed_project()
@@ -129,7 +131,7 @@ function case_study_download_completed_project()
 		}
 	} //$zip_file_count > 0
 	else {
-		drupal_set_message("There are no power system simulation project in this proposal to download", 'error');
-		drupal_goto('powersystems');
+		drupal_set_message("There is no Case Case Study in this proposal to download", 'error');
+		drupal_goto('case-study-project/completed-case-studies');
 	}
 }

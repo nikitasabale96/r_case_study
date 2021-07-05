@@ -72,7 +72,7 @@ function r_case_study_menu()
         'weight' => 4,
         'file' => 'manage_proposal.inc',
     );
-    /*$items['case-study-project/manage-proposal/edit-upload-file'] = array(
+    $items['case-study-project/manage-proposal/edit-upload-file'] = array(
         'title' => 'Edit code files',
         'description' => 'Edit code files',
         'page callback' => 'r_case_study_proposal_edit_file_all',
@@ -83,7 +83,7 @@ function r_case_study_menu()
         'type' => MENU_LOCAL_TASK,
         'weight' => 4,
         'file' => 'manage_proposal.inc',
-    );*/
+    );
     $items['case-study-project/manage-proposal/approve'] = array(
         'title' => 'Approve Proposal',
         'description' => 'Approve Proposal',
@@ -138,8 +138,8 @@ function r_case_study_menu()
         'file' => 'abstract_bulk_approval.inc',
     );
     /* CODE UPLOAD */
-    /*$items['case-study-project/abstract-code/edit-upload-files'] = array(
-        'title' => 'Case Study Project Directory edit uploaded files for proposal',
+    $items['case-study-project/abstract-code/edit-upload-files'] = array(
+        'title' => 'Edit uploaded files during code submission',
         'description' => 'Project Edit Upload',
         'page callback' => 'drupal_get_form',
         'access callback' => 'user_access',
@@ -152,7 +152,7 @@ function r_case_study_menu()
         'type' => MENU_CALLBACK,
         'file' => 'upload_code.inc',
         'weight' => 2,
-    );*/
+    );
     $items['case-study-project/abstract-code'] = array(
         'title' => 'Case Study Project Directory Submission',
         'description' => 'Abstract Submission',
