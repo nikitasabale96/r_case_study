@@ -18,7 +18,7 @@ function r_case_study_completed_proposals_all()
 	{
 		$output .= "Work has been completed for the following Case Studies. We welcome your contributions." . "<hr>";
 		$preference_rows = array();
-		$i = 1;
+		$i = $result->rowCount();
 		while ($row = $result->fetchObject())
 		{
 			$proposal_id = $row->id;
@@ -36,7 +36,7 @@ function r_case_study_completed_proposals_all()
 				$row->university,
 				$completion_date
 			);
-			$i++;
+			$i--;
 		} //$row = $result->fetchObject()
 		$preference_header = array(
 			'No',
