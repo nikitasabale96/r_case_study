@@ -295,8 +295,8 @@ function r_case_study_proposal_form($form, &$form_state, $no_js_use = FALSE)
 	);
 	$form['sample_references_file'] = array(
         '#type' => 'item',
-        '#title' => t('<h5>Ideal Literature Survey File Submission</h5>'),
-		'#markup' => t('Kindly refer to the following link to know the ideal Literature Survey file submission: ') . t('<a href= "https://static.fossee.in/r/Sample_R_Codes/Literature%20Survey.docx" target="_blank">Click Here</a>')
+        '#title' => t('<h5>Literature Survey File Submission</h5>'),
+		'#markup' => t('Please download the template of the Literature Survey using the following link: ') . t('<a href= "https://static.fossee.in/r/Sample_R_Codes/Literature%20Survey.docx" target="_blank">Click Here</a>') . '<br>' . t('Kindly fill it and submit it in the section below. Make sure to add at least 10 items in the survey list.')
     );
 
 	$form['literature_survey_file'] = array(
@@ -320,8 +320,8 @@ function r_case_study_proposal_form($form, &$form_state, $no_js_use = FALSE)
 	// );
 	$form['sample_abstract_file'] = array(
         '#type' => 'item',
-        '#title' => t('<h5>Ideal Abstract File Submission</h5>'),
-		'#markup' => t('Kindly refer to the following link to know the ideal abstract file submission:') . t('<a href= "https://r.fossee.in/case-study-project/download/proposal-abstract-files/4" target="_blank"> Click Here</a>')
+        '#title' => t('<h5>Abstract File Submission</h5>'),
+		'#markup' => t('Kindly refer to the following link to know the ideal abstract file format:') . t('<a href= "https://r.fossee.in/case-study-project/download/proposal-abstract-files/4" target="_blank"> Click Here</a>')
     );
 	$form['abstract_file'] = array(
 		'#type' => 'fieldset',
