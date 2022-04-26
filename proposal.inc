@@ -145,27 +145,36 @@ function r_case_study_proposal_form($form, &$form_state, $no_js_use = FALSE)
 	);
 	$form['faculty_name'] = array(
 		'#type' => 'textfield',
-		'#title' => t('Name of the Faculty Member of your Institution, if any, who helped you with this Case Study Project'),
+		'#title' => t('Name of the Faculty Member of your Institution, who helped you with this Case Study Project'),
 		'#size' => 50,
 		'#maxlength' => 50,
-		'#validated' => TRUE,
-		'#description' => t('<span style="color:red">Maximum character limit is 50</span>')
+		'#description' => t('<span style="color:red">Maximum character limit is 50</span>'),
+		'#required' => TRUE,
+		'#attributes' => array(
+			'placeholder' => 'Insert Name of the Faculty Member '
+		)
 	);
 	$form['faculty_department'] = array(
 		'#type' => 'textfield',
-		'#title' => t('Department of the Faculty Member of your Institution, if any, who helped you with this Case Study Project'),
+		'#title' => t('Department of the Faculty Member of your Institution, who helped you with this Case Study Project'),
 		'#size' => 50,
 		'#maxlength' => 50,
-		'#validated' => TRUE,
-		'#description' => t('<span style="color:red">Maximum character limit is 50</span>')
+		'#description' => t('<span style="color:red">Maximum character limit is 50</span>'),
+		'#required' => TRUE,
+		'#attributes' => array(
+			'placeholder' => 'Insert Department of the Faculty Member '
+		)
 	);
 	$form['faculty_email'] = array(
 		'#type' => 'textfield',
-		'#title' => t('Email id of the Faculty Member of your Institution, if any, who helped you with this Case Study Project'),
+		'#title' => t('Email id of the Faculty Member of your Institution, who helped you with this Case Study Project'),
 		'#size' => 255,
 		'#maxlength' => 255,
-		'#validated' => TRUE,
-		'#description' => t('<span style="color:red">Maximum character limit is 255</span>')
+		'#description' => t('<span style="color:red">Maximum character limit is 255</span>'),
+		'#required' => TRUE,
+		'#attributes' => array(
+			'placeholder' => 'Insert Email id of the Faculty Member '
+		)
 	);
 	$form['country'] = array(
 		'#type' => 'select',
@@ -627,9 +636,9 @@ function r_case_study_proposal_form_submit($form, &$form_state)
 		":university" => trim($v['university']),
 		":department" => $v['department'],
 		":how_did_you_know_about_project" => trim($how_did_you_know_about_project),
-		":faculty_name" => trim($v['faculty_name']),
-		":faculty_department" => trim($v['faculty_department']),
-		":faculty_email" => trim($v['faculty_email']),
+		":faculty_name" => $v['faculty_name'],
+		":faculty_department" => $v['faculty_department'],
+		":faculty_email" => $v['faculty_email'],
 		":city" => $v['city'],
 		":pincode" => $v['pincode'],
 		":state" => $v['all_state'],
