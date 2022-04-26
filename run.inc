@@ -137,7 +137,7 @@ function _case_study_details($case_study_default_value)
 {
 	$case_study_details = _case_study_information($case_study_default_value);
 	if ($case_study_default_value != 0) {
-		$form['case_study_details']['#markup'] = '<span style="color: rgb(128, 0, 0);"><strong>About the case study</strong></span></td><td style="width: 35%;"><br />' . '<ul>' . '<li><strong>Proposer Name:</strong> ' . $case_study_details->name_title . ' ' . $case_study_details->contributor_name . '</li>' . '<li><strong>Title of the Case Study:</strong> ' . $case_study_details->project_title . '</li>' . '<li><strong>University:</strong> ' . $case_study_details->university . '</li>' . '<li><strong>Version:</strong> ' . $case_study_details->r_version . '</li>' . '</ul>';
+		$form['case_study_details']['#markup'] = '<span style="color: rgb(128, 0, 0);"><strong>About the case study</strong></span></td><td style="width: 35%;"><br />' . '<ul>' . '<li><strong>Proposer Name:</strong> ' . $case_study_details->name_title . ' ' . $case_study_details->contributor_name . '</li>' . '<li><strong>Title of the Case Study:</strong> ' . $case_study_details->project_title . '</li>' . '<li><strong>University:</strong> ' . $case_study_details->university . '</li>' . '<li><strong>R Version:</strong> ' . $case_study_details->r_version . '</li>' . '</ul>';
 		$details = $form['case_study_details']['#markup'];
 		return $details;
 	} //$case_study_default_value != 0

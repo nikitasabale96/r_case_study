@@ -287,7 +287,7 @@ function r_case_study_proposal_form($form, &$form_state, $no_js_use = FALSE)
 	);
 	$form['description'] = array(
 		'#type' => 'textarea',
-		'#title' => t('Description'),
+		'#title' => t('Objective'),
 		'#size' => 250,
 		'#maxlength' => 1200,
 		'#description' => t('Maximum character limit is 1200'),
@@ -295,12 +295,41 @@ function r_case_study_proposal_form($form, &$form_state, $no_js_use = FALSE)
 	);
 	$form['references'] = array(
 		'#type' => 'textfield',
-		'#title' => t("References (Add links to all the data sources, research papers, and textbooks referred for the case study)"),
+		'#title' => t("Literature Survey"),
 		'#size' => 255,
 		'#maxlength' => 2500,
 		'#description' => t('Maximum character limit is 2500'),
 		'#required' => TRUE
 	);
+	$form['references_1'] = array(
+		'#type' => 'select',
+		'#title' => t('Do you want to add another Literature Survey'),
+		'#options' => array(
+			'Yes' => 'Yes',
+			'No' => 'No'
+		),
+		'#required' => TRUE,
+		'#tree' => TRUE
+	);
+	$form['other_references'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Other Literature Survey'),
+		'#size' => 255,
+		'#maxlength' => 2500,
+		'#description' => t('Maximum character limit is 2500'),
+		'#states' => array(
+			'visible' => array(
+				':input[name="references_1"]' => array(
+					'value' => 'Yes'
+				)
+			)
+		)
+	);
+	$form['sample_abstract_file'] = array(
+        '#type' => 'item',
+        '#title' => t('<h5>Ideal Sample Abstract File Submission</h5>'),
+		'#markup' => t('Kindly refer to the following link to know the ideal sample abstract file submission:') . t('<a href= "https://r.fossee.in/case-study-project/download/proposal-abstract-files/4" target="_blank"> Click Here</a>')
+    );
 	$form['abstract_file'] = array(
 		'#type' => 'fieldset',
 		'#title' => t('Submit an Abstract<span style="color:red">*</span>'),
@@ -526,6 +555,12 @@ function r_case_study_proposal_form_submit($form, &$form_state)
 	else {
 		$how_did_you_know_about_project = $form_state['values']['how_did_you_know_about_project'];
 	}
+	if($form_state['values']['other_references'] == 'Yes'){
+		$other_references = $form_state['values']['other_references'];
+    }
+    else{
+        $other_references = 'NA';
+    }
 	/* inserting the user proposal */
 	$v = $form_state["values"];
 	$project_title = trim($v['case_study_title']);
@@ -553,6 +588,7 @@ function r_case_study_proposal_form_submit($form, &$form_state)
     project_title,
     description,
     reference,
+    other_reference,
     directory_name,
     approval_status,
     is_completed, 
@@ -581,6 +617,7 @@ function r_case_study_proposal_form_submit($form, &$form_state)
     :project_title, 
     :description,
     :reference,
+    :other_reference,
     :directory_name,
     :approval_status,
     :is_completed, 
@@ -609,6 +646,7 @@ function r_case_study_proposal_form_submit($form, &$form_state)
 		":project_title" => $project_title,
 		':description' => $v['description'],
 		":reference" => $v['references'],
+		":other_reference" => $other_references,
 		":directory_name" => $directory_name,
 		":approval_status" => 0,
 		":is_completed" => 0,

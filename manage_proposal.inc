@@ -231,6 +231,12 @@ function r_case_study_proposal_approval_form($form, &$form_state)
     else{
         $reference = $proposal_data->reference;
     }
+    if($proposal_data->other_reference == ''){
+        $other_reference = 'NA';
+    }
+    else{
+        $other_reference = $proposal_data->other_reference;
+    }
     $form['contributor_name'] = array(
         '#type' => 'item',
         '#markup' => l($proposal_data->name_title . ' ' . $proposal_data->contributor_name, 'user/' . $proposal_data->uid),
@@ -310,12 +316,17 @@ function r_case_study_proposal_approval_form($form, &$form_state)
     $form['description'] = array(
         '#type' => 'item',
         '#markup' => $proposal_data->description,
-        '#title' => t('Description')
+        '#title' => t('Objective')
     );
     $form['reference'] = array(
         '#type' => 'item',
         '#markup' => $reference,
-        '#title' => t('Reference')
+        '#title' => t('Literature Survey')
+    );
+    $form['other_reference'] = array(
+        '#type' => 'item',
+        '#markup' => $other_reference,
+        '#title' => t('Another Literature Survey')
     );
     $form['abstract_file'] = array(
         '#type' => 'item',
@@ -522,6 +533,12 @@ function r_case_study_proposal_status_form($form, &$form_state)
     else{
         $reference = $proposal_data->reference;
     }
+    if($proposal_data->other_reference == ''){
+        $other_reference = 'NA';
+    }
+    else{
+        $other_reference = $proposal_data->other_reference;
+    }
     $form['contributor_name'] = array(
         '#type' => 'item',
         '#markup' => l($proposal_data->name_title . ' ' . $proposal_data->contributor_name, 'user/' . $proposal_data->uid),
@@ -601,15 +618,20 @@ function r_case_study_proposal_status_form($form, &$form_state)
     $form['description'] = array(
         '#type' => 'item',
         '#markup' => $proposal_data->description,
-        '#title' => t('Description')
+        '#title' => t('Objective')
     );
-    /*$url = '~(?:(https?)://([^\s<]+)|(www\.[^\s<]+?\.[^\s<]+))(?<![\.,:])~i';
-    $reference = preg_replace($url, '<a href="$0" target="_blank" title="$0">$0</a>', $re);*/
     $form['reference'] = array(
         '#type' => 'item',
         '#markup' => $reference,
-        '#title' => t('Reference')
+        '#title' => t('Literature Survey')
     );
+    $form['other_reference'] = array(
+        '#type' => 'item',
+        '#markup' => $other_reference,
+        '#title' => t('Another Literature Survey')
+    );
+    /*$url = '~(?:(https?)://([^\s<]+)|(www\.[^\s<]+?\.[^\s<]+))(?<![\.,:])~i';
+    $reference = preg_replace($url, '<a href="$0" target="_blank" title="$0">$0</a>', $re);*/
     $form['abstract_file'] = array(
         '#type' => 'item',
         '#markup' => l('View abstract', 'case-study-project/download/proposal-abstract-files/' . $proposal_data->id),
@@ -785,6 +807,12 @@ function r_case_study_proposal_edit_form($form, &$form_state)
         drupal_goto('case-study-project/manage-proposal');
         return;
     }*/
+    if($proposal_data->other_reference == ''){
+        $other_reference = 'NA';
+    }
+    else{
+        $other_reference = $proposal_data->other_reference;
+    }
     $user_data = user_load($proposal_data->uid);
     $form['name_title'] = array(
         '#type' => 'select',
@@ -979,7 +1007,7 @@ function r_case_study_proposal_edit_form($form, &$form_state)
     );
     $form['description'] = array(
         '#type' => 'textarea',
-        '#title' => t('Description'),
+        '#title' => t('Objective'),
         '#size' => 300,
         '#maxlength' => 1200,
         '#required' => true,
@@ -987,10 +1015,17 @@ function r_case_study_proposal_edit_form($form, &$form_state)
     ); 
     $form['reference'] = array(
         '#type' => 'textfield',
-        '#title' => t('Reference'),
+        '#title' => t('Literature Survey'),
         '#size' => 300,
         '#maxlength' => 350,
         '#default_value' => $proposal_data->reference,
+    );
+    $form['other_reference'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Another Literature Survey'),
+        '#size' => 300,
+        '#maxlength' => 350,
+        '#default_value' => $proposal_data->other_reference,
     );
     $form['date_of_proposal'] = array(
         '#type' => 'textfield',
@@ -1166,6 +1201,7 @@ function r_case_study_proposal_edit_form_submit($form, &$form_state)
 				project_title=:project_title,
                 description=:description,
                 reference=:reference,
+                other_reference=:other_reference,
                 r_version=:r_version,
 				directory_name=:directory_name
 				WHERE id=:proposal_id";
@@ -1184,6 +1220,7 @@ function r_case_study_proposal_edit_form_submit($form, &$form_state)
         ':project_title' => $project_title,
         ':description' => $v['description'],
         ':reference' => $v['reference'],
+        ':other_reference' => $v['other_reference'],
         ':r_version' => $v['r_version'],
         ':directory_name' => $directory_name,
         ':proposal_id' => $proposal_id,
