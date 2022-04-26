@@ -293,42 +293,35 @@ function r_case_study_proposal_form($form, &$form_state, $no_js_use = FALSE)
 		'#description' => t('Maximum character limit is 1200'),
 		'#required' => TRUE,
 	);
-	$form['references'] = array(
-		'#type' => 'textfield',
-		'#title' => t("Literature Survey"),
-		'#size' => 255,
-		'#maxlength' => 2500,
-		'#description' => t('Maximum character limit is 2500'),
-		'#required' => TRUE
+	$form['sample_references_file'] = array(
+        '#type' => 'item',
+        '#title' => t('<h5>Ideal Literature Survey File Submission</h5>'),
+		'#markup' => t('Kindly refer to the following link to know the ideal Literature Survey file submission: ') . t('<a href= "https://static.fossee.in/r/Sample_R_Codes/Literature%20Survey.docx" target="_blank">Click Here</a>')
+    );
+
+	$form['literature_survey_file'] = array(
+		'#type' => 'fieldset',
+		'#title' => t('Submit Literature Survey<span style="color:red">*</span>'),
+		'#collapsible' => FALSE,
+		'#collapsed' => FALSE
 	);
-	$form['references_1'] = array(
-		'#type' => 'select',
-		'#title' => t('Do you want to add another Literature Survey'),
-		'#options' => array(
-			'Yes' => 'Yes',
-			'No' => 'No'
-		),
-		'#required' => TRUE,
-		'#tree' => TRUE
+	$form['literature_survey_file']['literature_survey_file_path'] = array(
+		'#type' => 'file',
+		'#size' => 48,
+		'#description' => t('<span style="color:red;">Upload filenames with allowed extensions only. No spaces or any special characters allowed in filename.</span>') . '<br />' . t('<span style="color:red;">Allowed file extensions: ') . variable_get('proposal_literature_survey_upload_extensions', '') . '</span>'
 	);
-	$form['other_references'] = array(
-		'#type' => 'textfield',
-		'#title' => t('Other Literature Survey'),
-		'#size' => 255,
-		'#maxlength' => 2500,
-		'#description' => t('Maximum character limit is 2500'),
-		'#states' => array(
-			'visible' => array(
-				':input[name="references_1"]' => array(
-					'value' => 'Yes'
-				)
-			)
-		)
-	);
+	// $form['references'] = array(
+	// 	'#type' => 'textfield',
+	// 	'#title' => t("Literature Survey"),
+	// 	'#size' => 255,
+	// 	'#maxlength' => 2500,
+	// 	'#description' => t('Maximum character limit is 2500'),
+	// 	'#required' => TRUE
+	// );
 	$form['sample_abstract_file'] = array(
         '#type' => 'item',
-        '#title' => t('<h5>Ideal Sample Abstract File Submission</h5>'),
-		'#markup' => t('Kindly refer to the following link to know the ideal sample abstract file submission:') . t('<a href= "https://r.fossee.in/case-study-project/download/proposal-abstract-files/4" target="_blank"> Click Here</a>')
+        '#title' => t('<h5>Ideal Abstract File Submission</h5>'),
+		'#markup' => t('Kindly refer to the following link to know the ideal abstract file submission:') . t('<a href= "https://r.fossee.in/case-study-project/download/proposal-abstract-files/4" target="_blank"> Click Here</a>')
     );
 	$form['abstract_file'] = array(
 		'#type' => 'fieldset',
@@ -500,6 +493,8 @@ function r_case_study_proposal_form_validate($form, &$form_state)
 if (isset($_FILES['files']))
 	{
 		/* check if atleast one source or result file is uploaded */
+		if(!($_FILES['files']['name']['literature_survey_file_path']))
+			form_set_error('literature_survey_file_path', t('Please upload the literature survey file'));
 		if (!($_FILES['files']['name']['abstract_file_path']))
 			form_set_error('abstract_file_path', t('Please upload the abstract file'));
 		if(!($_FILES['files']['name']['raw_data_file_path']))
@@ -510,13 +505,18 @@ if (isset($_FILES['files']))
 			if ($file_name)
 			{
 				/* checking file type */
+				if (strstr($file_form_name, 'literature_survey_file_path'))
+						$file_type = 'S';
 				if (strstr($file_form_name, 'abstract_file_path'))
 						$file_type = 'A';
 				else if (strstr($file_form_name, 'raw_data_file_path'))
 						$file_type = 'R';
 				$allowed_extensions_str = '';
 				switch ($file_type)
-				{
+				{	
+					case 'S':
+						$allowed_extensions_str = variable_get('proposal_literature_survey_upload_extensions', '');
+						break;
 					case 'A':
 						$allowed_extensions_str = variable_get('proposal_abstract_upload_extensions', '');
 						break;
@@ -555,12 +555,6 @@ function r_case_study_proposal_form_submit($form, &$form_state)
 	else {
 		$how_did_you_know_about_project = $form_state['values']['how_did_you_know_about_project'];
 	}
-	if($form_state['values']['other_references'] == 'Yes'){
-		$other_references = $form_state['values']['other_references'];
-    }
-    else{
-        $other_references = 'NA';
-    }
 	/* inserting the user proposal */
 	$v = $form_state["values"];
 	$project_title = trim($v['case_study_title']);
@@ -587,8 +581,7 @@ function r_case_study_proposal_form_submit($form, &$form_state)
     r_version,
     project_title,
     description,
-    reference,
-    other_reference,
+    -- reference,
     directory_name,
     approval_status,
     is_completed, 
@@ -616,8 +609,7 @@ function r_case_study_proposal_form_submit($form, &$form_state)
     :r_version,
     :project_title, 
     :description,
-    :reference,
-    :other_reference,
+    -- :reference,
     :directory_name,
     :approval_status,
     :is_completed, 
@@ -645,8 +637,7 @@ function r_case_study_proposal_form_submit($form, &$form_state)
 		":r_version" => $v['r_version'],
 		":project_title" => $project_title,
 		':description' => $v['description'],
-		":reference" => $v['references'],
-		":other_reference" => $other_references,
+		// ":reference" => $v['references'],
 		":directory_name" => $directory_name,
 		":approval_status" => 0,
 		":is_completed" => 0,
@@ -669,12 +660,42 @@ function r_case_study_proposal_form_submit($form, &$form_state)
 		if ($file_name)
 		{
 			/* checking file type */
-			if (strstr($file_form_name, 'abstract_file_path'))
+			if (strstr($file_form_name, 'literature_survey_file_path'))
+						$file_type = 'S';
+			else if (strstr($file_form_name, 'abstract_file_path'))
 						$file_type = 'A';
 			else if (strstr($file_form_name, 'raw_data_file_path'))
 						$file_type = 'R';
 			switch ($file_type)
-			{
+			{	
+				case 'S':
+					if (file_exists($root_path . $dest_path . $_FILES['files']['name'][$file_form_name]))
+					{
+						 drupal_set_message(t("Error uploading file. File !filename already exists.", array('!filename' => $_FILES['files']['name'][$file_form_name])), 'error');
+						//unlink($root_path . $dest_path . $_FILES['files']['name'][$file_form_name]);
+					} //file_exists($root_path . $dest_path . $_FILES['files']['name'][$file_form_name])
+					/* uploading file */
+					if (move_uploaded_file($_FILES['files']['tmp_name'][$file_form_name], $root_path . $dest_path . $_FILES['files']['name'][$file_form_name]))
+					{
+						$query = "INSERT INTO {case_study_proposals_file} (proposal_id, filename, filepath, filemime, filesize, filetype, timestamp)
+          VALUES (:proposal_id, :filename, :filepath, :filemime, :filesize, :filetype, :timestamp)";
+							$args = array(
+								":proposal_id" => $proposal_id,
+								":filename" => $_FILES['files']['name'][$file_form_name],
+								":filepath" => $dest_path . $_FILES['files']['name'][$file_form_name],
+								":filemime" => mime_content_type($root_path . $dest_path . $_FILES['files']['name'][$file_form_name]),
+								":filesize" => $_FILES['files']['size'][$file_form_name],
+								":filetype" => $file_type,
+								":timestamp" => time()
+							);
+						$updateresult = db_query($query, $args);
+						drupal_set_message($file_name . ' uploaded successfully.', 'status');
+					} //move_uploaded_file($_FILES['files']['tmp_name'][$file_form_name], $root_path . $dest_path . $_FILES['files']['name'][$file_form_name])
+					else
+					{
+						drupal_set_message('Error uploading file : ' . $dest_path . $file_name, 'error');
+					}
+					break;
 				case 'A':
 					if (file_exists($root_path . $dest_path . $_FILES['files']['name'][$file_form_name]))
 					{

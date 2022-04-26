@@ -29,6 +29,15 @@ function r_case_study_settings_form($form, $form_state)
 		'#required' => TRUE,
 		'#default_value' => variable_get('case_study_from_email', '')
 	);
+	$form['extensions']['proposal_literature_survey_file'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Allowed file extensions for uploading literature survey file in the proposal form'),
+		'#description' => t('A comma separated list WITHOUT SPACE of source file extensions that are permitted to be uploaded on the server'),
+		'#size' => 50,
+		'#maxlength' => 255,
+		'#required' => TRUE,
+		'#default_value' => variable_get('proposal_literature_survey_upload_extensions', '')
+	);
 	$form['extensions']['proposal_abstract_file'] = array(
 		'#type' => 'textfield',
 		'#title' => t('Allowed file extensions for uploading abstract files in the proposal form'),
@@ -98,6 +107,7 @@ function r_case_study_settings_form_submit($form, &$form_state)
 	variable_set('case_study_emails', $form_state['values']['emails']);
 	variable_set('case_study_cc_emails', $form_state['values']['cc_emails']);
 	variable_set('case_study_from_email', $form_state['values']['from_email']);
+	variable_set('proposal_literature_survey_upload_extensions', $form_state['values']['proposal_literature_survey_file']);
 	variable_set('proposal_abstract_upload_extensions', $form_state['values']['proposal_abstract_file']);
 	variable_set('proposal_raw_data_upload_extensions', $form_state['values']['proposal_raw_data_file']);
 	variable_set('project_report_upload_extensions', $form_state['values']['project_submission_report']);

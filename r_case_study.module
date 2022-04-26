@@ -258,6 +258,16 @@ function r_case_study_menu()
         'type' => MENU_CALLBACK,
         'file' => 'available_project_titles_list.inc',
     );
+    $items['case-study-project/download/proposal-literature-survey-files'] = array(
+        'title' => 'Download Project file',
+        'description' => 'Download project file',
+        'page callback' => 'r_case_study_proposal_literature_survey_file',
+        'access arguments' => array(
+            'download code',
+        ),
+        'type' => MENU_CALLBACK,
+        'file' => 'download.inc',
+    );
     $items['case-study-project/download/proposal-abstract-files'] = array(
         'title' => 'Download Project file',
         'description' => 'Download project file',
