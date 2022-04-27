@@ -225,12 +225,6 @@ function r_case_study_proposal_approval_form($form, &$form_state)
     } else {
         $faculty_email = $proposal_data->faculty_email;
     }
-    if($proposal_data->reference == ''){
-        $reference = 'NA';
-    }
-    else{
-        $reference = $proposal_data->reference;
-    }
     $form['contributor_name'] = array(
         '#type' => 'item',
         '#markup' => l($proposal_data->name_title . ' ' . $proposal_data->contributor_name, 'user/' . $proposal_data->uid),
@@ -310,12 +304,12 @@ function r_case_study_proposal_approval_form($form, &$form_state)
     $form['description'] = array(
         '#type' => 'item',
         '#markup' => $proposal_data->description,
-        '#title' => t('Description')
+        '#title' => t('Objective')
     );
-    $form['reference'] = array(
+    $form['literature_survey_file'] = array(
         '#type' => 'item',
-        '#markup' => $reference,
-        '#title' => t('Reference')
+        '#markup' => l('View Literature Survey', 'case-study-project/download/proposal-literature-survey-files/' . $proposal_data->id),
+        '#title' => t('Literature Survey')
     );
     $form['abstract_file'] = array(
         '#type' => 'item',
@@ -516,12 +510,6 @@ function r_case_study_proposal_status_form($form, &$form_state)
     } else {
         $faculty_email = $proposal_data->faculty_email;
     }
-     if($proposal_data->reference == ''){
-        $reference = 'NA';
-    }
-    else{
-        $reference = $proposal_data->reference;
-    }
     $form['contributor_name'] = array(
         '#type' => 'item',
         '#markup' => l($proposal_data->name_title . ' ' . $proposal_data->contributor_name, 'user/' . $proposal_data->uid),
@@ -601,14 +589,14 @@ function r_case_study_proposal_status_form($form, &$form_state)
     $form['description'] = array(
         '#type' => 'item',
         '#markup' => $proposal_data->description,
-        '#title' => t('Description')
+        '#title' => t('Objective')
     );
     /*$url = '~(?:(https?)://([^\s<]+)|(www\.[^\s<]+?\.[^\s<]+))(?<![\.,:])~i';
     $reference = preg_replace($url, '<a href="$0" target="_blank" title="$0">$0</a>', $re);*/
-    $form['reference'] = array(
+    $form['literature_survey_file'] = array(
         '#type' => 'item',
-        '#markup' => $reference,
-        '#title' => t('Reference')
+        '#markup' => l('View Literature Survey', 'case-study-project/download/proposal-literature-survey-files/' . $proposal_data->id),
+        '#title' => t('Literature Survey')
     );
     $form['abstract_file'] = array(
         '#type' => 'item',
@@ -979,19 +967,12 @@ function r_case_study_proposal_edit_form($form, &$form_state)
     );
     $form['description'] = array(
         '#type' => 'textarea',
-        '#title' => t('Description'),
+        '#title' => t('Objective'),
         '#size' => 300,
         '#maxlength' => 1200,
         '#required' => true,
         '#default_value' => $proposal_data->description,
     ); 
-    $form['reference'] = array(
-        '#type' => 'textfield',
-        '#title' => t('Reference'),
-        '#size' => 300,
-        '#maxlength' => 350,
-        '#default_value' => $proposal_data->reference,
-    );
     $form['date_of_proposal'] = array(
         '#type' => 'textfield',
         '#title' => t('Date of Proposal'),
@@ -1165,7 +1146,6 @@ function r_case_study_proposal_edit_form_submit($form, &$form_state)
 				state=:state,
 				project_title=:project_title,
                 description=:description,
-                reference=:reference,
                 r_version=:r_version,
 				directory_name=:directory_name
 				WHERE id=:proposal_id";
@@ -1183,7 +1163,6 @@ function r_case_study_proposal_edit_form_submit($form, &$form_state)
         ':state' => $v['all_state'],
         ':project_title' => $project_title,
         ':description' => $v['description'],
-        ':reference' => $v['reference'],
         ':r_version' => $v['r_version'],
         ':directory_name' => $directory_name,
         ':proposal_id' => $proposal_id,
