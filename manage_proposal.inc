@@ -256,6 +256,11 @@ function r_case_study_proposal_approval_form($form, &$form_state)
         '#markup' => $proposal_data->how_did_you_know_about_project,
         '#title' => t('How did you know about the project'),
     );
+    $form['profession'] = array(
+        '#type' => 'item',
+        '#markup' => $proposal_data->profession,
+        '#title' => t('Current Professional Status'),
+    );
     $form['faculty_name'] = array(
         '#type' => 'item',
         '#markup' => $faculty_name,
@@ -541,6 +546,11 @@ function r_case_study_proposal_status_form($form, &$form_state)
         '#markup' => $proposal_data->how_did_you_know_about_project,
         '#title' => t('How did you know about the project'),
     );
+    $form['profession'] = array(
+        '#type' => 'item',
+        '#markup' => $proposal_data->profession,
+        '#title' => t('Current Professional Status'),
+    );
     $form['faculty_name'] = array(
         '#type' => 'item',
         '#markup' => $faculty_name,
@@ -773,6 +783,21 @@ function r_case_study_proposal_edit_form($form, &$form_state)
         drupal_goto('case-study-project/manage-proposal');
         return;
     }*/
+    if ($proposal_data->faculty_name == '') {
+        $faculty_name = 'NA';
+    } else {
+        $faculty_name = $proposal_data->faculty_name;
+    }
+    if ($proposal_data->faculty_department == '') {
+        $faculty_department = 'NA';
+    } else {
+        $faculty_department = $proposal_data->faculty_department;
+    }
+    if ($proposal_data->faculty_email == '') {
+        $faculty_email = 'NA';
+    } else {
+        $faculty_email = $proposal_data->faculty_email;
+    }
     $user_data = user_load($proposal_data->uid);
     $form['name_title'] = array(
         '#type' => 'select',
@@ -829,13 +854,18 @@ function r_case_study_proposal_edit_form($form, &$form_state)
         '#default_value' => $proposal_data->how_did_you_know_about_project,
         '#required' => true,
     );
+    $form['profession'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Current Professional Status'),
+        '#default_value' => $proposal_data->profession
+    );
     $form['faculty_name'] = array(
         '#type' => 'textfield',
         '#title' => t('Name of the Faculty'),
         '#size' => 50,
         '#maxlength' => 50,
         '#validated' => true,
-        '#default_value' => $proposal_data->faculty_name,
+        '#default_value' => $faculty_name,
     );
     $form['faculty_department'] = array(
         '#type' => 'textfield',
@@ -843,7 +873,7 @@ function r_case_study_proposal_edit_form($form, &$form_state)
         '#size' => 50,
         '#maxlength' => 50,
         '#validated' => true,
-        '#default_value' => $proposal_data->faculty_department,
+        '#default_value' => $faculty_department,
     );
     $form['faculty_email'] = array(
         '#type' => 'textfield',
@@ -851,7 +881,7 @@ function r_case_study_proposal_edit_form($form, &$form_state)
         '#size' => 255,
         '#maxlength' => 255,
         '#validated' => true,
-        '#default_value' => $proposal_data->faculty_email,
+        '#default_value' => $faculty_email,
     );
     $form['country'] = array(
         '#type' => 'select',
@@ -1138,6 +1168,7 @@ function r_case_study_proposal_edit_form_submit($form, &$form_state)
 				university=:university,
 				department=:department,
 				how_did_you_know_about_project = :how_did_you_know_about_project,
+                profession=:profession,
 				faculty_name = :faculty_name,
 				faculty_department = :faculty_department,
 				faculty_email = :faculty_email,
@@ -1155,6 +1186,7 @@ function r_case_study_proposal_edit_form_submit($form, &$form_state)
         ':university' => $v['university'],
         ":department" => $v['department'],
         ":how_did_you_know_about_project" => $v['how_did_you_know_about_project'],
+        ":profession" => $v['profession'],
         ":faculty_name" => $v['faculty_name'],
         ":faculty_department" => $v['faculty_department'],
         ":faculty_email" => $v['faculty_email'],
