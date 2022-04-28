@@ -143,16 +143,26 @@ function r_case_study_proposal_form($form, &$form_state, $no_js_use = FALSE)
 			)
 		)		
 	);
+	$form['profession'] = array(
+		'#type' => 'select',
+		'#title' => t('Kindly select the option which describes your current status'),
+		'#options' =>  array(
+			'Student' => 'Student',
+			'Faculty (School/College/University)' => 'Faculty (School/College/University)',
+			'Working Professional (other than faculty)' => 'Working Professional (other than faculty)'
+		),
+		'#description' => t('<span style="color:red">It is mandatory for a student contributor to work under the guidance of a faculty for the case study project</span>'),
+		'#required' => TRUE
+	);
 	$form['faculty_name'] = array(
 		'#type' => 'textfield',
 		'#title' => t('Name of the Faculty Member of your Institution, who helped you with this Case Study Project'),
 		'#size' => 50,
 		'#maxlength' => 50,
 		'#description' => t('<span style="color:red">Maximum character limit is 50</span>'),
-		'#required' => TRUE,
 		'#attributes' => array(
 			'placeholder' => 'Insert Name of the Faculty Member '
-		)
+		)		
 	);
 	$form['faculty_department'] = array(
 		'#type' => 'textfield',
@@ -160,10 +170,9 @@ function r_case_study_proposal_form($form, &$form_state, $no_js_use = FALSE)
 		'#size' => 50,
 		'#maxlength' => 50,
 		'#description' => t('<span style="color:red">Maximum character limit is 50</span>'),
-		'#required' => TRUE,
 		'#attributes' => array(
 			'placeholder' => 'Insert Department of the Faculty Member '
-		)
+		)		
 	);
 	$form['faculty_email'] = array(
 		'#type' => 'textfield',
@@ -171,10 +180,9 @@ function r_case_study_proposal_form($form, &$form_state, $no_js_use = FALSE)
 		'#size' => 255,
 		'#maxlength' => 255,
 		'#description' => t('<span style="color:red">Maximum character limit is 255</span>'),
-		'#required' => TRUE,
 		'#attributes' => array(
 			'placeholder' => 'Insert Email id of the Faculty Member '
-		)
+		)	
 	);
 	$form['country'] = array(
 		'#type' => 'select',
@@ -580,6 +588,7 @@ function r_case_study_proposal_form_submit($form, &$form_state)
     university,
     department,
     how_did_you_know_about_project,
+    profession,
     faculty_name,
     faculty_department,
     faculty_email,
@@ -608,6 +617,7 @@ function r_case_study_proposal_form_submit($form, &$form_state)
     :university,
     :department,
     :how_did_you_know_about_project,
+    :profession,
     :faculty_name,
     :faculty_department,
     :faculty_email,
@@ -636,6 +646,7 @@ function r_case_study_proposal_form_submit($form, &$form_state)
 		":university" => trim($v['university']),
 		":department" => $v['department'],
 		":how_did_you_know_about_project" => trim($how_did_you_know_about_project),
+		":profession" => $v['profession'],
 		":faculty_name" => $v['faculty_name'],
 		":faculty_department" => $v['faculty_department'],
 		":faculty_email" => $v['faculty_email'],
@@ -658,6 +669,7 @@ function r_case_study_proposal_form_submit($form, &$form_state)
 	$proposal_id = db_query($result, $args, array(
 		'return' => Database::RETURN_INSERT_ID
 	));
+	//var_dump($args);die;
 	$dest_path = $directory_name . '/';
 	$dest_path1 = $root_path . $dest_path;
 	//var_dump($dest_path1);die;	
