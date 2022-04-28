@@ -151,8 +151,8 @@ function r_case_study_proposal_form($form, &$form_state, $no_js_use = FALSE)
 			'Faculty (School/College/University)' => 'Faculty (School/College/University)',
 			'Working Professional (other than faculty)' => 'Working Professional (other than faculty)'
 		),
-		'#required' => TRUE,
-		'#tree' => TRUE
+		'#description' => t('<span style="color:red">It is mandatory for a student contributor to work under the guidance of a faculty for the case study project</span>'),
+		'#required' => TRUE
 	);
 	$form['faculty_name'] = array(
 		'#type' => 'textfield',
@@ -162,13 +162,6 @@ function r_case_study_proposal_form($form, &$form_state, $no_js_use = FALSE)
 		'#description' => t('<span style="color:red">Maximum character limit is 50</span>'),
 		'#attributes' => array(
 			'placeholder' => 'Insert Name of the Faculty Member '
-		),
-		'#states' => array(
-			'visible' => array(
-				':input[name="profession"]' => array(
-					'value' => 'Student'
-				)
-			)
 		)		
 	);
 	$form['faculty_department'] = array(
@@ -179,13 +172,6 @@ function r_case_study_proposal_form($form, &$form_state, $no_js_use = FALSE)
 		'#description' => t('<span style="color:red">Maximum character limit is 50</span>'),
 		'#attributes' => array(
 			'placeholder' => 'Insert Department of the Faculty Member '
-		),
-		'#states' => array(
-			'visible' => array(
-				':input[name="profession"]' => array(
-					'value' => 'Student'
-				)
-			)
 		)		
 	);
 	$form['faculty_email'] = array(
@@ -196,14 +182,7 @@ function r_case_study_proposal_form($form, &$form_state, $no_js_use = FALSE)
 		'#description' => t('<span style="color:red">Maximum character limit is 255</span>'),
 		'#attributes' => array(
 			'placeholder' => 'Insert Email id of the Faculty Member '
-		),
-		'#states' => array(
-			'visible' => array(
-				':input[name="profession"]' => array(
-					'value' => 'Student'
-				)
-			)
-		)		
+		)	
 	);
 	$form['country'] = array(
 		'#type' => 'select',
@@ -426,24 +405,6 @@ function r_case_study_proposal_form_validate($form, &$form_state)
 		form_set_error('term_condition', t('Please check the terms and conditions'));
 		// $form_state['values']['country'] = $form_state['values']['other_country'];
 	}*/ //$form_state['values']['term_condition'] == '1'
-	if ($form_state['values']['profession'] == 'Student')
-	{
-		if ($form_state['values']['faculty_name'] == '')
-		{
-			form_set_error('faculty_name', t('Enter faculty name'));
-			// $form_state['values']['country'] = $form_state['values']['other_country'];
-		} //$form_state['values']['other_country'] == ''
-		if ($form_state['values']['faculty_department'] == '')
-		{
-			form_set_error('faculty_department', t('Enter faculty department'));
-			// $form_state['values']['country'] = $form_state['values']['other_country'];
-		} //$form_state['values']['other_state'] == ''
-		if ($form_state['values']['faculty_email'] == '')
-		{
-			form_set_error('faculty_email', t('Enter faculty email'));
-			// $form_state['values']['country'] = $form_state['values']['other_country'];
-		} //$form_state['values']['other_city'] == ''
-	} 
 	if ($form_state['values']['country'] == 'Others')
 	{
 		if ($form_state['values']['other_country'] == '')
