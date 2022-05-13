@@ -50,13 +50,13 @@ function r_case_study_proposal_all()
                 $approval_status = 'Pending';
                 break;
             case 1:
-                $approval_status = 'Approved';
+                $approval_status = "<span style='color:red;'>Approved</span>";
                 break;
             case 2:
-                $approval_status = 'Dis-approved';
+                $approval_status = "<span style='color:black;'>Dis-approved</span>";
                 break;
             case 3:
-                $approval_status = 'Completed';
+                $approval_status = "<span style='color:green;'>Completed</span>";
                 break;
             case 5:
                 $approval_status = 'On Hold';
