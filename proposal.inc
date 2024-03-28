@@ -298,21 +298,32 @@ function r_case_study_proposal_form($form, &$form_state, $no_js_use = FALSE)
 		'#type' => 'textarea',
 		'#title' => t('Case Study Title'),
 		'#size' => 250,
-		'#maxlength' => 500,
+		'#maxlength' => 100,
 		'#description' => t('Maximum character limit is 500'),
 		'#required' => TRUE,
 	);
 	$form['description'] = array(
 		'#type' => 'textarea',
-		'#title' => t('Objective'),
+		'#title' => t('Objective and Necessity of the Case Study'),
 		'#size' => 250,
 		'#maxlength' => 1200,
 		'#description' => t('Maximum character limit is 1200'),
 		'#required' => TRUE,
 	);
+	$form['raw_data_file'] = array(
+		'#type' => 'fieldset',
+		'#title' => t('Submit the data directory files (Upload raw data (in .csv)/Data Description File (in .pdf)/ Data Source Link (in .txt))<span style="color:red">*</span>'),
+		'#collapsible' => FALSE,
+		'#collapsed' => FALSE
+	);
+	$form['raw_data_file']['raw_data_file_path'] = array(
+		'#type' => 'file',
+		'#size' => 48,
+		'#description' => t('<span style="color:red;">Upload filenames with allowed extensions only. No spaces or any special characters allowed in filename.</span>') . '<br />' . t('<span style="color:red;">Allowed file extensions: ') . variable_get('proposal_raw_data_upload_extensions', '') . '</span>'
+	);
 	$form['sample_references_file'] = array(
         '#type' => 'item',
-        '#title' => t('<h5>Literature Survey File Submission</h5>'),
+        '#title' => t('<h5>Literature Survey Submission</h5>'),
 		'#markup' => t('Please download the template of the Literature Survey using the following link: ') . t('<a href= "https://static.fossee.in/r/Sample_R_Codes/Literature%20Survey.docx" target="_blank">Click Here</a>') . '<br>' . t('Kindly fill it and submit it in the section below. Make sure to add at least 10 items in the survey list.')
     );
 
@@ -327,22 +338,14 @@ function r_case_study_proposal_form($form, &$form_state, $no_js_use = FALSE)
 		'#size' => 48,
 		'#description' => t('<span style="color:red;">Upload filenames with allowed extensions only. No spaces or any special characters allowed in filename.</span>') . '<br />' . t('<span style="color:red;">Allowed file extensions: ') . variable_get('proposal_literature_survey_upload_extensions', '') . '</span>'
 	);
-	// $form['references'] = array(
-	// 	'#type' => 'textfield',
-	// 	'#title' => t("Literature Survey"),
-	// 	'#size' => 255,
-	// 	'#maxlength' => 2500,
-	// 	'#description' => t('Maximum character limit is 2500'),
-	// 	'#required' => TRUE
-	// );
 	$form['sample_abstract_file'] = array(
         '#type' => 'item',
-        '#title' => t('<h5>Abstract File Submission</h5>'),
+        '#title' => t('<h5>Methodology Details</h5>'),
 		'#markup' => t('Kindly refer to the following link to know the ideal abstract file format:') . t('<a href= "https://r.fossee.in/case-study-project/download/proposal-abstract-files/4" target="_blank"> Click Here</a>')
     );
 	$form['abstract_file'] = array(
 		'#type' => 'fieldset',
-		'#title' => t('Submit an Abstract<span style="color:red">*</span>'),
+		'#title' => t('Methodology Details<span style="color:red">*</span>'),
 		'#collapsible' => FALSE,
 		'#collapsed' => FALSE
 	);
@@ -351,17 +354,7 @@ function r_case_study_proposal_form($form, &$form_state, $no_js_use = FALSE)
 		'#size' => 48,
 		'#description' => t('<span style="color:red;">Upload filenames with allowed extensions only. No spaces or any special characters allowed in filename.</span>') . '<br />' . t('<span style="color:red;">Allowed file extensions: ') . variable_get('proposal_abstract_upload_extensions', '') . '</span>'
 	);
-	$form['raw_data_file'] = array(
-		'#type' => 'fieldset',
-		'#title' => t('Submit raw data file/s<span style="color:red">*</span>'),
-		'#collapsible' => FALSE,
-		'#collapsed' => FALSE
-	);
-	$form['raw_data_file']['raw_data_file_path'] = array(
-		'#type' => 'file',
-		'#size' => 48,
-		'#description' => t('<span style="color:red;">Upload filenames with allowed extensions only. No spaces or any special characters allowed in filename.</span>') . '<br />' . t('<span style="color:red;">Allowed file extensions: ') . variable_get('proposal_raw_data_upload_extensions', '') . '</span>'
-	);
+	
 	$form['date_of_proposal'] = array(
 		'#type' => 'date_popup',
 		'#title' => t('Date of Proposal'),
@@ -457,11 +450,7 @@ function r_case_study_proposal_form_validate($form, &$form_state)
 	$form_state['values']['case_study_title'] = trim($form_state['values']['case_study_title']);
 	if ($form_state['values']['case_study_title'] != '')
 	{
-		if (strlen($form_state['values']['case_study_title']) > 250)
-		{
-			form_set_error('case_study_title', t('Maximum charater limit is 250 charaters only, please check the length of the project title'));
-		} //strlen($form_state['values']['project_title']) > 250
-		else if (strlen($form_state['values']['case_study_title']) < 10)
+		if (strlen($form_state['values']['case_study_title']) < 10)
 		{
 			form_set_error('case_study_title', t('Minimum charater limit is 10 charaters, please check the length of the project title'));
 		}
