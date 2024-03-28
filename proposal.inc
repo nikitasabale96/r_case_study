@@ -346,7 +346,7 @@ function r_case_study_proposal_form($form, &$form_state, $no_js_use = FALSE)
 	$form['sample_abstract_file'] = array(
         '#type' => 'item',
         '#title' => t('<h5>Methodology Details</h5>'),
-		'#markup' => t('Kindly refer to Point no. 4 in the <a href= "https://r.fossee.in/case-study-project/submission-guidelines" target="_blank">Submission Guidlines</a> to know the requirements of the document.')
+		'#markup' => t('Kindly refer to Point no. 4 of the Proposal Documents in the <a href= "https://r.fossee.in/case-study-project/submission-guidelines" target="_blank">Submission Guidlines</a> to know the requirements of the document.')
     );
 	$form['abstract_file'] = array(
 		'#type' => 'fieldset',
