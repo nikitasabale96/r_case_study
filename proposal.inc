@@ -299,7 +299,7 @@ function r_case_study_proposal_form($form, &$form_state, $no_js_use = FALSE)
 		'#title' => t('Case Study Title'),
 		'#size' => 250,
 		'#maxlength' => 100,
-		'#description' => t('Maximum character limit is 500'),
+		'#description' => t('Maximum character limit is 100'),
 		'#required' => TRUE,
 	);
 	$form['description'] = array(
@@ -310,9 +310,13 @@ function r_case_study_proposal_form($form, &$form_state, $no_js_use = FALSE)
 		'#description' => t('Maximum character limit is 1200'),
 		'#required' => TRUE,
 	);
+	$form['raw_data_title'] = array(
+        '#type' => 'item',
+        '#title' => t('<h5>Data Submission</h5>'),
+    );
 	$form['raw_data_file'] = array(
 		'#type' => 'fieldset',
-		'#title' => t('Submit the data directory files (Upload raw data (in .csv)/Data Description File (in .pdf)/ Data Source Link (in .txt))<span style="color:red">*</span>'),
+		'#title' => t('Upload raw data (in .csv)/Data Description File (in .pdf)/ Data Source Link (in .txt)<span style="color:red">*</span>'),
 		'#collapsible' => FALSE,
 		'#collapsed' => FALSE
 	);
