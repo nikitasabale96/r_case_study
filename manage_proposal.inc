@@ -309,7 +309,7 @@ function r_case_study_proposal_approval_form($form, &$form_state)
     $form['description'] = array(
         '#type' => 'item',
         '#markup' => $proposal_data->description,
-        '#title' => t('Objective')
+        '#title' => t('Objective and Necessity of the Case Study')
     );
     $form['literature_survey_file'] = array(
         '#type' => 'item',
@@ -318,7 +318,7 @@ function r_case_study_proposal_approval_form($form, &$form_state)
     );
     $form['abstract_file'] = array(
         '#type' => 'item',
-        '#markup' => l('View abstract', 'case-study-project/download/proposal-abstract-files/' . $proposal_data->id),
+        '#markup' => l('View Methodology details', 'case-study-project/download/proposal-abstract-files/' . $proposal_data->id),
         '#title' => t('Abstract File')
     );
     $form['rawdata_file'] = array(
@@ -599,7 +599,7 @@ function r_case_study_proposal_status_form($form, &$form_state)
     $form['description'] = array(
         '#type' => 'item',
         '#markup' => $proposal_data->description,
-        '#title' => t('Objective')
+        '#title' => t('Objective and Necessity of the Case Study')
     );
     /*$url = '~(?:(https?)://([^\s<]+)|(www\.[^\s<]+?\.[^\s<]+))(?<![\.,:])~i';
     $reference = preg_replace($url, '<a href="$0" target="_blank" title="$0">$0</a>', $re);*/
@@ -991,13 +991,13 @@ function r_case_study_proposal_edit_form($form, &$form_state)
         '#type' => 'textfield',
         '#title' => t('Title of the Case Study Project'),
         '#size' => 300,
-        '#maxlength' => 500,
+        '#maxlength' => 100,
         '#required' => true,
         '#default_value' => $proposal_data->project_title,
     );
     $form['description'] = array(
         '#type' => 'textarea',
-        '#title' => t('Objective'),
+        '#title' => t('Objective and Necessity of the Case Study'),
         '#size' => 300,
         '#maxlength' => 1200,
         '#required' => true,
