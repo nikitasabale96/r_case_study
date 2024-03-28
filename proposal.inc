@@ -313,10 +313,11 @@ function r_case_study_proposal_form($form, &$form_state, $no_js_use = FALSE)
 	$form['raw_data_title'] = array(
         '#type' => 'item',
         '#title' => t('<h5>Data Submission</h5>'),
+        '#markup' => t('Upload a zip file containing raw data (in .csv)/Data Description File (in .pdf)/ Data Source Link (in .txt)')
     );
 	$form['raw_data_file'] = array(
 		'#type' => 'fieldset',
-		'#title' => t('Upload raw data (in .csv)/Data Description File (in .pdf)/ Data Source Link (in .txt)<span style="color:red">*</span>'),
+		'#title' => t('Upload data directory submission <span style="color:red">*</span>'),
 		'#collapsible' => FALSE,
 		'#collapsed' => FALSE
 	);
@@ -328,7 +329,7 @@ function r_case_study_proposal_form($form, &$form_state, $no_js_use = FALSE)
 	$form['sample_references_file'] = array(
         '#type' => 'item',
         '#title' => t('<h5>Literature Survey Submission</h5>'),
-		'#markup' => t('Please download the template of the Literature Survey using the following link: ') . t('<a href= "https://static.fossee.in/r/Sample_R_Codes/Literature%20Survey.docx" target="_blank">Click Here</a>') . '<br>' . t('Kindly fill it and submit it in the section below. Make sure to add at least 10 items in the survey list.')
+		'#markup' => t('Please download the template of the Literature Survey using the following link: ') . t('<a href= "https://static.fossee.in/r/Sample_R_Codes/Literature%20Survey.docx" target="_blank">Click Here</a>') . '<br>' . t('Kindly fill it and submit it in the section below.')
     );
 
 	$form['literature_survey_file'] = array(
@@ -345,7 +346,7 @@ function r_case_study_proposal_form($form, &$form_state, $no_js_use = FALSE)
 	$form['sample_abstract_file'] = array(
         '#type' => 'item',
         '#title' => t('<h5>Methodology Details</h5>'),
-		'#markup' => t('Kindly refer to the following link to know the ideal abstract file format:') . t('<a href= "https://r.fossee.in/case-study-project/download/proposal-abstract-files/4" target="_blank"> Click Here</a>')
+		'#markup' => t('Kindly refer to Point no. 4 in the <a href= "https://r.fossee.in/case-study-project/submission-guidelines" target="_blank">Submission Guidlines</a> to know the requirements of the document.')
     );
 	$form['abstract_file'] = array(
 		'#type' => 'fieldset',
