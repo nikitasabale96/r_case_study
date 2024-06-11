@@ -60,6 +60,7 @@ function r_case_study_progress_all()
 	$query->fields('case_study_proposal');
 	$query->condition('approval_status', 1);
 	$query->condition('is_completed', 0);
+	$query->orderBy('approval_date', DESC);
 	$result = $query->execute();
 	if ($result->rowCount() == 0)
 	{
