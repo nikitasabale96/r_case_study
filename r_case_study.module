@@ -268,6 +268,16 @@ function r_case_study_menu()
         'type' => MENU_CALLBACK,
         'file' => 'download.inc',
     );
+    $items['case-study-project/download/final-report'] = array(
+        'title' => 'Download Final Report',
+        'description' => 'Download Final Report',
+        'page callback' => 'r_case_study_download_final_report',
+        'access arguments' => array(
+            'download code',
+        ),
+        'type' => MENU_CALLBACK,
+        'file' => 'download.inc',
+    );
     $items['case-study-project/download/proposal-abstract-files'] = array(
         'title' => 'Download Project file',
         'description' => 'Download project file',

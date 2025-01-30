@@ -44,7 +44,7 @@ function r_case_study_run_form($form, &$form_state)
 		);
 		$form['selected_case_study'] = array(
 			'#type' => 'item',
-			'#markup' => '<div id="ajax_selected_case_study">' . l('Download Abstract', "case-study-project/download/proposal-abstract-files/" . $case_study_default_value) . '<br>' . l('Download Case Study', 'case-study-project/full-download/project/' . $case_study_default_value) . '</div>'
+			'#markup' => '<div id="ajax_selected_case_study">' . l('Download Report', "case-study-project/download/final-report/" . $case_study_default_value) . '<br>' . l('Download Case Study', 'case-study-project/full-download/project/' . $case_study_default_value) . '</div>'
 		);
 	}
 	return $form;
@@ -58,7 +58,7 @@ function case_study_project_details_callback($form, $form_state)
 		$case_study_details = _case_study_information($case_study_default_value);
 		$provider = user_load($case_study_details->uid);
 		if ($case_study_details->uid > 0) {
-			$commands[] = ajax_command_html('#ajax_selected_case_study', l('Download Abstract', "case-study-project/download/proposal-abstract-files/" . $case_study_default_value) . '<br>' . l('Download case study', 'case-study-project/full-download/project/' . $case_study_default_value));
+			$commands[] = ajax_command_html('#ajax_selected_case_study', l('Download Report', "case-study-project/download/final-report/" . $case_study_default_value) . '<br>' . l('Download case study', 'case-study-project/full-download/project/' . $case_study_default_value));
 		} //$case_study_details->uid > 0
 		else {
 			$commands[] = ajax_command_html('#ajax_selected_case_study', '');
