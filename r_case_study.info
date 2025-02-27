@@ -1,7 +1,9 @@
 name = "R Case Study"
 description = "R Case Study Project, FOSSEE, IIT Bombay"
 package = FOSSEE
-version = "7.x"
-core = "7.x"
+core = 8.x
+core_version_requirement =  ^8 || ^9
+type = module
 
 ;scripts[] = js/jquery-1.4.1.min.js
+

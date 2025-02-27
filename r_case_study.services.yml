@@ -1,0 +1,11 @@
+
+services:
+  r_case_study_global:
+    class: '\Drupal\r_case_study\Services\RCaseStudyGlobalfunction'
+
+  r_Case_study_email:
+    class:  '\Drupal\r_case_study\Services\RCaseStudyEmailfunction'
+
+  
+
+  
