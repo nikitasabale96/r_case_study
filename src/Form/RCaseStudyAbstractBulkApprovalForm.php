@@ -64,10 +64,15 @@ class RCaseStudyAbstractBulkApprovalForm extends FormBase {
       ],
     ];
 
-//     $form['download_abstract_wrapper'] = [
-//       '#type' => 'container',
-//       '#attributes' => ['id' => 'ajax_selected_abstract_details'],
-//     ];
+    $form['download_abstract_wrapper'] = [
+      '#type' => 'container',
+      '#attributes' => ['id' => 'ajax_selected_abstract_details'],
+    ];
+    $form['download_abstract_wrapper']['selected_abstract'] = [
+      '#type' => 'markup',
+      '#markup' => $this->_case_study_details($selected), // Display details dynamically
+    ];
+    
 // //===============
 $case_study_default_value = $url_case_study_id;
     $form['case_study_details'] = [
@@ -76,16 +81,17 @@ $case_study_default_value = $url_case_study_id;
     ];
     
 
+   
+    
+    
+
+  
     $form['download_abstract_wrapper']['selected_abstract'] = [
       '#type' => 'markup',
     '#markup' => Link::fromTextAndUrl($this->t('Download Case Study'), Url::fromUri('internal:/case-study-project/full-download/project/', ['project' => $case_study_proposal_id]))->toString(),
 
        ];
-    
-    
 
-  
-      
     $form['case_study_actions'] = [
       '#type' => 'select',
       '#title' => t('Please select action for Case Study'),
@@ -166,22 +172,35 @@ public function _list_of_case_study()
       } //$abstracts_pdf->filename != "NULL" || $abstracts_pdf->filename != ""
       else
       {
-        $abstract_filename = "File not uploaded";
+        // $abstract_filename = "File not uploaded";
       }
     } //$abstracts_pdf == TRUE
     else
     {
-      $abstract_filename = "File not uploaded";
+      // $abstract_filename = "File not uploaded";
     }
-    $query_process = \Drupal::database()->select('case_study_submitted_abstracts_file');
-    $query_process->fields('case_study_submitted_abstracts_file');
-    $query_process->condition('proposal_id', $case_study_proposal_id);
-    $query_process->condition('filetype', 'C');
-    $abstracts_query_process = $query_process->execute()->fetchObject();
-    $query = \Drupal::database()->select('case_study_submitted_abstracts');
-    $query->fields('case_study_submitted_abstracts');
-    $query->condition('proposal_id', $case_study_proposal_id);
-    $abstracts_q = $query->execute()->fetchObject();
+    // $query_process = \Drupal::database()->select('case_study_submitted_abstracts_file');
+    // $query_process->fields('case_study_submitted_abstracts_file');
+    // $query_process->condition('proposal_id', $case_study_proposal_id);
+    // $query_process->condition('filetype', 'C');
+    // $abstracts_query_process = $query_process->execute()->fetchObject();
+    // $query = \Drupal::database()->select('case_study_submitted_abstracts');
+    // $query->fields('case_study_submitted_abstracts');
+    // $query->condition('proposal_id', $case_study_proposal_id);
+    // $abstracts_q = $query->execute()->fetchObject();
+    $database = Database::getConnection();
+
+    $abstracts_q = $database->select('case_study_submitted_abstracts', 'csa')
+        ->fields('csa')
+        ->condition('proposal_id', $proposal_data->id)
+        ->execute()
+        ->fetchObject();
+        $abstracts_pro = $database->select('case_study_proposal', 'csp')
+        ->fields('csp')
+        ->condition('id', $proposal_data->id)
+        ->execute()
+        ->fetchObject();
+
     if ($abstracts_q)
     {
       if ($abstracts_q->is_submitted == 0)
@@ -201,7 +220,7 @@ public function _list_of_case_study()
       } //$abstracts_query_process->filename != "NULL" || $abstracts_query_process->filename != ""
       else
       {
-        $abstracts_query_process_filename = "File not uploaded";
+        // $abstracts_query_process_filename = "File not uploaded";
       }
     } //$abstracts_query_process == TRUE
     else
@@ -217,10 +236,43 @@ public function _list_of_case_study()
     $return_html .= $download_case_study;
     return $return_html;
   }
-  public function  ajax_bulk_case_study_abstract_details_callback($form, $form_state) {
+
+  function _case_study_information($proposal_id)
+{
+	$query = \Drupal::database()->select('case_study_proposal');
+	$query->fields('case_study_proposal');
+	$query->condition('id', $proposal_id);
+	$query->condition('approval_status', 3);
+	$case_study_q = $query->execute();
+	$case_study_data = $case_study_q->fetchObject();
+	if ($case_study_data) {
+		return $case_study_data;
+	} //$case_study_data
+	else {
+		return 'Not found';
+	}
+}
+//  public function _case_study_details($case_study_default_value)
+//   {
+//     $case_study_details = $this->_case_study_information($case_study_default_value);
+//     if ($case_study_default_value != 0) {
+//       $form['case_study_details']['#markup'] = '<span style="color: rgb(128, 0, 0);"><strong>About the case study</strong></span></td><td style="width: 35%;"><br />' . '<ul>' . '<li><strong>Proposer Name:</strong> ' . $case_study_details->name_title . ' ' . $case_study_details->contributor_name . '</li>' . '<li><strong>Title of the Case Study:</strong> ' . $case_study_details->project_title . '</li>' . '<li><strong>University:</strong> ' . $case_study_details->university . '</li>' . '<li><strong>R Version:</strong> ' . $case_study_details->r_version . '</li>' . '</ul>';
+//       $details = $form['case_study_details']['#markup'];
+//       return $details;
+//     } //$case_study_default_value != 0
+  
+//   }
+  
+  //   public function  ajax_bulk_case_study_abstract_details_callback($form, $form_state) {
+  //   return $form['download_abstract_wrapper'];
+  // }
+
+  public function ajax_bulk_case_study_abstract_details_callback(array &$form, FormStateInterface $form_state) {
+    $selected_case_study = $form_state->getValue('case_study_project');
+    $form['download_abstract_wrapper']['selected_abstract']['#markup'] = $this->_case_study_details($selected_case_study);
     return $form['download_abstract_wrapper'];
   }
-
+  
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $this->messenger->addMessage($this->t('Form submitted successfully.'));
   }

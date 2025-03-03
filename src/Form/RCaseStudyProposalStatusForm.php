@@ -311,26 +311,26 @@ $user_link = Link::fromTextAndUrl($proposal_data->name_title . ' ' . $proposal_d
         \Drupal::messenger()->addMessage('Error in update status', 'error');
         return;
       } //!$result
-        /* sending email */
-      $user_data = user_load($proposal_data->uid);
-      $email_to = $user_data->mail;
-      $from = variable_get('case_study_from_email', '');
-      $bcc = variable_get('case_study_emails', '');
-      $cc = variable_get('case_study_cc_emails', '');
-      $params['case_study_proposal_completed']['proposal_id'] = $proposal_id;
-      $params['case_study_proposal_completed']['user_id'] = $proposal_data->uid;
-      $params['case_study_proposal_completed']['headers'] = [
-        'From' => $from,
-        'MIME-Version' => '1.0',
-        'Content-Type' => 'text/plain; charset=UTF-8; format=flowed; delsp=yes',
-        'Content-Transfer-Encoding' => '8Bit',
-        'X-Mailer' => 'Drupal',
-        'Cc' => $cc,
-        'Bcc' => $bcc,
-      ];
-      if (!drupal_mail('case_study', 'case_study_proposal_completed', $email_to, language_default(), $params, $from, TRUE)) {
-        \Drupal::messenger()->addMessage('Error sending email message.', 'error');
-      }
+      //   /* sending email */
+      // $user_data = user_load($proposal_data->uid);
+      // $email_to = $user_data->mail;
+      // $from = variable_get('case_study_from_email', '');
+      // $bcc = variable_get('case_study_emails', '');
+      // $cc = variable_get('case_study_cc_emails', '');
+      // $params['case_study_proposal_completed']['proposal_id'] = $proposal_id;
+      // $params['case_study_proposal_completed']['user_id'] = $proposal_data->uid;
+      // $params['case_study_proposal_completed']['headers'] = [
+      //   'From' => $from,
+      //   'MIME-Version' => '1.0',
+      //   'Content-Type' => 'text/plain; charset=UTF-8; format=flowed; delsp=yes',
+      //   'Content-Transfer-Encoding' => '8Bit',
+      //   'X-Mailer' => 'Drupal',
+      //   'Cc' => $cc,
+      //   'Bcc' => $bcc,
+      // ];
+      // if (!drupal_mail('case_study', 'case_study_proposal_completed', $email_to, language_default(), $params, $from, TRUE)) {
+      //   \Drupal::messenger()->addMessage('Error sending email message.', 'error');
+      // }
 
       \Drupal::messenger()->addMessage('Congratulations! R Case Study proposal has been marked as completed. User has been notified of the completion.', 'status');
     }

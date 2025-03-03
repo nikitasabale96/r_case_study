@@ -25,7 +25,6 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Drupal\Core\Messenger\MessengerInterface;
 
-
 /**
  * Default controller for the r_case_study module.
  */
@@ -422,7 +421,6 @@ public function r_case_study_abstract() {
       ];
   }
   
-  \Drupal::logger('r_case_study')->notice(print_r($proposal_data, TRUE));
   
     $abstracts_q = $database->select('case_study_submitted_abstracts', 'csa')
         ->fields('csa')
@@ -623,162 +621,88 @@ $abstracts_query_process_filename = !empty($abstracts_query_process) && isset($a
   //   return $return_html;
   // }
 
-  // public function r_case_study_download_full_project() {
-  //   $user = \Drupal::currentUser();
-  //   // $id = arg(3);
-  //   $route_match = \Drupal::routeMatch();
+  public function r_case_study_download_full_project() {
+    $user = \Drupal::currentUser();
+    // $id = arg(3);
+    $route_match = \Drupal::routeMatch();
 
-  //   $id = (int) $route_match->getParameter('id');
-  //   // var_dump($root_path);die;
-  //   $root_path = \Drupal::service("r_case_study_global")->r_case_study_path();
-    
-  //   // var_dump($_SERVER['DOCUMENT_ROOT'] . base_path());die;
-  //   // var_dump($root_path);die;
-  //   $query = \Drupal::database()->select('case_study_proposal');
-  //   $query->fields('case_study_proposal');
-  //   $query->condition('id', $id);
-  //   $case_study_q = $query->execute();
-  //   $case_study_data = $case_study_q->fetchObject();
-  //   $CS_PATH = $case_study_data->directory_name . '/';
-  //   /* zip filename */
-  //   $zip_filename = $root_path . 'zip-' . time() . '-' . rand(0, 999999) . '.zip';
-  //   /* creating zip archive on the server */
-  //   $zip = new \ZipArchive();
-  //   $zip->open($zip_filename, \ZipArchive::CREATE);
-  //   $query = \Drupal::database()->select('case_study_proposal');
-  //   $query->fields('case_study_proposal');
-  //   $query->condition('id', $id);
-  //   $case_study_udc_q = $query->execute();
-  //   $query_proposal_files = \Drupal::database()->select('case_study_proposals_file');
-  //   $query_proposal_files->fields('case_study_proposals_file');
-  //   $query_proposal_files->condition('proposal_id', $id);
-  //   $proposal_files = $query_proposal_files->execute();
-  //   while ($proposal_files_data = $proposal_files->fetchObject()) {
-  //     $zip->addFile($root_path . $proposal_files_data->filepath, $CS_PATH . str_replace(' ', '_', basename($proposal_files_data->filename)));
-  //   }
-  //   $query = \Drupal::database()->select('case_study_submitted_abstracts_file');
-  //   $query->fields('case_study_submitted_abstracts_file');
-  //   $query->condition('proposal_id', $id);
-  //   $project_files = $query->execute();
-  //   //var_dump($project_files->rowCount());die;
-  //   while ($cs_project_files = $project_files->fetchObject()) {
-  //     //var_dump($root_path . $CS_PATH . 'project_files/' . $cs_project_files->filepath);die;
-  //     $zip->addFile($root_path . $CS_PATH . 'project_files/' . $cs_project_files->filepath, $CS_PATH . 'project_files/' . str_replace(' ', '_', basename($cs_project_files->filename)));
-  //   }
-  //   $zip_file_count = $zip->numFiles;
-  //   //var_dump($zip_file_count);die;
-  //   $zip->close();
-  //   if ($zip_file_count > 0) {
-  //     if ($user->uid) {
-  //       /* download zip file */
-  //       header('Content-Type: application/zip');
-  //       header('Content-disposition: attachment; filename="' . str_replace(' ', '_', $case_study_data->project_title) . '.zip"');
-  //       header('Content-Length: ' . filesize($zip_filename));
-  //       ob_end_flush();
-  //       ob_clean();
-  //       flush();
-  //       readfile($zip_filename);
-  //       unlink($zip_filename);
-  //     } //$user->uid
-  //     else {
-  //       header('Content-Type: application/zip');
-  //       header('Content-disposition: attachment; filename="' . str_replace(' ', '_', $case_study_data->project_title) . '.zip"');
-  //       header('Content-Length: ' . filesize($zip_filename));
-  //       header("Content-Transfer-Encoding: binary");
-  //       header('Expires: 0');
-  //       header('Pragma: no-cache');
-  //       ob_end_flush();
-  //       ob_clean();
-  //       flush();
-  //       readfile($zip_filename);
-  //       unlink($zip_filename);
-  //     }
-  //   } //$zip_file_count > 0
-  //   else {
-  //     \Drupal::messenger()->addMessage("There is no Case Study in this proposal to download", 'error');
-  //     drupal_goto('case-study-project/completed-case-studies');
-  //   }
-  // }
-
-  public function  r_case_study_download_full_project() {
-    
-    $id = (int) $id;
+    $id = (int) $route_match->getParameter('id');
+    // var_dump($root_path);die;
     $root_path = \Drupal::service("r_case_study_global")->r_case_study_path();
-
-    // Fetch case study details.
-    $case_study_data = \Drupal::database()->select('case_study_proposal', 'csp')
-      ->fields('csp', ['id', 'directory_name', 'project_title'])
-      ->condition('id', $id)
-      ->execute()
-      ->fetchObject();
-
-    if (!$case_study_data) {
-      \Drupal::messenger()->addError($this->t('Case study not found.'));
-      return new RedirectResponse('/case-study-project/completed-case-studies');
-    }
-
+    
+    // var_dump($_SERVER['D OCUMENT_ROOT'] . base_path());die;
+    // var_dump($root_path);die;
+    $query = \Drupal::database()->select('case_study_proposal');
+    $query->fields('case_study_proposal');
+    $query->condition('id', $id);
+    $case_study_q = $query->execute();
+    $case_study_data = $case_study_q->fetchObject();
     $CS_PATH = $case_study_data->directory_name . '/';
+    /* zip filename */
     $zip_filename = $root_path . 'zip-' . time() . '-' . rand(0, 999999) . '.zip';
-
-    // Create ZIP file.
+    /* creating zip archive on the server */
     $zip = new \ZipArchive();
-    if ($zip->open($zip_filename, \ZipArchive::CREATE) !== true) {
-      $this->messenger->addError($this->t('Failed to create ZIP file.'));
-      return new RedirectResponse('/case-study-project/completed-case-studies');
+    $zip->open($zip_filename, \ZipArchive::CREATE);
+    $query = \Drupal::database()->select('case_study_proposal');
+    $query->fields('case_study_proposal');
+    $query->condition('id', $id);
+    $case_study_udc_q = $query->execute();
+    $query_proposal_files = \Drupal::database()->select('case_study_proposals_file');
+    $query_proposal_files->fields('case_study_proposals_file');
+    $query_proposal_files->condition('proposal_id', $id);
+    $proposal_files = $query_proposal_files->execute();
+    while ($proposal_files_data = $proposal_files->fetchObject()) {
+      $zip->addFile($root_path . $proposal_files_data->filepath, $CS_PATH . str_replace(' ', '_', basename($proposal_files_data->filename)));
     }
-
-    // Add case study proposal files.
-    $proposal_files = $this->database->select('case_study_proposals_file', 'cspf')
-      ->fields('cspf', ['filepath', 'filename'])
-      ->condition('proposal_id', $id)
-      ->execute();
-
-    foreach ($proposal_files as $file) {
-      $file_path = $root_path . $file->filepath;
-      if (file_exists($file_path)) {
-        $zip->addFile($file_path, $CS_PATH . str_replace(' ', '_', basename($file->filename)));
-      }
+    $query = \Drupal::database()->select('case_study_submitted_abstracts_file');
+    $query->fields('case_study_submitted_abstracts_file');
+    $query->condition('proposal_id', $id);
+    $project_files = $query->execute();
+    //var_dump($project_files->rowCount());die;
+    while ($cs_project_files = $project_files->fetchObject()) {
+      //var_dump($root_path . $CS_PATH . 'project_files/' . $cs_project_files->filepath);die;
+      $zip->addFile($root_path . $CS_PATH . 'project_files/' . $cs_project_files->filepath, $CS_PATH . 'project_files/' . str_replace(' ', '_', basename($cs_project_files->filename)));
+      // $zip->addFile($root_path . $LAB_PATH . $solution_files_row->filepath, $LAB_PATH . $EXP_PATH . $CODE_PATH . str_replace(' ', '_', ($solution_files_row->filename)));
     }
-
-    // Add case study submitted abstract files.
-    $project_files = $this->database->select('case_study_submitted_abstracts_file', 'cssaf')
-      ->fields('cssaf', ['filepath', 'filename'])
-      ->condition('proposal_id', $id)
-      ->execute();
-
-
-    foreach ($project_files as $file) {
-      $file_path = $root_path . $CS_PATH . 'project_files/' . $file->filepath;
-      if (file_exists($file_path)) {
-        $zip->addFile($file_path, $CS_PATH . 'project_files/' . str_replace(' ', '_', basename($file->filename)));
-      }
-    }
-
     $zip_file_count = $zip->numFiles;
+    //var_dump($zip_file_count);die;
     $zip->close();
-
-    if ($zip_file_count === 0) {
-      unlink($zip_filename);
-      $this->messenger->addError($this->t('There is no Case Study in this proposal to download.'));
-      return new RedirectResponse('/case-study-project/completed-case-studies');
+    if ($zip_file_count > 0) {
+      if ($user->uid) {
+        /* download zip file */
+        header('Content-Type: application/zip');
+        header('Content-disposition: attachment; filename="' . str_replace(' ', '_', $case_study_data->project_title) . '.zip"');
+        header('Content-Length: ' . filesize($zip_filename));
+        ob_end_flush();
+        ob_clean();
+        flush();
+        readfile($zip_filename);
+        unlink($zip_filename);
+      } //$user->uid
+      else {
+        header('Content-Type: application/zip');
+        header('Content-disposition: attachment; filename="' . str_replace(' ', '_', $case_study_data->project_title) . '.zip"');
+        header('Content-Length: ' . filesize($zip_filename));
+        header("Content-Transfer-Encoding: binary");
+        header('Expires: 0');
+        header('Pragma: no-cache');
+        ob_end_flush();
+        ob_clean();
+        flush();
+        readfile($zip_filename);
+        unlink($zip_filename);
+      }
+    } //$zip_file_count > 0
+    else {
+      \Drupal::messenger()->addMessage("There is no Case Study in this proposal to download", 'error');
+      // drupal_goto('case-study-project/completed-case-studies');
+      // return new RedirectResponse(Url::fromRoute('case-study-project.completed_proposals_all')->toString());
+      // $response = new RedirectResponse(Url::fromUri('internal:/case-study-project/completed-case-studies')->toString());
+      // $response->send();
     }
-
-    // Serve the ZIP file for download.
-    $response = new BinaryFileResponse($zip_filename);
-    $response->setContentDisposition(
-      ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-      str_replace(' ', '_', $case_study_data->project_title) . '.zip'
-    );
-
-    // Delete ZIP after download.
-    $response->deleteFileAfterSend(true);
-
-    return $response;
-  
   }
 
-
-
+  
   // public function r_case_study_completed_proposals_all() {
   //   $output = "";
   //   $query = \Drupal::database()->select('case_study_proposal');
@@ -1047,6 +971,7 @@ public function r_case_study_progress_all() {
     readfile($root_path . $directory_name . $final_report_data->filename);
     ob_end_flush();
     ob_clean();
+
   }
 
   public function r_case_study_proposal_abstract_file() {
@@ -1055,6 +980,7 @@ public function r_case_study_progress_all() {
 
     $proposal_id = (int) $route_match->getParameter('id');
     $root_path = \Drupal::service("r_case_study_global")->r_case_study_path();
+    var_dump($root_path);die;
     $query = \Drupal::database()->select('case_study_proposals_file');
     $query->fields('case_study_proposals_file');
     $query->condition('proposal_id', $proposal_id);
@@ -1083,6 +1009,7 @@ public function r_case_study_progress_all() {
     readfile($root_path . $directory_name . $abstract_file);
     ob_end_flush();
     ob_clean();
+    return;
   }
 
   public function r_case_study_proposal_rawdata_file() {
@@ -1121,6 +1048,7 @@ $proposal_id = (int) $route_match->getParameter('id');
     readfile($root_path . $directory_name . $rawdata_file);
     /*ob_end_flush();
 		ob_clean();*/
+    return;
   }
 
   public function _list_case_study_certificates() {

@@ -331,7 +331,7 @@ class RCaseStudyProposalApprovalForm extends FormBase {
       if ($form_state->getValue(['approval']) == 2) {
         $query = "UPDATE {case_study_proposal} SET approver_uid = :uid, approval_date = :date, approval_status = 2, dissapproval_reason = :dissapproval_reason WHERE id = :proposal_id";
         $args = [
-          ":uid" => $user->get('uid')->value,
+          ":uid" => $user->id(),
           ":date" => time(),
           ":dissapproval_reason" => $form_state->getValue(['message']),
           ":proposal_id" => $proposal_id,

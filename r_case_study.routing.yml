@@ -76,7 +76,7 @@ r_case_study.upload_abstract_code_form:
   requirements:
     _permission: 'Case Study upload abstract'
 r_case_study.download_full_project:
-  path: /case-study-project/full-download/project/{url_case_study_id}
+  path: /case-study-project/full-download/project/{id}
   defaults:
     _title: 'Code Download'
     _controller: '\Drupal\r_case_study\Controller\DefaultController::r_case_study_download_full_project'
@@ -118,7 +118,7 @@ r_case_study.download_final_report:
   requirements:
     _permission: 'download code'
 r_case_study.proposal_abstract_file:
-  path: /case-study-project/download/proposal-abstract-files
+  path: /case-study-project/download/proposal-abstract-files/{id?}
   defaults:
     _title: 'Download Project file'
     _controller: '\Drupal\r_case_study\Controller\DefaultController::r_case_study_proposal_abstract_file'
