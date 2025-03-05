@@ -84,7 +84,8 @@ $user_link = Link::fromTextAndUrl($proposal_data->name_title . ' ' . $proposal_d
       '#title' => t('Student Email'),
       '#type' => 'item',
       // '#markup' => user_load($proposal_data->uid)->mail,
-      '#markup' => $user_data ? $user_data->getEmail():'',
+      // '#markup' => $user_data ? $user_data->getEmail():'',
+      '#markup' => \Drupal::entityTypeManager()->getStorage('user')->load($proposal_data->uid)->getEmail(),
 
       '#title' => t('Email'),
     ];
@@ -179,7 +180,7 @@ $user_link = Link::fromTextAndUrl($proposal_data->name_title . ' ' . $proposal_d
       // '#markup' => l('View abstract', 'case-study-project/download/proposal-abstract-files/' . $proposal_data->id),
       '#markup' => Link::fromTextAndUrl(
         'View abstract',
-        Url::fromUri('internal:/case-study-project/download/proposal-abstarct-files/' . $proposal_data->id)
+        Url::fromUri('internal:/case-study-project/download/proposal-abstract-files/' . $proposal_data->id)
       )->toString(),
       '#title' => t('Abstract File'),
     ];

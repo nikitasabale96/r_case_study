@@ -622,7 +622,7 @@ $abstracts_query_process_filename = !empty($abstracts_query_process) && isset($a
   // }
 
   public function r_case_study_download_full_project() {
-    $user = \Drupal::currentUser();
+    // $user = \Drupal::currentUser();
     // $id = arg(3);
     $route_match = \Drupal::routeMatch();
 
@@ -634,12 +634,14 @@ $abstracts_query_process_filename = !empty($abstracts_query_process) && isset($a
     // var_dump($root_path);die;
     $query = \Drupal::database()->select('case_study_proposal');
     $query->fields('case_study_proposal');
-    $query->condition('id', $id);
+    $query->condition('id', $proposal_id);
     $case_study_q = $query->execute();
     $case_study_data = $case_study_q->fetchObject();
     $CS_PATH = $case_study_data->directory_name . '/';
+    // var_dump($case_study_data);die;
     /* zip filename */
     $zip_filename = $root_path . 'zip-' . time() . '-' . rand(0, 999999) . '.zip';
+    // var_dump($zip_filename);die;
     /* creating zip archive on the server */
     $zip = new \ZipArchive();
     $zip->open($zip_filename, \ZipArchive::CREATE);
@@ -654,13 +656,14 @@ $abstracts_query_process_filename = !empty($abstracts_query_process) && isset($a
     while ($proposal_files_data = $proposal_files->fetchObject()) {
       $zip->addFile($root_path . $proposal_files_data->filepath, $CS_PATH . str_replace(' ', '_', basename($proposal_files_data->filename)));
     }
+    // var_dump($root_path . $proposal_files_data->filepath, $CS_PATH . str_replace(' ', '_', basename($proposal_files_data->filename)));die;
     $query = \Drupal::database()->select('case_study_submitted_abstracts_file');
     $query->fields('case_study_submitted_abstracts_file');
     $query->condition('proposal_id', $id);
     $project_files = $query->execute();
     //var_dump($project_files->rowCount());die;
     while ($cs_project_files = $project_files->fetchObject()) {
-      //var_dump($root_path . $CS_PATH . 'project_files/' . $cs_project_files->filepath);die;
+      // var_dump($root_path . $CS_PATH . 'project_files/' . $cs_project_files->filepath);die;
       $zip->addFile($root_path . $CS_PATH . 'project_files/' . $cs_project_files->filepath, $CS_PATH . 'project_files/' . str_replace(' ', '_', basename($cs_project_files->filename)));
       // $zip->addFile($root_path . $LAB_PATH . $solution_files_row->filepath, $LAB_PATH . $EXP_PATH . $CODE_PATH . str_replace(' ', '_', ($solution_files_row->filename)));
     }
@@ -701,6 +704,87 @@ $abstracts_query_process_filename = !empty($abstracts_query_process) && isset($a
       // $response->send();
     }
   }
+//   public function r_case_study_download_full_project() {
+//     $route_match = \Drupal::routeMatch();
+//     $id = (int) $route_match->getParameter('id');
+//     $root_path = \Drupal::service("r_case_study_global")->r_case_study_path();
+//     $user = \Drupal::currentUser();
+
+//     // Fetch case study data
+//     $query = \Drupal::database()->select('case_study_proposal', 'csp');
+//     $query->fields('csp');
+//     $query->condition('id', $id);
+//     $case_study_q = $query->execute();
+//     $case_study_data = $case_study_q->fetchObject();
+
+//     if (!$case_study_data) {
+//         throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException("Case study not found.");
+//     }
+
+//     $CS_PATH = $case_study_data->directory_name . '/';
+
+//     // Generate ZIP filename
+//     $zip_filename = $root_path . 'zip-' . time() . '-' . rand(0, 999999) . '.zip';
+
+//     // Create ZIP archive
+//     $zip = new \ZipArchive();
+//     if ($zip->open($zip_filename, \ZipArchive::CREATE) !== true) {
+//         throw new \Exception("Could not create ZIP file.");
+//     }
+
+//     // Fetch proposal files
+//     $query_proposal_files = \Drupal::database()->select('case_study_proposals_file', 'csf');
+//     $query_proposal_files->fields('csf');
+//     $query_proposal_files->condition('proposal_id', $id);
+//     $proposal_files = $query_proposal_files->execute();
+
+//     while ($proposal_files_data = $proposal_files->fetchObject()) {
+//         $full_file_path = $root_path . $proposal_files_data->filepath;
+//         if (file_exists($full_file_path)) {
+//             $zip->addFile($full_file_path, $CS_PATH . str_replace(' ', '_', basename($proposal_files_data->filename)));
+//         } else {
+//             \Drupal::logger('r_case_study')->warning("File not found: " . $full_file_path);
+//         }
+//     }
+
+//     // Fetch project files
+//     $query = \Drupal::database()->select('case_study_submitted_abstracts_file', 'csaf');
+//     $query->fields('csaf');
+//     $query->condition('proposal_id', $id);
+//     $project_files = $query->execute();
+
+//     while ($cs_project_files = $project_files->fetchObject()) {
+//         $full_project_path = $root_path . $CS_PATH . 'project_files/' . $cs_project_files->filepath;
+//         if (file_exists($full_project_path)) {
+//             $zip->addFile($full_project_path, $CS_PATH . 'project_files/' . str_replace(' ', '_', basename($cs_project_files->filename)));
+//         } else {
+//             \Drupal::logger('r_case_study')->warning("Project file not found: " . $full_project_path);
+//         }
+//     }
+
+//     $zip_file_count = $zip->numFiles;
+//     $zip->close();
+
+//     if ($zip_file_count > 0) {
+//         if (ob_get_length()) {
+//             ob_end_clean();
+//         }
+
+//         // Prepare file download response
+//         header('Content-Type: application/zip');
+//         header('Content-Disposition: attachment; filename="' . str_replace(' ', '_', $case_study_data->project_title) . '.zip"');
+//         header('Content-Length: ' . filesize($zip_filename));
+//         header("Content-Transfer-Encoding: binary");
+//         header('Expires: 0');
+//         header('Pragma: no-cache');
+
+//         readfile($zip_filename);
+//         unlink($zip_filename);
+//         exit;
+//     } else {
+//         \Drupal::messenger()->addMessage("There are no files in this case study to download.", 'error');
+//     }
+// }
 
   
   // public function r_case_study_completed_proposals_all() {
@@ -910,13 +994,13 @@ public function r_case_study_progress_all() {
     $result = $query->execute();
     $case_study_literature_survey_files = $result->fetchObject();
     // var_dump($case_study_literature_survey_files);die;
-    // $query1 = \Drupal::database()->select('case_study_proposal');
-    // $query1->fields('case_study_proposal');
-    // $query1->condition('id', $proposal_id);
-    // $result1 = $query1->execute();
-    // $case_study = $result1->fetchObject();
-    // $directory_name = $case_study->directory_name . '/';
-    // $literature_survey_file = $case_study_literature_survey_files->filename;
+    $query1 = \Drupal::database()->select('case_study_proposal');
+    $query1->fields('case_study_proposal');
+    $query1->condition('id', $proposal_id);
+    $result1 = $query1->execute();
+    $case_study = $result1->fetchObject();
+    $directory_name = $case_study->directory_name . '/';
+    $literature_survey_file = $case_study_literature_survey_files->filename;
     // var_dump($literature_survey_file);die;
     ob_clean();
     header("Pragma: public");
@@ -935,44 +1019,127 @@ public function r_case_study_progress_all() {
     ob_clean();
   }
 
-  public function r_case_study_download_final_report() {
-    // $proposal_id = arg(3);
-    $route_match = \Drupal::routeMatch();
 
-    $proposal_id = (int) $route_match->getParameter('id');
-    $root_path = \Drupal::service("r_case_study_global")->r_case_study_path();
-    $query = \Drupal::database()->select('case_study_proposal');
-    $query->fields('case_study_proposal');
-    $query->condition('id', $proposal_id);
-    $result = $query->execute();
-    $r_case_study_project_files = $result->fetchObject();
-    $query = \Drupal::database()->select('case_study_submitted_abstracts_file');
-    $query->fields('case_study_submitted_abstracts_file');
-    $query->condition('proposal_id', $proposal_id);
-    $query->condition('filetype', 'R');
-    $project_files = $query->execute();
-    $final_report_data = $project_files->fetchObject();
-    $directory_name = $r_case_study_project_files->directory_name . '/project_files/';
-    /*$str = substr($r_case_study_project_files->samplefilepath, strrpos($r_case_study_project_files->samplefilepath, '/'));
-    $abstract_file = ltrim($str, '/');*/
-    //var_dump($final_report_data);die;
-    ob_clean();
-    header("Pragma: public");
-    header("Expires: 0");
-    header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-    header("Cache-Control: public");
-    header("Content-Description: File Transfer");
-    header("Content-Type: application/pdf");
-    header('Content-disposition: attachment; filename="' . $final_report_data->filename . '"');
-    header("Content-Length: " . filesize($root_path . $directory_name . $final_report_data->filename));
-    header("Content-Transfer-Encoding: binary");
-    header("Expires: 0");
-    header("Pragma: no-cache");
-    readfile($root_path . $directory_name . $final_report_data->filename);
-    ob_end_flush();
-    ob_clean();
+//   public function r_case_study_download_final_report() {
+//     $route_match = \Drupal::routeMatch();
+//     $proposal_id = (int) $route_match->getParameter('id');
+//     $root_path = \Drupal::service("r_case_study_global")->r_case_study_path();
 
+//     // Fetch case study details
+//     $query = \Drupal::database()->select('case_study_proposal', 'csp');
+//     $query->fields('csp');
+//     $query->condition('id', $proposal_id);
+//     $result = $query->execute();
+//     $case_study_project_files = $result->fetchObject();
+
+//     // if (!$case_study_project_files) {
+//     //     throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException("Case study not found.");
+//     // }
+
+//     // Fetch final report details
+//     $query = \Drupal::database()->select('case_study_submitted_abstracts_file', 'csaf');
+//     $query->fields('csaf');
+//     $query->condition('proposal_id', $proposal_id);
+//     $query->condition('filetype', 'R');
+//     $project_files = $query->execute();
+//     $final_report_data = $project_files->fetchObject();
+
+//     // if (!$final_report_data) {
+//     //     throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException("Final report not found.");
+//     // }
+
+//     // Get the file path
+//     $directory_name = $case_study_project_files->directory_name . '/';
+//     $file_path = $root_path . $directory_name . $final_report_data->filename;
+
+//     // if (!file_exists($file_path)) {
+//     //     throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException("File not found on the server.");
+//     // }
+
+//     // Clean output buffer before sending headers
+//     if (ob_get_length()) {
+//         ob_end_clean();
+//     }
+
+//     // Set headers for file download
+//     header("Pragma: public");
+//     header("Expires: 0");
+//     header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+//     header("Cache-Control: public");
+//     header("Content-Description: File Transfer");
+//     header("Content-Type: application/pdf");
+//     header('Content-Disposition: attachment; filename="' . basename($final_report_data->filename) . '"');
+//     header("Content-Length: " . filesize($file_path));
+//     header("Content-Transfer-Encoding: binary");
+//     header("Expires: 0");
+//     header("Pragma: no-cache");
+
+//     // Read file
+//     readfile($file_path);
+//     exit;
+// }
+public function r_case_study_download_final_report() {
+  $route_match = \Drupal::routeMatch();
+  $proposal_id = (int) $route_match->getParameter('id');
+  $root_path = \Drupal::service("r_case_study_global")->r_case_study_path();
+
+  // Fetch case study details
+  $query = \Drupal::database()->select('case_study_proposal', 'csp');
+  $query->fields('csp');
+  $query->condition('id', $proposal_id);
+  $result = $query->execute();
+  $case_study_project_files = $result->fetchObject();
+
+  if (!$case_study_project_files) {
+      throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException("Case study not found.");
   }
+
+  // Fetch final report details
+  $query = \Drupal::database()->select('case_study_submitted_abstracts_file', 'csaf');
+  $query->fields('csaf');
+  $query->condition('proposal_id', $proposal_id);
+  $query->condition('filetype', 'R');
+  $project_files = $query->execute();
+  $final_report_data = $project_files->fetchObject();
+
+  if (!$final_report_data || empty($final_report_data->filename)) {
+      throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException("Final report not found.");
+  }
+
+  // Get the file path
+  $directory_name = $case_study_project_files->directory_name . '/';
+  $file_path = $root_path . $directory_name . $final_report_data->filename;
+
+  // Log file path for debugging
+  \Drupal::logger('r_case_study')->notice("Attempting to download: " . $file_path);
+
+  if (!file_exists($file_path) || filesize($file_path) === 0) {
+      throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException("File not found or empty.");
+  }
+
+  // Clean output buffer before sending headers
+  if (ob_get_length()) {
+      ob_end_clean();
+  }
+
+  // Set headers for file download
+  header("Pragma: public");
+  header("Expires: 0");
+  header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+  header("Cache-Control: public");
+  header("Content-Description: File Transfer");
+  header("Content-Type: application/pdf");
+  header('Content-Disposition: attachment; filename="' . basename($final_report_data->filename) . '"');
+  header("Content-Length: " . filesize($file_path));
+  header("Content-Transfer-Encoding: binary");
+  header("Expires: 0");
+  header("Pragma: no-cache");
+
+  // Read file
+  readfile($file_path);
+  exit;
+}
+
 
   public function r_case_study_proposal_abstract_file() {
     // $proposal_id = arg(3);
@@ -980,7 +1147,7 @@ public function r_case_study_progress_all() {
 
     $proposal_id = (int) $route_match->getParameter('id');
     $root_path = \Drupal::service("r_case_study_global")->r_case_study_path();
-    var_dump($root_path);die;
+    // var_dump($root_path);die;
     $query = \Drupal::database()->select('case_study_proposals_file');
     $query->fields('case_study_proposals_file');
     $query->condition('proposal_id', $proposal_id);
@@ -1009,6 +1176,7 @@ public function r_case_study_progress_all() {
     readfile($root_path . $directory_name . $abstract_file);
     ob_end_flush();
     ob_clean();
+  //  var_dump($root_path . $directory_name . $abstract_file);die;
     return;
   }
 

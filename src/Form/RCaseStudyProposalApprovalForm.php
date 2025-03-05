@@ -84,14 +84,14 @@ class RCaseStudyProposalApprovalForm extends FormBase {
       )->toString(),
       '#title' => t('Student name'),
     ];
-    $user_data = \Drupal\user\Entity\User::load($uid); // Ensure $uid is valid
+    // $user_data = \Drupal\user\Entity\User::load($uid); // Ensure $uid is valid
     $form['student_email_id'] = [
       '#title' => t('Student Email'),
       '#type' => 'item',
-      
+      '#markup' => \Drupal::entityTypeManager()->getStorage('user')->load($proposal_data->uid)->getEmail(),
       // '#markup' => $user_data->getEmail(),
       // 
-      '#markup' => $user_data ? $user_data->getEmail():'',
+      // '#markup' => $user_data ? $user_data->getEmail():'',
       // '#markup' => $user_data ? $user_data->getEmail() : t('No email found'),
 
             // '#markup' => \Drupal::entityTypeManager()->getStorage('user')->load($proposal_data->uid)->mail,
@@ -188,7 +188,7 @@ class RCaseStudyProposalApprovalForm extends FormBase {
       // '#markup' => l('View Methodology details', 'case-study-project/download/proposal-abstract-files/' . $proposal_data->id),
       '#markup' => Link::fromTextAndUrl(
         'View Methodology details',
-        Url::fromUri('internal:/case-study-project/download/proposal-abstarct-files/' . $proposal_data->id)
+        Url::fromUri('internal:/case-study-project/download/proposal-abstract-files/' . $proposal_data->id)
       )->toString(),
       '#title' => t('Abstract File'),
     ];
