@@ -42,13 +42,13 @@ class RCaseStudyProposalEditForm extends FormBase {
             /* everything ok 
         } //$proposal_data = $proposal_q->fetchObject()
         else {
-            drupal_set_message(t('Invalid proposal selected. Please try again.'), 'error');
+            \Drupal::messenger()->addMessage(t('Invalid proposal selected. Please try again.'), 'error');
             drupal_goto('case-study-project/manage-proposal');
             return;
         }
     } //$proposal_q
     else {
-        drupal_set_message(t('Invalid proposal selected. Please try again.'), 'error');
+        \Drupal::messenger()->addMessage(t('Invalid proposal selected. Please try again.'), 'error');
         drupal_goto('case-study-project/manage-proposal');
         return;
     }*/
@@ -350,14 +350,14 @@ class RCaseStudyProposalEditForm extends FormBase {
         /* everything ok */
       } //$proposal_data = $proposal_q->fetchObject()
       else {
-        drupal_set_message(t('Invalid proposal selected. Please try again.'), 'error');
-        drupal_goto('case-study-project/manage-proposal');
+        \Drupal::messenger()->addMessage(t('Invalid proposal selected. Please try again.'), 'error');
+        // drupal_goto('case-study-project/manage-proposal');
         return;
       }
     } //$proposal_q
     else {
-      drupal_set_message(t('Invalid proposal selected. Please try again.'), 'error');
-      drupal_goto('case-study-project/manage-proposal');
+      \Drupal::messenger()->addMessage(t('Invalid proposal selected. Please try again.'), 'error');
+      // drupal_goto('case-study-project/manage-proposal');
       return;
     }
     /* delete proposal */
@@ -380,10 +380,10 @@ class RCaseStudyProposalEditForm extends FormBase {
       //   'Bcc' => $bcc,
       // ];
       // if (!drupal_mail('case_study', 'case_study_proposal_deleted', $email_to, user_preferred_language($user), $params, $from, TRUE)) {
-      //   drupal_set_message('Error sending email message.', 'error');
+      //   \Drupal::messenger()->addMessage('Error sending email message.', 'error');
       // }
 
-      drupal_set_message(t('Case Study proposal has been deleted.'), 'status');
+      \Drupal::messenger()->addMessage(t('Case Study proposal has been deleted.'), 'status');
       if (rrmdir_project($proposal_id) == TRUE) {
         $query = \Drupal::database()->delete('case_study_proposals_file');
         $query->condition('proposal_id', $proposal_id);
@@ -391,8 +391,8 @@ class RCaseStudyProposalEditForm extends FormBase {
         $query = \Drupal::database()->delete('case_study_proposal');
         $query->condition('id', $proposal_id);
         $num_deleted = $query->execute();
-        drupal_set_message(t('Proposal Deleted'), 'status');
-        drupal_goto('case-study-project/manage-proposal');
+        \Drupal::messenger()->addMessage(t('Proposal Deleted'), 'status');
+        // drupal_goto('case-study-project/manage-proposal');
         return;
       } //rrmdir_project($proposal_id) == TRUE
     } //$form_state['values']['delete_proposal'] == 1

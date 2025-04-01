@@ -1119,8 +1119,10 @@ public function r_case_study_progress_all() {
     header("Pragma: no-cache");
     ob_end_flush();
     ob_clean();
+    // var_dump($final_report_data->filename);die;
     // Read file
     readfile($file_path);
+    // var_dump(($file_path));die;
     exit;
 }
 

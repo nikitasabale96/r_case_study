@@ -88,8 +88,8 @@ class RCaseStudyProposalApprovalForm extends FormBase {
     $form['student_email_id'] = [
       '#title' => t('Student Email'),
       '#type' => 'item',
-      '#markup' => \Drupal::entityTypeManager()->getStorage('user')->load($proposal_data->uid)->getEmail(),
-      // '#markup' => $user_data->getEmail(),
+      // '#markup' => \Drupal::entityTypeManager()->getStorage('user')->load($proposal_data->uid)->getEmail(),
+      '#markup' => $user->getEmail(),
       // 
       // '#markup' => $user_data ? $user_data->getEmail():'',
       // '#markup' => $user_data ? $user_data->getEmail() : t('No email found'),
