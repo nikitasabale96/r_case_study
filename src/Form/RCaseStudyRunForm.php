@@ -158,6 +158,8 @@ public function case_study_project_details_callback(array &$form, FormStateInter
   return $response;
 }
 
+
+
 function _case_study_information($proposal_id)
 {
 	$query = \Drupal::database()->select('case_study_proposal');

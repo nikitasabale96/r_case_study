@@ -360,10 +360,15 @@ class RCaseStudyProposalApprovalForm extends FormBase {
 
         \Drupal::messenger()->addMessage('R Case Study proposal No. ' . $proposal_id . ' dis-approved. User has been notified of the dis-approval.', 'error');
         // drupal_goto('case-study-project/manage-proposal');
-//         $response = new RedirectResponse(Url::fromUri('internal:/case-study-project/manage-proposal/pending')->toString());
+        // $response = new RedirectResponse(Url::fromUri('internal:/case-study-project/manage-proposal/pending')->toString());
 // $response->send();
-$form_state->setRedirect('r_case_study.proposal_pending');
-        return;
+
+
+$response = new RedirectResponse(Url::fromRoute('r_case_study.proposal_pending')->toString());
+$response->send();
+
+// $form_state->setRedirect('r_case_study.proposal_pending');
+//         return;
       }
     } //$form_state['values']['approval'] == 2
   }

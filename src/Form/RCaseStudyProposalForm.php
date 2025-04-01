@@ -437,9 +437,9 @@ class RCaseStudyProposalForm extends FormBase {
         // $form_state['values']['country'] = $form_state['values']['other_country'];
       } //$form_state['values']['other_country'] == ''
       else {
-        $form_state->setValue(['country'], $form_state->getValue([
-          'other_country'
-          ]));
+          $form_state->setValue(['country'], $form_state->getValue([
+            'other_country'
+            ]));
       }
       if ($form_state->getValue(['other_state']) == '') {
         $form_state->setErrorByName('other_state', t('Enter state name'));
@@ -449,7 +449,8 @@ class RCaseStudyProposalForm extends FormBase {
         $form_state->setValue(['all_state'], $form_state->getValue([
           'other_state'
           ]));
-      }
+      
+        }
       if ($form_state->getValue(['other_city']) == '') {
         $form_state->setErrorByName('other_city', t('Enter city name'));
         // $form_state['values']['country'] = $form_state['values']['other_country'];

@@ -10,6 +10,13 @@ namespace Drupal\r_case_study\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
+use Drupal\Core\Database\Database;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Core\Ajax\AjaxResponse;
+  use Drupal\Core\Ajax\HtmlCommand;
+  use Drupal\Core\Ajax\ReplaceCommand;
+  use Drupal\Core\Link;
+  use Drupal\Core\Url;
 
 class RCaseStudyAbstractBulkApprovalForm extends FormBase {
 
@@ -21,7 +28,7 @@ class RCaseStudyAbstractBulkApprovalForm extends FormBase {
   }
 
   public function buildForm(array $form, \Drupal\Core\Form\FormStateInterface $form_state) {
-    $options_first = _bulk_list_of_case_study_project();
+    $options_first = $this->_bulk_list_of_case_study_project();
     $selected = !$form_state->getValue(['case_study_project']) ? $form_state->getValue([
       'case_study_project'
       ]) : key($options_first);
@@ -29,17 +36,17 @@ class RCaseStudyAbstractBulkApprovalForm extends FormBase {
     $form['case_study_project'] = [
       '#type' => 'select',
       '#title' => t('Title of the Case Study'),
-      '#options' => _bulk_list_of_case_study_project(),
+      '#options' => $this->_bulk_list_of_case_study_project(),
       '#default_value' => $selected,
       '#ajax' => [
-        'callback' => 'ajax_bulk_case_study_abstract_details_callback'
+        'callback' => '::ajax_bulk_case_study_abstract_details_callback'
         ],
       '#suffix' => '<div id="ajax_selected_case_study"></div><div id="ajax_selected_case_study_pdf"></div>',
     ];
     $form['case_study_actions'] = [
       '#type' => 'select',
       '#title' => t('Please select action for Case Study'),
-      '#options' => _bulk_list_case_study_actions(),
+      '#options' => $this->_bulk_list_case_study_actions(),
       '#default_value' => 0,
       '#prefix' => '<div id="ajax_selected_case_study_action" style="color:red;">',
       '#suffix' => '</div>',
@@ -73,6 +80,142 @@ class RCaseStudyAbstractBulkApprovalForm extends FormBase {
     ];
     return $form;
   }
+
+  
+  
+  
+  /**
+   * Ajax callback to update case study abstract details.
+   */
+  function ajax_bulk_case_study_abstract_details_callback(array &$form, FormStateInterface $form_state) {
+      $response = new AjaxResponse();
+  
+      $case_study_project_default_value = $form_state->getValue('case_study_project');
+  
+      if ($case_study_project_default_value != 0) {
+          // Update case study details
+          $response->addCommand(new HtmlCommand('#ajax_selected_case_study', $this->case_study_details($case_study_project_default_value)));
+  
+          // Update case study actions
+          $form['case_study_actions']['#options'] = $this->_bulk_list_case_study_actions();
+          $rendered_form = \Drupal::service('renderer')->render($form['case_study_actions']);
+          $response->addCommand(new ReplaceCommand('#ajax_selected_case_study_action', $rendered_form));
+      } 
+      else {
+          // Clear the selected case study
+          $response->addCommand(new HtmlCommand('#ajax_selected_case_study', ''));
+      }
+  
+      return $response;
+  }
+  
+
+  function _bulk_list_of_case_study_project() {
+      $database = Database::getConnection();
+      $project_titles = [
+          '0' => t('Please select...'),
+      ];
+  
+      // Fetch project details
+      $query = $database->select('case_study_proposal', 'csp')
+          ->fields('csp', ['id', 'project_title', 'contributor_name'])
+          ->condition('is_submitted', 1)
+          ->condition('approval_status', 1)
+          ->orderBy('creation_date', 'DESC')
+          ->execute()
+          ->fetchAll();
+  
+      // Process query results
+      foreach ($query as $project_titles_data) {
+          $project_titles[$project_titles_data->id] = $project_titles_data->project_title 
+              . ' (Proposed by ' . $project_titles_data->contributor_name . ')';
+      }
+  
+      return $project_titles;
+  }
+  
+
+
+function _bulk_list_case_study_actions() {
+    return [
+        0 => t('Please select...'),
+        1 => t('Approve Entire Case Study'),
+        2 => t('Resubmit Project files (This will enable resubmission for the contributor)'),
+        3 => t('Disapprove Entire Case Study (This will delete the Case Study files and the proposal from the database)'),
+        // 4 => t('Delete Entire Case Study Including Proposal'),
+    ];
+}
+
+
+
+/**
+ * Retrieves case study details.
+ *
+ * @param int $case_study_proposal_id
+ *   The ID of the case study proposal.
+ *
+ * @return string
+ *   The formatted HTML containing case study details.
+ */
+function case_study_details($case_study_proposal_id) {
+    $database = Database::getConnection();
+    $return_html = '';
+
+    // Fetch case study proposal details
+    $abstracts_pro = $database->select('case_study_proposal', 'csp')
+        ->fields('csp', ['name_title', 'contributor_name', 'project_title'])
+        ->condition('id', $case_study_proposal_id)
+        ->execute()
+        ->fetchAssoc();
+
+    // Fetch uploaded report
+    $abstracts_pdf = $database->select('case_study_submitted_abstracts_file', 'csaf')
+        ->fields('csaf', ['filename'])
+        ->condition('proposal_id', $case_study_proposal_id)
+        ->condition('filetype', 'R')
+        ->execute()
+        ->fetchAssoc();
+
+    $abstract_filename = (!empty($abstracts_pdf['filename']) && $abstracts_pdf['filename'] !== "NULL") 
+        ? $abstracts_pdf['filename'] 
+        : t('File not uploaded');
+
+    // Fetch uploaded data/code files
+    $abstracts_query_process = $database->select('case_study_submitted_abstracts_file', 'csaf')
+        ->fields('csaf', ['filename'])
+        ->condition('proposal_id', $case_study_proposal_id)
+        ->condition('filetype', 'C')
+        ->execute()
+        ->fetchAssoc();
+
+    $abstracts_query_process_filename = (!empty($abstracts_query_process['filename']) && $abstracts_query_process['filename'] !== "NULL") 
+        ? $abstracts_query_process['filename'] 
+        : t('File not uploaded');
+
+    // Upload abstract link (if applicable)
+    if (!$abstracts_query_process) {
+        $upload_url = Url::fromUri('internal:/case-study-project/abstract-code/upload');
+        $abstracts_query_process_filename = Link::fromTextAndUrl(t('Upload abstract'), $upload_url)->toString();
+    }
+
+    // Download Case Study link
+    $download_url = Url::fromUri('internal:/case-study-project/full-download/project/' . $case_study_proposal_id);
+    $download_case_study = Link::fromTextAndUrl(t('Download Case Study'), $download_url)->toString();
+
+    // Construct return HTML
+    $return_html .= '<strong>' . t('Contributor Name:') . '</strong><br />' 
+        . $abstracts_pro['name_title'] . ' ' . $abstracts_pro['contributor_name'] . '<br /><br />';
+    $return_html .= '<strong>' . t('Title of the Case Study:') . '</strong><br />' 
+        . $abstracts_pro['project_title'] . '<br /><br />';
+    $return_html .= '<strong>' . t('Uploaded Report of the project:') . '</strong><br />' 
+        . $abstract_filename . '<br /><br />';
+    $return_html .= '<strong>' . t('Uploaded data and code files of the project:') . '</strong><br />' 
+        . $abstracts_query_process_filename . '<br /><br />';
+    $return_html .= $download_case_study;
+
+    return $return_html;
+}
+
 
   public function submitForm(array &$form, \Drupal\Core\Form\FormStateInterface $form_state) {
     $user = \Drupal::currentUser();
