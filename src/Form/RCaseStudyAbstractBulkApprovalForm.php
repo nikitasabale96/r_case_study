@@ -227,7 +227,7 @@ function case_study_details($case_study_proposal_id) {
         // case_study_abstract_del_lab_pdf($form_state['values']['case_study_project']);
  {
         if (user_access('Case Study bulk manage abstract')) {
-          $query = db_select('case_study_proposal');
+          $query = \Drupal::database()->select('case_study_proposal');
           $query->fields('case_study_proposal');
           $query->condition('id', $form_state->getValue(['case_study_project']));
           $user_query = $query->execute();
@@ -235,7 +235,7 @@ function case_study_details($case_study_proposal_id) {
           $user_data = user_load($user_info->uid);
           if ($form_state->getValue(['case_study_actions']) == 1) {
             // approving entire project //
-            $query = db_select('case_study_submitted_abstracts');
+            $query = \Drupal::database()->select('case_study_submitted_abstracts');
             $query->fields('case_study_submitted_abstracts');
             $query->condition('proposal_id', $form_state->getValue(['case_study_project']));
             $abstracts_q = $query->execute();
@@ -251,7 +251,7 @@ function case_study_details($case_study_proposal_id) {
               ]);
             } //$abstract_data = $abstracts_q->fetchObject()
             drupal_goto('case-study-project/manage-proposal/all');
-            drupal_set_message(t('Approved Case Study.'), 'status');
+            \Drupal::messenger()->addMessage(t('Approved Case Study.'), 'status');
             // email 
             $email_subject = t('[!site_name][Case Study] Your uploaded Case Study have been approved', [
               '!site_name' => variable_get('site_name', '')
@@ -302,17 +302,17 @@ FOSSEE, IIT Bombay', [
               'Bcc' => $bcc,
             ];
             if (!drupal_mail('case_study', 'standard', $email_to, language_default(), $params, $from, TRUE)) {
-              $msg = drupal_set_message('Error sending email message.', 'error');
+              $msg = \Drupal::messenger()->addMessage('Error sending email message.', 'error');
             } //!drupal_mail('case_study', 'standard', $email_to, language_default(), $params, $from, TRUE)
           } //$form_state['values']['case_study_actions'] == 1
           elseif ($form_state->getValue(['case_study_actions']) == 2) {
             if (strlen(trim($form_state->getValue(['message']))) <= 30) {
               $form_state->setErrorByName('message', t(''));
-              $msg = drupal_set_message("Please mention the reason for marking resubmit. Minimum 30 character required", 'error');
+              $msg = \Drupal::messenger()->addMessage("Please mention the reason for marking resubmit. Minimum 30 character required", 'error');
               return $msg;
             }
             //pending review entire project 
-            $query = db_select('case_study_submitted_abstracts');
+            $query = \Drupal::database()->select('case_study_submitted_abstracts');
             $query->fields('case_study_submitted_abstracts');
             $query->condition('proposal_id', $form_state->getValue(['case_study_project']));
             $abstracts_q = $query->execute();
@@ -331,7 +331,7 @@ FOSSEE, IIT Bombay', [
                 ':submitted_abstract_id' => $abstract_data->id,
               ]);
             } //$abstract_data = $abstracts_q->fetchObject()
-            drupal_set_message(t('Resubmit the project files'), 'status');
+            \Drupal::messenger()->addMessage(t('Resubmit the project files'), 'status');
             // email 
             $email_subject = t('[!site_name][Case Study] Your uploaded Case Study have been marked as pending', [
               '!site_name' => variable_get('site_name', '')
@@ -373,23 +373,23 @@ FOSSEE, IIT Bombay', [
               'Bcc' => $bcc,
             ];
             if (!drupal_mail('case_study', 'standard', $email_to, language_default(), $params, $from, TRUE)) {
-              drupal_set_message('Error sending email message.', 'error');
+              \Drupal::messenger()->addMessage('Error sending email message.', 'error');
             } //!drupal_mail('case_study', 'standard', $email_to, language_default(), $params, $from, TRUE)
           } //$form_state['values']['case_study_actions'] == 2
           elseif ($form_state->getValue(['case_study_actions']) == 3) //disapprove and delete entire Case Study
  {
             if (strlen(trim($form_state->getValue(['message']))) <= 30) {
               $form_state->setErrorByName('message', t(''));
-              $msg = drupal_set_message("Please mention the reason for disapproval. Minimum 30 character required", 'error');
+              $msg = \Drupal::messenger()->addMessage("Please mention the reason for disapproval. Minimum 30 character required", 'error');
               return $msg;
             } //strlen(trim($form_state['values']['message'])) <= 30
             if (!user_access('Case Study bulk delete code')) {
-              $msg = drupal_set_message(t('You do not have permission to Bulk Dis-Approved and Deleted Entire Project.'), 'error');
+              $msg = \Drupal::messenger()->addMessage(t('You do not have permission to Bulk Dis-Approved and Deleted Entire Project.'), 'error');
               return $msg;
             } //!user_access('case_study bulk delete code')
             if (case_study_abstract_delete_project($form_state->getValue(['case_study_project']))) //////
  {
-              drupal_set_message(t('Dis-Approved and Deleted Entire Case Study.'), 'status');
+              \Drupal::messenger()->addMessage(t('Dis-Approved and Deleted Entire Case Study.'), 'status');
               $email_subject = t('[!site_name][Case Study] Your uploaded Case Study have been marked as dis-approved', [
                 '!site_name' => variable_get('site_name', '')
                 ]);
@@ -437,11 +437,11 @@ FOSSEE, IIT Bombay', [
                 'Bcc' => $bcc,
               ];
               if (!drupal_mail('case_study', 'standard', $email_to, language_default(), $params, $from, TRUE)) {
-                drupal_set_message('Error sending email message.', 'error');
+                \Drupal::messenger()->addMessage('Error sending email message.', 'error');
               }
             } //case_study_abstract_delete_project($form_state['values']['case_study_project'])
             else {
-              drupal_set_message(t('Error Dis-Approving and Deleting Entire Case Study.'), 'error');
+              \Drupal::messenger()->addMessage(t('Error Dis-Approving and Deleting Entire Case Study.'), 'error');
             }
             // email 
 
