@@ -238,10 +238,11 @@ $proposal_data = $query->execute()->fetchObject();
     $proposal_directory = $proposal_data->directory_name;
     /* create proposal folder if not present */
     //$dest_path = $proposal_directory . '/';
-    $dest_path_project_files = $proposal_directory . '/project_files/';
+    $dest_path_project_files = $proposal_directory . "/project_files/";
     if (!is_dir($root_path . $dest_path_project_files)) {
       mkdir($root_path . $dest_path_project_files);
     }
+    // var_dump($proposal_directory);die;
     $proposal_id = $proposal_data->id;
     $query_s = "SELECT * FROM {case_study_submitted_abstracts} WHERE proposal_id = :proposal_id";
     $args_s = [":proposal_id" => $proposal_id];

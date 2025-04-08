@@ -169,7 +169,7 @@ public function r_case_study_path()
 public function r_case_study_get_proposal() {
     $user = \Drupal::currentUser();
     $query = \Drupal::database()->select('case_study_proposal', 'csp');
-    $query->fields('csp', ['id', 'name_title', 'contributor_name', 'project_title', 'approval_status']);
+    $query->fields('csp');
     $query->condition('uid', $user->id());
     $query->orderBy('id', 'DESC');
     $query->range(0, 1);
