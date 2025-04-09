@@ -16,6 +16,7 @@ use Drupal\Core\Url;
 use Drupal\Core\Link;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Drupal\r_case_study\Form\stdClass;
+use Drupal\Core\Database\Database;
 
 class RCaseStudyEditUploadAbstractCodeForm extends FormBase {
 
@@ -44,7 +45,7 @@ class RCaseStudyEditUploadAbstractCodeForm extends FormBase {
     //var_dump($proposal_data);die;
 
     if (!$proposal_data) {
-      // drupal_set_message(t('Invalid proposal selected. Please try again.'), 'error');
+      // \Drupal::messenger()->addMessage(t('Invalid proposal selected. Please try again.'), 'error');
       // drupal_goto('case-study-project/manage-proposal/edit-upload-file');
       //return;
     } //$proposal_q
@@ -94,9 +95,10 @@ class RCaseStudyEditUploadAbstractCodeForm extends FormBase {
       $form['submit'] = [
         '#type' => 'submit',
         '#value' => t('Submit'),
-        '#submit' => [
-          'r_case_study_edit_upload_abstract_code_form_submit'
-          ],
+        // '#submit' => [
+        //   // 'r_case_study_edit_upload_abstract_code_form_submit'
+        //   'r_case_study.edit_upload_abstract_code_form'
+        //   ],
       ];
       $form['cancel'] = [
         '#type' => 'item',
@@ -169,11 +171,11 @@ class RCaseStudyEditUploadAbstractCodeForm extends FormBase {
           ];
           \Drupal::database()->query($query, $args, ['return' => Database::RETURN_INSERT_ID]);
 
-          // drupal_set_message($file_name . ' file updated successfully.', 'status');
+          \Drupal::messenger()->addMessage($file_name . ' file updated successfully.', 'status');
 
         }
         else {
-          // drupal_set_message($file_name . ' file not updated successfully.', 'error');
+          \Drupal::messenger()->addMessage($file_name . ' file not updated successfully.', 'error');
         }
       }
     } //$_FILES['files']['name'] as $file_form_name => $file_name
@@ -196,10 +198,12 @@ class RCaseStudyEditUploadAbstractCodeForm extends FormBase {
     //   'Bcc' => $bcc,
     // ];
     // if (!drupal_mail('case_study', 'abstract_edit_file_uploaded', $email_to, language_default(), $params, $from, TRUE)) {
-    //   drupal_set_message('Error sending email message.', 'error');
+    //   \Drupal::messenger()->addMessage('Error sending email message.', 'error');
     // }
-    //drupal_set_message(t('Updated'), 'status');
+    \Drupal::messenger()->addMessage(t('Updated'), 'status');
     // drupal_goto('case-study-project/abstract-code/edit-upload-files/' . $proposal_id);
+    $form_state->setRedirect('r_case_study.edit_upload_abstract_code_form', ['proposal_id' => $proposal_id]);
+ 
   }
 
 }

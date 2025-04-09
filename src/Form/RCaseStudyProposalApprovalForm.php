@@ -21,6 +21,8 @@ use Drupal\Core\Mail\MailManagerInterface;
 use Drupal\Core\DependencyInjection\ContainerInterface;
 use Drupal\Core\Session\AccountProxy;
 
+
+
 class RCaseStudyProposalApprovalForm extends FormBase {
 
   /**
@@ -323,8 +325,13 @@ class RCaseStudyProposalApprovalForm extends FormBase {
       //   \Drupal::messenger()->addmessage('Error sending email message.', 'error');
       // }
 
-      // \Drupal::messenger()->addmessage('R Case Study proposal No. ' . $proposal_id . ' approved. User has been notified of the approval.', 'status');
+      \Drupal::messenger()->addmessage('R Case Study proposal No. ' . $proposal_id . ' approved. User has been notified of the approval.', 'status');
       // drupal_goto('case-study-project/manage-proposal');
+
+      // Inside your method:
+      // return new RedirectResponse(Url::fromRoute('r_case_study.proposal_pending'));
+      $url = Url::fromRoute('r_case_study.proposal_pending')->toString();
+      \Drupal::service('request_stack')->getCurrentRequest()->query->set('destination', $url);
       return;
     } //$form_state['values']['approval'] == 1
     else {
