@@ -232,7 +232,7 @@ function case_study_details($case_study_proposal_id) {
           $query->condition('id', $form_state->getValue(['case_study_project']));
           $user_query = $query->execute();
           $user_info = $user_query->fetchObject();
-          $user_data = user_load($user_info->uid);
+          $user_data = User::load($user_info->uid);
           if ($form_state->getValue(['case_study_actions']) == 1) {
             // approving entire project //
             $query = \Drupal::database()->select('case_study_submitted_abstracts');
@@ -250,7 +250,15 @@ function case_study_details($case_study_proposal_id) {
                 ':submitted_abstract_id' => $abstract_data->id,
               ]);
             } //$abstract_data = $abstracts_q->fetchObject()
-            drupal_goto('case-study-project/manage-proposal/all');
+            // drupal_goto('case-study-project/manage-proposal/all');
+
+            // Create a URL object for the path 'case-study-project/manage-proposal/all'
+$url = Url::fromUserInput('/case-study-project/manage-proposal/all');
+
+// Create a RedirectResponse object and send it
+$response = new RedirectResponse($url->toString());
+$response->send();
+
             \Drupal::messenger()->addMessage(t('Approved Case Study.'), 'status');
             // email 
             $email_subject = t('[!site_name][Case Study] Your uploaded Case Study have been approved', [
