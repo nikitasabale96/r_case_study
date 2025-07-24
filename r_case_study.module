@@ -1,10 +1,10 @@
 <?php
 // $Id$
-error_reporting(E_ALL);
-ini_set('display_errors', TRUE);
-ini_set('display_startup_errors', TRUE);
-require_once 'general_deletion.inc';
-require_once 'email.inc';
+// error_reporting(E_ALL);
+// ini_set('display_errors', TRUE);
+// ini_set('display_startup_errors', TRUE);
+// require_once 'general_deletion.inc';
+// require_once 'email.inc';
 /**
  * Implementation of hook_menu().
  */
@@ -35,7 +35,7 @@ function r_case_study_menu()
         'access arguments' => array(
             'Case Study create proposal',
         ),
-        'type' => MENU_NORMAL_ITEM,
+        // 'type' => MENU_NORMAL_ITEM,
         'file' => 'proposal.inc',
     );
     $items['case-study-project/manage-proposal'] = array(
@@ -56,7 +56,7 @@ function r_case_study_menu()
         'access arguments' => array(
             'Case Study manage proposal',
         ),
-        'type' => MENU_DEFAULT_LOCAL_TASK,
+        // 'type' => MENU_DEFAULT_LOCAL_TASK,
         'weight' => 1,
         'file' => 'manage_proposal.inc',
     );
@@ -68,7 +68,7 @@ function r_case_study_menu()
         'access arguments' => array(
             'Case Study manage proposal',
         ),
-        'type' => MENU_LOCAL_TASK,
+        // 'type' => MENU_LOCAL_TASK,
         'weight' => 4,
         'file' => 'manage_proposal.inc',
     );
@@ -80,7 +80,7 @@ function r_case_study_menu()
         'access arguments' => array(
             'Case Study manage proposal',
         ),
-        'type' => MENU_LOCAL_TASK,
+        // 'type' => MENU_LOCAL_TASK,
         'weight' => 4,
         'file' => 'manage_proposal.inc',
     );
@@ -94,7 +94,7 @@ function r_case_study_menu()
         'access arguments' => array(
             'Case Study manage proposal',
         ),
-        'type' => MENU_CALLBACK,
+        // 'type' => MENU_CALLBACK,
         'file' => 'manage_proposal.inc',
     );
     $items['case-study-project/manage-proposal/edit'] = array(
@@ -107,7 +107,7 @@ function r_case_study_menu()
         'access arguments' => array(
             'Case Study manage proposal',
         ),
-        'type' => MENU_CALLBACK,
+        // 'type' => MENU_CALLBACK,
         'file' => 'manage_proposal.inc',
     );
     $items['case-study-project/manage-proposal/status'] = array(
@@ -120,7 +120,7 @@ function r_case_study_menu()
         'access arguments' => array(
             'Case Study approve proposal',
         ),
-        'type' => MENU_CALLBACK,
+        // 'type' => MENU_CALLBACK,
         'file' => 'manage_proposal.inc',
     );
     $items['case-study-project/abstract-approval/bulk'] = array(
@@ -133,7 +133,7 @@ function r_case_study_menu()
         'access arguments' => array(
             'Case Study bulk manage abstract',
         ),
-        'type' => MENU_LOCAL_TASK,
+        // 'type' => MENU_LOCAL_TASK,
         'weight' => 2,
         'file' => 'abstract_bulk_approval.inc',
     );
@@ -149,7 +149,7 @@ function r_case_study_menu()
         'access arguments' => array(
             'Case Study upload abstract',
         ),
-        'type' => MENU_CALLBACK,
+        // 'type' => MENU_CALLBACK,
         'file' => 'upload_code.inc',
         'weight' => 2,
     );
@@ -174,20 +174,20 @@ function r_case_study_menu()
         'access arguments' => array(
             'Case Study upload abstract',
         ),
-        'type' => MENU_LOCAL_TASK,
+        // 'type' => MENU_LOCAL_TASK,
         'file' => 'upload_code.inc',
         'weight' => 2,
     );
-    $items['case-study-project/abstract-code/delete'] = array(
-        'title' => 'Delete Solution',
-        'description' => 'Delete Solution',
-        'page callback' => 'r_case_study_upload_code_delete',
-        'access arguments' => array(
-            'Case Study upload code',
-        ),
-        'type' => MENU_CALLBACK,
-        'file' => 'upload_code_delete.inc',
-    );
+    // $items['case-study-project/abstract-code/delete'] = array(
+    //     'title' => 'Delete Solution',
+    //     'description' => 'Delete Solution',
+    //     'page callback' => 'r_case_study_upload_code_delete',
+    //     'access arguments' => array(
+    //         'Case Study upload code',
+    //     ),
+    //     // 'type' => MENU_CALLBACK,
+    //     'file' => 'upload_code_delete.inc',
+    // );
     /* CODE DOWNLOADS */
     $items['case-study-project/full-download/project'] = array(
         'title' => 'Code Download',
@@ -196,7 +196,7 @@ function r_case_study_menu()
         'access arguments' => array(
             'Case Study download code',
         ),
-        'type' => MENU_CALLBACK,
+        // 'type' => MENU_CALLBACK,
         'file' => 'full_download.inc',
     );
     /* COMPLETED  Case studies */
@@ -217,14 +217,14 @@ function r_case_study_menu()
         ),
         'file' => 'case_study_details.inc',
     );
-    $items['case-study-project/list-of-project-titles'] = array(
-        'title' => 'List of available Project titles',
-        'page callback' => 'list_of_available_project_titles',
-        'access arguments' => array(
-            'Case Study Project titles list',
-        ),
-        'file' => 'available_project_titles_list.inc',
-    );
+    // $items['case-study-project/list-of-project-titles'] = array(
+    //     'title' => 'List of available Project titles',
+    //     'page callback' => 'list_of_available_project_titles',
+    //     'access arguments' => array(
+    //         'Case Study Project titles list',
+    //     ),
+    //     'file' => 'available_project_titles_list.inc',
+    // );
     /* DOWNLOAD FOR EVERYONE */
     $items['case-study-project/case-study-run'] = array(
         'title' => 'Download Codes',
@@ -235,29 +235,29 @@ function r_case_study_menu()
         'access arguments' => array(
             'Case Study download code',
         ),
-        'type' => MENU_NORMAL_ITEM,
+        // 'type' => MENU_NORMAL_ITEM,
         'file' => 'run.inc',
     );
-    $items['case-study-project/download/resource-file'] = array(
-        'title' => 'Download user defined compound file',
-        'description' => 'Download resource file',
-        'page callback' => 'r_case_study_download_upload_file',
-        'access arguments' => array(
-            'download code',
-        ),
-        'type' => MENU_CALLBACK,
-        'file' => 'download.inc',
-    );
-    $items['case-study-project/download/project-title-file'] = array(
-        'title' => 'Download Project Title file',
-        'description' => 'Download Project Title file',
-        'page callback' => 'download_case_study_project_title_files',
-        'access arguments' => array(
-            'download code',
-        ),
-        'type' => MENU_CALLBACK,
-        'file' => 'available_project_titles_list.inc',
-    );
+    // $items['case-study-project/download/resource-file'] = array(
+    //     'title' => 'Download user defined compound file',
+    //     'description' => 'Download resource file',
+    //     'page callback' => 'r_case_study_download_upload_file',
+    //     'access arguments' => array(
+    //         'download code',
+    //     ),
+    //     // 'type' => MENU_CALLBACK,
+    //     'file' => 'download.inc',
+    // );
+    // $items['case-study-project/download/project-title-file'] = array(
+    //     'title' => 'Download Project Title file',
+    //     'description' => 'Download Project Title file',
+    //     'page callback' => 'download_case_study_project_title_files',
+    //     'access arguments' => array(
+    //         'download code',
+    //     ),
+    //     // 'type' => MENU_CALLBACK,
+    //     'file' => 'available_project_titles_list.inc',
+    // );
     $items['case-study-project/download/proposal-literature-survey-files'] = array(
         'title' => 'Download Project file',
         'description' => 'Download project file',
@@ -265,7 +265,7 @@ function r_case_study_menu()
         'access arguments' => array(
             'download code',
         ),
-        'type' => MENU_CALLBACK,
+        // 'type' => MENU_CALLBACK,
         'file' => 'download.inc',
     );
     $items['case-study-project/download/final-report'] = array(
@@ -275,7 +275,7 @@ function r_case_study_menu()
         'access arguments' => array(
             'download code',
         ),
-        'type' => MENU_CALLBACK,
+        // 'type' => MENU_CALLBACK,
         'file' => 'download.inc',
     );
     $items['case-study-project/download/proposal-abstract-files'] = array(
@@ -285,7 +285,7 @@ function r_case_study_menu()
         'access arguments' => array(
             'download code',
         ),
-        'type' => MENU_CALLBACK,
+        // 'type' => MENU_CALLBACK,
         'file' => 'download.inc',
     );
     $items['case-study-project/download/proposal-rawdata-files'] = array(
@@ -295,7 +295,7 @@ function r_case_study_menu()
         'access arguments' => array(
             'download code',
         ),
-        'type' => MENU_CALLBACK,
+        // 'type' => MENU_CALLBACK,
         'file' => 'download.inc',
     );
     /* ADMIN SETTINGS */
@@ -309,7 +309,7 @@ function r_case_study_menu()
         'access arguments' => array(
             'administer  Case Study',
         ),
-        'type' => MENU_NORMAL_ITEM,
+        // 'type' => MENU_NORMAL_ITEM,
         'file' => 'settings.inc',
     );
     /* AJAX REQUEST */
@@ -329,13 +329,13 @@ function r_case_study_menu()
         'page arguments' => array(
             'generate_pdf',
         ),
-        'type' => MENU_CALLBACK,
+        // 'type' => MENU_CALLBACK,
         'access arguments' => array(
             'generate pdf',
         ),
         'file' => 'pdf/cert_new.inc',
     );
-    /*$items['case-study-project/certificates-custom'] = array(
+    $items['case-study-project/certificates-custom'] = array(
     'title'=> 'List of Case Study Custom Certificates',
     'description'=> 'List of Case Study Custom Certificates',
     'page callback'=> '_list_r_case_study_custom_certificates',
@@ -351,12 +351,12 @@ function r_case_study_menu()
     'page arguments'=> array(
     'generate_pdf'
     ),
-    'type'=> MENU_CALLBACK,
+    // 'type'=> MENU_CALLBACK,
     'access arguments'=> array(
     'generate pdf'
     ),
     'file'=> 'pdf/mentor_cert_pdf.inc'
-    ); */
+    ); 
     $items['case-study-project/certificates/verify'] = array(
         "title" => "Certificate Verification",
         "page callback" => "verify_certificates",
@@ -366,7 +366,7 @@ function r_case_study_menu()
         "access arguments" => array(
             "verify certificates",
         ),
-        'type' => MENU_CALLBACK,
+        // 'type' => MENU_CALLBACK,
         'file' => 'pdf/verify_certificates.inc',
     );
     return $items;
@@ -488,8 +488,8 @@ function r_case_study_path()
 /************************* USER VERIFICATION FUNCTIONS ************************/
 function r_case_study_get_proposal()
 {
-    global $user;
-    $query = db_select('case_study_proposal');
+    $user = \Drupal::currentUser();
+    $query = \Drupal::database()->select('case_study_proposal');
     $query->fields('case_study_proposal');
     $query->condition('uid', $user->uid);
     $query->orderBy('id', 'DESC');
@@ -497,23 +497,23 @@ function r_case_study_get_proposal()
     $proposal_q = $query->execute();
     $proposal_data = $proposal_q->fetchObject();
     if (!$proposal_data) {
-        drupal_set_message("You do not have any approved  Case Study proposal. Please propose a Case Study", 'error');
-        drupal_goto('');
+        \Drupal::messenger()->addError("You do not have any approved  Case Study proposal. Please propose a Case Study");
+        // drupal_goto('');
     } //!$proposal_data
     switch ($proposal_data->approval_status) {
         case 0:
-            drupal_set_message(t('Proposal is awaiting approval.'), 'status');
+            \Drupal::messenger()->addStatus(t('Proposal is awaiting approval.'));
             return false;
         case 1:
             return $proposal_data;
         case 2:
-            drupal_set_message(t('Proposal has been dis-approved.'), 'error');
+            \Drupal::messenger()->addError(t('Proposal has been dis-approved.'));
             return false;
         case 3:
-            drupal_set_message(t('Proposal has been marked as completed.'), 'status');
+            \Drupal::messenger()->addStatus(t('Proposal has been marked as completed.'));
             return false;
         default:
-            drupal_set_message(t('Invalid proposal state. Please contact site administrator for further information.'), 'error');
+            \Drupal::messenger()->addError(t('Invalid proposal state. Please contact site administrator for further information.'));
             return false;
     } //$proposal_data->approval_status
     return false;
@@ -554,7 +554,7 @@ function _r_case_study_list_of_states()
     $states = array(
         0 => '-Select-',
     );
-    $query = db_select('list_states_of_india');
+    $query = \Drupal::database()->select('list_states_of_india');
     $query->fields('list_states_of_india');
     //$query->orderBy('', '');
     $states_list = $query->execute();
@@ -568,7 +568,7 @@ function _r_case_study_list_of_cities()
     $city = array(
         0 => '-Select-',
     );
-    $query = db_select('list_cities_of_india');
+    $query = \Drupal::database()->select('list_cities_of_india');
     $query->fields('list_cities_of_india');
     $query->orderBy('city', 'ASC');
     $city_list = $query->execute();
@@ -577,12 +577,12 @@ function _r_case_study_list_of_cities()
     } //$city_list_data = $city_list->fetchObject()
     return $city;
 }
-function _r_case_study_list_of_pincodes()
+ function _r_case_study_list_of_pincodes()
 {
     $pincode = array(
         0 => '-Select-',
     );
-    $query = db_select('list_of_all_india_pincode');
+    $query = \Drupal::database()->select('list_of_all_india_pincode');
     $query->fields('list_of_all_india_pincode');
     $query->orderBy('pincode', 'ASC');
     $pincode_list = $query->execute();
@@ -591,10 +591,10 @@ function _r_case_study_list_of_pincodes()
     } //$pincode_list_data = $pincode_list->fetchObject()
     return $pincode;
 }
-function _r_case_study_list_of_departments()
+ function _r_case_study_list_of_departments()
 {
     $department = array();
-    $query = db_select('list_of_departments');
+    $query = \Drupal::database()->select('list_of_departments');
     $query->fields('list_of_departments');
     $query->orderBy('id', 'DESC');
     $department_list = $query->execute();
@@ -604,19 +604,19 @@ function _r_case_study_list_of_departments()
     return $department;
 }
 
-function _cs_list_of_case_studies()
+ function _cs_list_of_case_studies()
 {
     $existing_case_studies = array();
-    $result = db_query("SELECT * from list_of_project_titles WHERE {project_title_name} NOT IN( SELECT  project_title from case_study_proposal WHERE approval_status = 0 OR approval_status = 1 OR approval_status = 3)");
+    $result = \Drupal::database()->query("SELECT * from list_of_project_titles WHERE {project_title_name} NOT IN( SELECT  project_title from case_study_proposal WHERE approval_status = 0 OR approval_status = 1 OR approval_status = 3)");
     while ($case_study_list_data = $result->fetchObject()) {
         $existing_case_studies[$case_study_list_data->project_title_name] = $case_study_list_data->project_title_name;
     }
     return $existing_case_studies;
 }
 
-function _cs_list_of_versions(){
+ function _cs_list_of_versions(){
     $versions = array();
-    $query = db_select('case_study_software_version');
+    $query = \Drupal::database()->select('case_study_software_version');
     $query->fields('case_study_software_version');
     $version_list = $query->execute();
     while($version_data = $version_list->fetchObject()){
@@ -625,7 +625,7 @@ function _cs_list_of_versions(){
     return $versions;
 }
 
-function _r_case_study_dir_name($project, $proposar_name)
+ function _r_case_study_dir_name($project, $proposar_name)
 {
     $project_title = ucname($project);
     $proposar_name = ucname($proposar_name);
@@ -638,7 +638,7 @@ function CaseStudy_RenameDir($proposal_id, $dir_name)
 {
     $proposal_id = $proposal_id;
     $dir_name = $dir_name;
-    $query = db_query("SELECT directory_name,id FROM case_study_proposal WHERE id = :proposal_id", array(
+    $query = \Drupal::database()->query("SELECT directory_name,id FROM case_study_proposal WHERE id = :proposal_id", array(
         ':proposal_id' => $proposal_id,
     ));
     $result = $query->fetchObject();
@@ -656,19 +656,19 @@ function CaseStudy_RenameDir($proposal_id, $dir_name)
             return $new_directory_name;
         } //is_dir($files_id_dir)
         else {
-            drupal_set_message('Directory not available for rename.');
+            \Drupal::messenger()->addMessage('Directory not available for rename.');
             return;
         }
     } //$result != NULL
     else {
-        drupal_set_message('Project directory name not present in databse');
+        \Drupal::messenger()->addMessage('Project directory name not present in databse');
         return;
     }
     return;
 }
 function CreateReadmeFileCaseStudyProject($proposal_id)
 {
-    $result = db_query("
+    $result = \Drupal::database()->query("
                         SELECT * from case_study_proposal WHERE id = :proposal_id", array(
         ":proposal_id" => $proposal_id,
     ));
@@ -690,7 +690,7 @@ function CreateReadmeFileCaseStudyProject($proposal_id)
 function rrmdir_project($prop_id)
 {
     $proposal_id = $prop_id;
-    $result = db_query("SELECT * from case_study_proposal WHERE id = :proposal_id", array(
+    $result = \Drupal::database()->query("SELECT * from case_study_proposal WHERE id = :proposal_id", array(
         ":proposal_id" => $proposal_id,
     ));
     $proposal_data = $result->fetchObject();
@@ -711,14 +711,14 @@ function rrmdir_project($prop_id)
             } //$objects as $object
             reset($objects);
             rmdir($dir);
-            $msg = drupal_set_message("Directory deleted successfully");
+            $msg = \Drupal::messenger()->addMessage("Directory deleted successfully");
             return $msg;
         } //is_dir($dir)
-        $msg = drupal_set_message("Directory not present");
+        $msg = \Drupal::messenger()->addMessage("Directory not present");
         return $msg;
     } //$proposal_data->id == $prop_id
     else {
-        $msg = drupal_set_message("Data not found");
+        $msg = \Drupal::messenger()->addMessage("Data not found");
         return $msg;
     }
 }

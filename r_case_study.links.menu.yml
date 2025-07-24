@@ -1,0 +1,111 @@
+r_case_study.proposal_form:
+  route_name: r_case_study.proposal_form
+  title: 'Case Study Proposal Form'
+  description: 'Case Study Proposal Form'
+r_case_study.proposal_pending:
+  route_name: r_case_study.proposal_pending
+  title: 'Manage Case Study Proposals'
+  description: 'Manage Case StudyProposals'
+r_case_study.proposal_pending_0:
+  route_name: r_case_study.proposal_pending
+  title: 'Pending Proposals'
+  weight: 1
+  description: 'Pending Case Study Proposals Queue'
+r_case_study.proposal_all:
+  route_name: r_case_study.proposal_all
+  title: 'All Proposals'
+  weight: 4
+  description: 'All Proposals'
+r_case_study.proposal_edit_file_all:
+  route_name: r_case_study.proposal_edit_file_all
+  title: 'Edit code files'
+  weight: 4
+  description: 'Edit code files'
+r_case_study.proposal_approval_form:
+  route_name: r_case_study.proposal_approval_form
+  title: 'Approve Proposal'
+  description: 'Approve Proposal'
+r_case_study.proposal_edit_form:
+  route_name: r_case_study.proposal_edit_form
+  title: 'Edit Proposal'
+  description: 'Edit Proposal'
+r_case_study.proposal_status_form:
+  route_name: r_case_study.proposal_status_form
+  title: 'Proposal Status'
+  description: 'Proposal Status'
+r_case_study.abstract_bulk_approval_form:
+  route_name: r_case_study.abstract_bulk_approval_form
+  title: 'Manage Case Study Project Files'
+  weight: 2
+  description: 'Bulk Mangage'
+r_case_study.edit_upload_abstract_code_form:
+  route_name: r_case_study.edit_upload_abstract_code_form
+  title: 'Edit uploaded files during code submission'
+  weight: 2
+  description: 'Project Edit Upload'
+  parent: r_case_study.abstract
+r_case_study.abstract:
+  route_name: r_case_study.abstract
+  title: 'Case Study Project Directory Submission'
+  description: 'Abstract Submission'
+r_case_study.upload_abstract_code_form:
+  route_name: r_case_study.upload_abstract_code_form
+  title: 'Case Study Project Directory Submission'
+  weight: 2
+  description: 'Project Upload'
+  parent: r_case_study.abstract
+r_case_study.download_full_project:
+  route_name: r_case_study.download_full_project
+  title: 'Code Download'
+  description: 'Code Download'
+r_case_study.completed_proposals_all:
+  route_name: r_case_study.completed_proposals_all
+  title: 'Completed Case studies'
+r_case_study.progress_all:
+  route_name: r_case_study.progress_all
+  title: 'Case studies in Progress'
+r_case_study.run_form:
+  route_name: r_case_study.run_form
+  title: 'Download Codes'
+r_case_study.proposal_literature_survey_file:
+  route_name: r_case_study.proposal_literature_survey_file
+  title: 'Download Project file'
+  description: 'Download project file'
+r_case_study.download_final_report:
+  route_name: r_case_study.download_final_report
+  title: 'Download Final Report'
+  description: 'Download Final Report'
+r_case_study.proposal_abstract_file:
+  route_name: r_case_study.proposal_abstract_file
+  title: 'Download Project file'
+  description: 'Download project file'
+r_case_study.proposal_rawdata_file:
+  route_name: r_case_study.proposal_rawdata_file
+  title: 'Download Project file'
+  description: 'Download project file'
+r_case_study.settings_form:
+  route_name: r_case_study.settings_form
+  title: 'Case Study Settings'
+  description: 'Case Study Settings'
+r_case_study._list_case_study_certificates:
+  route_name: r_case_study._list_case_study_certificates
+  title: 'List of Case Study Certificates'
+  description: 'List of Case Study Certificates'
+r_case_study.generate_pdf:
+  route_name: r_case_study.generate_pdf
+  title: 'Download Certificate'
+  description: 'Download Certificate'
+  parent: r_case_study._list_r_case_study_custom_certificates
+r_case_study._list_r_case_study_custom_certificates:
+  route_name: r_case_study._list_r_case_study_custom_certificates
+  title: 'List of Case Study Custom Certificates'
+  description: 'List of Case Study Custom Certificates'
+r_case_study.generate_pdf_0:
+  route_name: r_case_study.generate_pdf
+  title: 'Download Certificate'
+  description: 'Download Certificate'
+  parent: r_case_study._list_r_case_study_custom_certificates
+r_case_study.verify_certificates_verify_certificates:
+  route_name: r_case_study.verify_certificates_verify_certificates
+  title: 'Certificate Verification'
+  parent: r_case_study._list_case_study_certificates
