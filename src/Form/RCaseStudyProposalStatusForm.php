@@ -80,15 +80,25 @@ $user_link = Link::fromTextAndUrl($proposal_data->name_title . ' ' . $proposal_d
      
       '#title' => t('Student name'),
     ];
-    $form['student_email_id'] = [
-      '#title' => t('Student Email'),
-      '#type' => 'item',
-      // '#markup' => user_load($proposal_data->uid)->mail,
-      // '#markup' => $user_data ? $user_data->getEmail():'',
-      '#markup' => \Drupal::entityTypeManager()->getStorage('user')->load($proposal_data->uid)->getEmail(),
+    // $form['student_email_id'] = [
+    //   '#title' => t('Student Email'),
+    //   '#type' => 'item',
+    //   '#markup' => user_load($proposal_data->uid)->mail,
+    //   // '#markup' => $user_data ? $user_data->getEmail():'',
+    //   // '#markup' => \Drupal::entityTypeManager()->getStorage('user')->load($proposal_data->uid)->getEmail(),
 
-      '#title' => t('Email'),
-    ];
+    //   '#title' => t('Email'),
+    // ];
+    $user = \Drupal::entityTypeManager()
+  ->getStorage('user')
+  ->load($proposal_data->uid);
+
+$email = $user ? $user->getEmail() : '';
+$form['student_email_id'] = [
+  '#title' => t('Email'),
+  '#type' => 'item',
+  '#markup' => $email,
+];
     $form['contributor_contact_no'] = [
       '#title' => t('Contact No.'),
       '#type' => 'item',

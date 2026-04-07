@@ -304,27 +304,61 @@ class RCaseStudyProposalApprovalForm extends FormBase {
         ":proposal_id" => $proposal_id,
       ];
       \Drupal::database()->query($query, $args);
-      /* sending email */
-      // $user_data = user_load($proposal_data->uid);
-      // $email_to = $user_data->mail;
-      // $from = variable_get('case_study_from_email', '');
-      // $bcc = variable_get('case_study_emails', '');
-      // $cc = variable_get('case_study_cc_emails', '');
-      // $params['case_study_proposal_approved']['proposal_id'] = $proposal_id;
-      // $params['case_study_proposal_approved']['user_id'] = $proposal_data->uid;
-      // $params['case_study_proposal_approved']['headers'] = [
-      //   'From' => $from,
-      //   'MIME-Version' => '1.0',
-      //   'Content-Type' => 'text/plain; charset=UTF-8; format=flowed; delsp=yes',
-      //   'Content-Transfer-Encoding' => '8Bit',
-      //   'X-Mailer' => 'Drupal',
-      //   'Cc' => $cc,
-      //   'Bcc' => $bcc,
-      // ];
-      // if (!drupal_mail('case_study', 'case_study_proposal_approved', $email_to, language_default(), $params, $from, TRUE)) {
-      //   \Drupal::messenger()->addmessage('Error sending email message.', 'error');
-      // }
 
+/* sending email */
+$user_data = User::load($proposal_data->uid);
+
+// Ensure $email_to is at least an empty string, not null
+$email_to = ($user_data && $user_data->getEmail()) ? $user_data->getEmail() : '';
+
+// Use null coalescing (?? '') to ensure these are never null
+$from = \Drupal::config('case_study.settings')->get('case_study_from_email') ?? '';
+$bcc  = \Drupal::config('case_study.settings')->get('case_study_emails') ?? '';
+$cc   = \Drupal::config('case_study.settings')->get('case_study_cc_emails') ?? '';
+
+// Check if we even have a recipient and a sender before proceeding
+if (empty($email_to) || empty($from)) {
+  \Drupal::logger('case_study')->error('Cannot send email: Recipient or From address is missing.');
+  // Handle the error or return early
+} else {
+  $params['case_study_proposal_approved']['proposal_id'] = $proposal_id;
+  $params['case_study_proposal_approved']['user_id'] = $proposal_data->uid;
+  
+  // Build headers, ensuring Cc and Bcc are only added if they aren't empty
+  $headers = [
+    'From' => $from,
+    'MIME-Version' => '1.0',
+    'Content-Type' => 'text/plain; charset=UTF-8; format=flowed; delsp=yes',
+    'Content-Transfer-Encoding' => '8Bit',
+    'X-Mailer' => 'Drupal',
+  ];
+
+  if (!empty($cc)) {
+    $headers['Cc'] = $cc;
+  }
+  if (!empty($bcc)) {
+    $headers['Bcc'] = $bcc;
+  }
+
+  $params['case_study_proposal_approved']['headers'] = $headers;
+
+  $result = \Drupal::service('plugin.manager.mail')->mail(
+    'case_study',
+    'case_study_proposal_approved',
+    $email_to,
+    \Drupal::languageManager()->getDefaultLanguage()->getId(),
+    $params,
+    $from,
+    TRUE
+  );
+
+  if (!$result) {
+    \Drupal::messenger()->addError(t('There was a problem sending your message and it was not sent.'));
+  }
+}
+ {
+  \Drupal::messenger()->addMessage(' Sending email message.');
+}
       \Drupal::messenger()->addmessage('R Case Study proposal No. ' . $proposal_id . ' approved. User has been notified of the approval.', 'status');
       // drupal_goto('case-study-project/manage-proposal');
 

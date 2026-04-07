@@ -1,0 +1,19 @@
+r_case_study.proposal_pending:
+  route_name: r_case_study.proposal_pending
+  title: 'Manage Case Study Proposals'
+  description: 'Manage Case StudyProposals'
+r_case_study.proposal_pending_0:
+  route_name: r_case_study.proposal_pending
+  title: 'Pending Proposals'
+  weight: 1
+  base_route: r_case_study.proposal_pending
+r_case_study.proposal_all:
+  route_name: r_case_study.proposal_all
+  title: 'All Proposals'
+  weight: 2
+  base_route: r_case_study.proposal_pending
+r_case_study.proposal_edit_file_all:
+  route_name: r_case_study.proposal_edit_file_all
+  title: 'Edit code files'
+  weight: 3
+  base_route: r_case_study.proposal_pending

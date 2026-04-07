@@ -90,7 +90,7 @@ class RCaseStudyProposalForm extends FormBase {
     $form['contributor_name'] = [
       '#type' => 'textfield',
       '#title' => t('Name of the contributor'),
-      '#size' => 250,
+      // '#size' => 250,
       '#attributes' => [
         'placeholder' => t('Enter your full name.....')
         ],
@@ -100,14 +100,14 @@ class RCaseStudyProposalForm extends FormBase {
     $form['contributor_email_id'] = [
       '#type' => 'textfield',
       '#title' => t('Email'),
-      '#size' => 30,
+      // '#size' => 30,
       '#value' => $user ? $user->getEmail() : '',
       '#disabled' => TRUE,
     ];
     $form['contributor_contact_no'] = [
       '#type' => 'textfield',
       '#title' => t('Contact No.'),
-      '#size' => 10,
+      // '#size' => 10,
       '#attributes' => [
         'placeholder' => t('Enter your contact number')
         ],
@@ -117,7 +117,7 @@ class RCaseStudyProposalForm extends FormBase {
     $form['university'] = [
       '#type' => 'textfield',
       '#title' => t('University/Institute/Organisation'),
-      '#size' => 80,
+      // '#size' => 80,
       '#maxlength' => 200,
       '#required' => TRUE,
       '#attributes' => [
@@ -127,7 +127,7 @@ class RCaseStudyProposalForm extends FormBase {
     $form['department'] = [
       '#type' => 'select',
       '#title' => t('Department/Branch'),
-      '#options' => _r_case_study_list_of_departments(),
+      '#options' => \Drupal::service("r_case_study_global")->_r_case_study_list_of_departments(),
       '#required' => TRUE,
     ];
     $form['other_department'] = [
@@ -181,7 +181,7 @@ class RCaseStudyProposalForm extends FormBase {
     $form['faculty_name'] = [
       '#type' => 'textfield',
       '#title' => t('Name of the Faculty Member of your Institution, who helped you with this Case Study Project'),
-      '#size' => 50,
+      // '#size' => 50,
       '#maxlength' => 50,
       '#description' => t('<span style="color:red">Maximum character limit is 50</span>'),
       '#attributes' => [
@@ -191,7 +191,7 @@ class RCaseStudyProposalForm extends FormBase {
     $form['faculty_department'] = [
       '#type' => 'textfield',
       '#title' => t('Department of the Faculty Member of your Institution, who helped you with this Case Study Project'),
-      '#size' => 50,
+      // '#size' => 50,
       '#maxlength' => 50,
       '#description' => t('<span style="color:red">Maximum character limit is 50</span>'),
       '#attributes' => [
@@ -201,7 +201,7 @@ class RCaseStudyProposalForm extends FormBase {
     $form['faculty_email'] = [
       '#type' => 'textfield',
       '#title' => t('Email id of the Faculty Member of your Institution, who helped you with this Case Study Project'),
-      '#size' => 255,
+      // '#size' => 255,
       '#maxlength' => 255,
       '#description' => t('<span style="color:red">Maximum character limit is 255</span>'),
       '#attributes' => [
@@ -221,7 +221,7 @@ class RCaseStudyProposalForm extends FormBase {
     $form['other_country'] = [
       '#type' => 'textfield',
       '#title' => t('Other Country'),
-      '#size' => 100,
+      // '#size' => 100,
       '#attributes' => [
         'placeholder' => t('Enter your country name')
         ],
@@ -236,7 +236,7 @@ class RCaseStudyProposalForm extends FormBase {
     $form['other_state'] = [
       '#type' => 'textfield',
       '#title' => t('State'),
-      '#size' => 100,
+      // '#size' => 100,
       '#attributes' => [
         'placeholder' => t('Enter your state/region name')
         ],
@@ -251,7 +251,7 @@ class RCaseStudyProposalForm extends FormBase {
     $form['other_city'] = [
       '#type' => 'textfield',
       '#title' => t('City'),
-      '#size' => 100,
+      // '#size' => 100,
       '#attributes' => [
         'placeholder' => t('Enter your city name')
         ],
@@ -291,7 +291,7 @@ class RCaseStudyProposalForm extends FormBase {
     $form['pincode'] = [
       '#type' => 'textfield',
       '#title' => t('Pincode'),
-      '#size' => 6,
+      // '#size' => 6,
     ];
     /***************************************************************************/
     $form['hr'] = [
@@ -308,7 +308,7 @@ class RCaseStudyProposalForm extends FormBase {
       '#type' => 'textfield',
       '#title' => t('Enter the R version used'),
       '#description' => t('<span style="color:red">This is a mandatory field</span>'),
-      '#size' => 100,
+      // '#size' => 100,
       '#maxlength' => 100,
       '#states' => [
         'visible' => [
@@ -321,7 +321,7 @@ class RCaseStudyProposalForm extends FormBase {
     $form['case_study_title'] = [
       '#type' => 'textarea',
       '#title' => t('Case Study Title'),
-      '#size' => 250,
+      // '#size' => 250,
       '#maxlength' => 100,
       '#description' => t('Maximum character limit is 100'),
       '#required' => TRUE,
@@ -329,7 +329,7 @@ class RCaseStudyProposalForm extends FormBase {
     $form['description'] = [
       '#type' => 'textarea',
       '#title' => t('Objective and Necessity of the Case Study'),
-      '#size' => 250,
+      // '#size' => 250,
       '#maxlength' => 1200,
       '#description' => t('Maximum character limit is 1200'),
       '#required' => TRUE,
@@ -347,7 +347,7 @@ class RCaseStudyProposalForm extends FormBase {
     ];
     $form['raw_data_file']['raw_data_file_path'] = [
       '#type' => 'file',
-      '#size' => 48,
+      // '#size' => 48,
       '#description' => t('<span style="color:red;">Upload filenames with allowed extensions only. No spaces or any special characters allowed in filename.</span>') . '<br />' . t('<span style="color:red;">Allowed file extensions: ') . \Drupal::config('r_case_study.settings')->get('proposal_raw_data_upload_extensions', '') . '</span>',
     ];
     $form['sample_references_file'] = [
@@ -364,7 +364,7 @@ class RCaseStudyProposalForm extends FormBase {
     ];
     $form['literature_survey_file']['literature_survey_file_path'] = [
       '#type' => 'file',
-      '#size' => 48,
+      // '#size' => 48,
       '#description' => t('<span style="color:red;">Upload filenames with allowed extensions only. No spaces or any special characters allowed in filename.</span>') . '<br />' . t('<span style="color:red;">Allowed file extensions: ') . \Drupal::config('r_case_study.settings')->get('proposal_literature_survey_upload_extensions', '') . '</span>',
     ];
     $form['sample_abstract_file'] = [
@@ -380,7 +380,7 @@ class RCaseStudyProposalForm extends FormBase {
     ];
     $form['abstract_file']['abstract_file_path'] = [
       '#type' => 'file',
-      '#size' => 48,
+      // '#size' => 48,
       '#description' => t('<span style="color:red;">Upload filenames with allowed extensions only. No spaces or any special characters allowed in filename.</span>') . '<br />' . t('<span style="color:red;">Allowed file extensions: ') . \Drupal::config('r_case_study.settings')->get('proposal_abstract_upload_extensions', '') . '</span>',
     ];
 
@@ -587,7 +587,7 @@ class RCaseStudyProposalForm extends FormBase {
 
   public function submitForm(array &$form, \Drupal\Core\Form\FormStateInterface $form_state) {
     $user = \Drupal::currentUser();
-    $root_path = r_case_study_path();
+    $root_path = \Drupal::service("r_case_study_global")->r_case_study_path();
     if (!$user->id()) {
       \Drupal::messenger()->addmessage('It is mandatory to login on this website to access the proposal form', 'error');
       return;
@@ -810,25 +810,68 @@ class RCaseStudyProposalForm extends FormBase {
       return;
     } //!$proposal_id
 	/* sending email */
-    // $email_to = $user->mail;
-    // $form = variable_get('case_study_from_email', '');
-    // $bcc = variable_get('case_study_emails', '');
-    // $cc = variable_get('case_study_cc_emails', '');
-    // $params['case_study_proposal_received']['proposal_id'] = $proposal_id;
-    // $params['case_study_proposal_received']['user_id'] = $user->uid;
-    // $params['case_study_proposal_received']['headers'] = [
-    //   'From' => $form,
-    //   'MIME-Version' => '1.0',
-    //   'Content-Type' => 'text/plain; charset=UTF-8; format=flowed; delsp=yes',
-    //   'Content-Transfer-Encoding' => '8Bit',
-    //   'X-Mailer' => 'Drupal',
-    //   'Cc' => $cc,
-    //   'Bcc' => $bcc,
-    // ];
-    // if (!drupal_mail('case_study', 'case_study_proposal_received', $email_to, user_preferred_language($user), $params, $form, TRUE)) {
-    //   \Drupal::messenger()->addMessage('Error sending email message.', 'error');
-    // }
-    \Drupal::messenger()->addMessage(t('We have received your case study proposal. We will get back to you soon.'), 'status');
+
+// Load user safely
+$user = User::load($proposal_data->uid);
+
+// Ensure recipient email exists
+$email_to = ($user && $user->getEmail()) ? $user->getEmail() : '';
+
+if (empty($email_to)) {
+  \Drupal::messenger()->addMessage('Recipient email is missing.', 'error');
+  return;
+}
+
+// Get config values with fallback
+$config = \Drupal::config('case_study.settings');
+
+$form = $config->get('case_study_from_email') 
+  ?: \Drupal::config('system.site')->get('mail');
+
+$bcc = $config->get('case_study_emails') ?: '';
+$cc  = $config->get('case_study_cc_emails') ?: '';
+
+// Prepare params
+$params['case_study_proposal_received']['proposal_id'] = $proposal_id;
+$params['case_study_proposal_received']['user_id'] = $user->id();
+
+// Build headers safely (avoid NULL values)
+$headers = [
+  'From' => $form,
+  'MIME-Version' => '1.0',
+  'Content-Type' => 'text/plain; charset=UTF-8; format=flowed; delsp=yes',
+  'Content-Transfer-Encoding' => '8Bit',
+  'X-Mailer' => 'Drupal',
+];
+
+if (!empty($cc)) {
+  $headers['Cc'] = $cc;
+}
+if (!empty($bcc)) {
+  $headers['Bcc'] = $bcc;
+}
+
+$params['case_study_proposal_received']['headers'] = $headers;
+
+// Send mail
+$result = \Drupal::service('plugin.manager.mail')->mail(
+  'case_study',
+  'case_study_proposal_received',
+  $email_to,
+  $user->getPreferredLangcode(),
+  $params,
+  $form,
+  TRUE
+);
+
+// Handle result properly
+if (!$result || empty($result['result'])) {
+  \Drupal::messenger()->addMessage('Error sending email message.', 'error');
+}
+else {
+  \Drupal::messenger()->addMessage('Email sent successfully.');
+}  
+  \Drupal::messenger()->addMessage(t('We have received your case study proposal. We will get back to you soon.'), 'status');
     // drupal_goto('');
     $response = new RedirectResponse(Url::fromRoute('<front>')->toString());
   

@@ -12,6 +12,8 @@ r_case_study.proposal_pending:
     _controller: '\Drupal\r_case_study\Controller\DefaultController::r_case_study_proposal_pending'
   requirements:
     _permission: 'Case Study manage proposal'
+  options:
+    no_cache: TRUE
 r_case_study.proposal_all:
   path: /case-study-project/manage-proposal/all
   defaults:
@@ -19,6 +21,8 @@ r_case_study.proposal_all:
     _controller: '\Drupal\r_case_study\Controller\DefaultController::r_case_study_proposal_all'
   requirements:
     _permission: 'Case Study manage proposal'
+  options:
+    no_cache: TRUE
 r_case_study.proposal_edit_file_all:
   path: /case-study-project/manage-proposal/edit-upload-file
   defaults:
@@ -26,6 +30,8 @@ r_case_study.proposal_edit_file_all:
     _controller: '\Drupal\r_case_study\Controller\DefaultController::r_case_study_proposal_edit_file_all'
   requirements:
     _permission: 'Case Study manage proposal'
+  options:
+    no_cache: TRUE
 r_case_study.proposal_approval_form:
   path: /case-study-project/manage-proposal/approve/{id?}
   defaults:
@@ -68,6 +74,8 @@ r_case_study.abstract:
     _controller: '\Drupal\r_case_study\Controller\DefaultController::r_case_study_abstract'
   requirements:
     _permission: 'Case Study upload abstract'
+  options:
+    no_cache: TRUE
 r_case_study.upload_abstract_code_form:
   path: /case-study-project/abstract-code/upload
   defaults:
@@ -82,6 +90,8 @@ r_case_study.download_full_project:
     _controller: '\Drupal\r_case_study\Controller\DefaultController::r_case_study_download_full_project'
   requirements:
     _permission: 'Case Study download code'
+  options:
+    no_cache: TRUE
 r_case_study.completed_proposals_all:
   path: /case-study-project/completed-case-studies
   defaults:
@@ -89,6 +99,8 @@ r_case_study.completed_proposals_all:
     _controller: '\Drupal\r_case_study\Controller\DefaultController::r_case_study_completed_proposals_all'
   requirements:
     _permission: 'Case Study download code'
+  options:
+    no_cache: TRUE
 r_case_study.progress_all:
   path: /case-study-project/case-study-progress
   defaults:
@@ -96,6 +108,8 @@ r_case_study.progress_all:
     _controller: '\Drupal\r_case_study\Controller\DefaultController::r_case_study_progress_all'
   requirements:
     _permission: 'Case Study download code'
+  options:
+    no_cache: TRUE
 r_case_study.run_form:
   path: /case-study-project/case-study-run/{url_case_study_id}
   defaults:
@@ -110,6 +124,8 @@ r_case_study.proposal_literature_survey_file:
     _controller: '\Drupal\r_case_study\Controller\DefaultController::r_case_study_proposal_literature_survey_file'
   requirements:
     _permission: 'download code'
+  options:
+    no_cache: TRUE
 r_case_study.download_final_report:
   path: /case-study-project/download/final-report/{id?}
   defaults:
@@ -117,6 +133,8 @@ r_case_study.download_final_report:
     _controller: '\Drupal\r_case_study\Controller\DefaultController::r_case_study_download_final_report'
   requirements:
     _permission: 'download code'
+  options:
+    no_cache: TRUE
 r_case_study.proposal_abstract_file:
   path: /case-study-project/download/proposal-abstract-files/{id?}
   defaults:
@@ -124,6 +142,8 @@ r_case_study.proposal_abstract_file:
     _controller: '\Drupal\r_case_study\Controller\DefaultController::r_case_study_proposal_abstract_file'
   requirements:
     _permission: 'download code'
+  options:
+    no_cache: TRUE
 r_case_study.proposal_rawdata_file:
   path: /case-study-project/download/proposal-rawdata-files/{id?}
   defaults:
@@ -131,6 +151,8 @@ r_case_study.proposal_rawdata_file:
     _controller: '\Drupal\r_case_study\Controller\DefaultController::r_case_study_proposal_rawdata_file'
   requirements:
     _permission: 'download code'
+  options:
+    no_cache: TRUE
 r_case_study.settings_form:
   path: /admin/settings/case-study
   defaults:
@@ -145,6 +167,8 @@ r_case_study._list_case_study_certificates:
     _controller: '\Drupal\r_case_study\Controller\DefaultController::_list_case_study_certificates'
   requirements:
     _permission: 'list Case Study certificates'
+  options:
+    no_cache: TRUE
 r_case_study.generate_pdf:
   path: /case-study-project/certificates-custom/pdf
   defaults:
@@ -166,3 +190,5 @@ r_case_study.verify_certificates_verify_certificates:
     _controller: '\Drupal\r_case_study\Controller\DefaultController::verify_certificates'
   requirements:
     _permission: 'verify certificates'
+  options:
+    no_cache: TRUE

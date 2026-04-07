@@ -429,26 +429,63 @@ $proposal_data = $query->execute()->fetchObject();
       } //$file_name
     } //$_FILES['files']['name'] as $file_form_name => $file_name
 	/* sending email */
-    // $email_to = $user->mail;
-    // $from = variable_get('case_study_from_email', '');
-    // $bcc = variable_get('case_study_emails', '');
-    // $cc = variable_get('case_study_cc_emails', '');
-    // $params['abstract_uploaded']['proposal_id'] = $proposal_id;
-    // $params['abstract_uploaded']['submitted_abstract_id'] = $submitted_abstract_id;
-    // $params['abstract_uploaded']['user_id'] = $user->uid;
-    // $params['abstract_uploaded']['headers'] = [
-    //   'From' => $from,
-    //   'MIME-Version' => '1.0',
-    //   'Content-Type' => 'text/plain; charset=UTF-8; format=flowed; delsp=yes',
-    //   'Content-Transfer-Encoding' => '8Bit',
-    //   'X-Mailer' => 'Drupal',
-    //   'Cc' => $cc,
-    //   'Bcc' => $bcc,
-    // ];
-    // if (!drupal_mail('case_study', 'abstract_uploaded', $email_to, language_default(), $params, $from, TRUE)) {
-    //   \Drupal::messenger()->addMessage('Error sending email message.', 'error');
-    // }
-    // drupal_goto('case-study-project/abstract-code');
+/* sending email */
+$email_to = $user->getEmail() ?? '';
+$from = \Drupal::config('case_study.settings')->get('case_study_from_email') ?? '';
+$bcc = \Drupal::config('case_study.settings')->get('case_study_emails') ?? '';
+$cc = \Drupal::config('case_study.settings')->get('case_study_cc_emails') ?? '';
+
+// // Basic validation: If there is no recipient or sender, stop before the crash.
+// if (empty($email_to) || empty($from)) {
+//   \Drupal::logger('case_study')->error('Email failed: Missing "To" (@to) or "From" (@from) address.', [
+//     '@to' => $email_to ?: 'NULL',
+//     '@from' => $from ?: 'NULL',
+//   ]);
+//   \Drupal::messenger()->addError(t('Unable to send email due to missing configuration.'));
+//   return; // Or handle logic flow accordingly
+// }
+
+$params['abstract_uploaded']['proposal_id'] = $proposal_id;
+$params['abstract_uploaded']['submitted_abstract_id'] = $submitted_abstract_id;
+$params['abstract_uploaded']['user_id'] = $user->id();
+
+// Build base headers
+$headers = [
+  'From' => $from,
+  'MIME-Version' => '1.0',
+  'Content-Type' => 'text/plain; charset=UTF-8; format=flowed; delsp=yes',
+  'Content-Transfer-Encoding' => '8Bit',
+  'X-Mailer' => 'Drupal',
+];
+
+// Only add Cc and Bcc if they actually contain a value
+if (!empty($cc)) {
+  $headers['Cc'] = $cc;
+}
+if (!empty($bcc)) {
+  $headers['Bcc'] = $bcc;
+}
+
+$params['abstract_uploaded']['headers'] = $headers;
+
+// Execute mail delivery
+$mail_manager = \Drupal::service('plugin.manager.mail');
+$langcode = \Drupal::languageManager()->getDefaultLanguage()->getId();
+
+$result = $mail_manager->mail(
+  'case_study',
+  'abstract_uploaded',
+  $email_to,
+  $langcode,
+  $params,
+  $from,
+  TRUE
+);
+
+if (!$result) {
+  \Drupal::messenger()->addMessage(t('Error sending email message.'), 'error');
+}
+// drupal_goto('case-study-project/abstract-code');
     $response = new RedirectResponse(Url::fromRoute('r_case_study.abstract')->toString());
 $response->send();
   }
