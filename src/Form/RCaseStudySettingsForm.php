@@ -27,7 +27,7 @@ class RCaseStudySettingsForm extends ConfigFormBase {
   }
 
   public function buildForm(array $form, \Drupal\Core\Form\FormStateInterface $form_state) {
-    $config = $this->config('case_study.settings');
+    $config = $this->config('r_case_study.settings');
     $form['emails'] = [
       '#type' => 'textfield',
       '#title' => t('(Bcc) Notification emails'),

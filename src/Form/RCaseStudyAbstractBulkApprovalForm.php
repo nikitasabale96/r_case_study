@@ -13,10 +13,10 @@ use Drupal\Core\Render\Element;
 use Drupal\Core\Database\Database;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Ajax\AjaxResponse;
-  use Drupal\Core\Ajax\HtmlCommand;
-  use Drupal\Core\Ajax\ReplaceCommand;
-  use Drupal\Core\Link;
-  use Drupal\Core\Url;
+use Drupal\Core\Ajax\HtmlCommand;
+use Drupal\Core\Ajax\ReplaceCommand;
+use Drupal\Core\Link;
+use Drupal\Core\Url;
 
 class RCaseStudyAbstractBulkApprovalForm extends FormBase {
 
@@ -220,7 +220,7 @@ function case_study_details($case_study_proposal_id) {
   public function submitForm(array &$form, \Drupal\Core\Form\FormStateInterface $form_state) {
     $user = \Drupal::currentUser();
     $msg = '';
-    $root_path = r_case_study_path();
+    $root_path = \Drupal::service("r_case_study_global")->r_case_study_path();
     //var_dump($form_state['values']);die;
     if ($form_state->get(['clicked_button', '#value']) == 'Submit') {
       if ($form_state->getValue(['case_study_project']))
@@ -260,59 +260,52 @@ $response = new RedirectResponse($url->toString());
 $response->send();
 
             \Drupal::messenger()->addMessage(t('Approved Case Study.'), 'status');
-            // email 
-            $email_subject = t('[!site_name][Case Study] Your uploaded Case Study have been approved', [
-              '!site_name' => variable_get('site_name', '')
-              ]);
-            $email_body = [
-              0 => t('
+/** sending email when everything done **/
+            $mailManager = \Drupal::service('plugin.manager.mail');
+$langcode = \Drupal::languageManager()->getDefaultLanguage()->getId();
 
-Dear ' . $user_info->contributor_name . ',
+$config = \Drupal::config('r_case_study.settings');
+$from = $config->get('case_study_from_email') ?: \Drupal::config('system.site')->get('mail');
+$cc   = $config->get('case_study_cc_emails');
+$bcc  = $config->get('case_study_emails');
 
-Congratulations!
-Your report and code files for Case Study Project at FOSSEE with the following details have been approved.
+$email_to = $user_data ? $user_data->getEmail() : '';//$form_state['values']['case_study_actions'] == 1
+// Message handling
+if (empty($result['result'])) {
+  \Drupal::messenger()->addMessage(' Sending email message.');
+}            //!drupal_mail('case_study', 'standard', $email_to, language_default(), $params, $from, TRUE)
+          } 
+          if ($email_to) {
+  $params['bulk_project_approved'] = [
+    'proposal_id' => $form_state->getValue('case_study_project'),
+    'user_id' => $user_info->uid,
+    'headers' => [
+      'From' => $from,
+      'Cc' => $cc,
+      'Bcc' => $bcc,
+      'Content-Type' => 'text/html; charset=UTF-8',
+    ],
+  ];
 
-Full Name: ' . $user_info->name_title . ' ' . $user_info->contributor_name . '
-Email : ' . $user_data->mail . '
-University/Institute : ' . $user_info->university . '
-City : ' . $user_info->city . '
+  $result = $mailManager->mail(
+    'case_study',
+    'bulk_project_approved',
+    $email_to,
+    $langcode,
+    $params,
+    $from,
+    TRUE
+  );
 
-Project Title  : ' . $user_info->project_title . '
-Description of the Case Study: ' . $user_info->description . '
+  if (empty($result['result'])) {
+    \Drupal::messenger()->addMessage(' sending approval email.');
+  }
+}
+        }
+          
 
-Kindly send us the internship forms as early as possible for processing your honorarium on time. In case you have already sent these forms, please share the the consignment number or tracking id with us.
+          //$form_state['values']['case_study_actions'] == 1
 
-Note: It will take upto 30 days from the time we receive your forms, to process your honorarium.
-
-
-Best Wishes,
-
-!site_name Team,
-FOSSEE, IIT Bombay', [
-                '!site_name' => variable_get('site_name', ''),
-                '!user_name' => $user_data->name,
-              ])
-              ];
-            /** sending email when everything done **/
-            $email_to = $user_data->mail;
-            $from = variable_get('case_study_from_email', '');
-            $bcc = variable_get('case_study_emails', '');
-            $cc = variable_get('case_study_cc_emails', '');
-            $params['standard']['subject'] = $email_subject;
-            $params['standard']['body'] = $email_body;
-            $params['standard']['headers'] = [
-              'From' => $from,
-              'MIME-Version' => '1.0',
-              'Content-Type' => 'text/plain; charset=UTF-8; format=flowed; delsp=yes',
-              'Content-Transfer-Encoding' => '8Bit',
-              'X-Mailer' => 'Drupal',
-              'Cc' => $cc,
-              'Bcc' => $bcc,
-            ];
-            if (!drupal_mail('case_study', 'standard', $email_to, language_default(), $params, $from, TRUE)) {
-              $msg = \Drupal::messenger()->addMessage('Error sending email message.', 'error');
-            } //!drupal_mail('case_study', 'standard', $email_to, language_default(), $params, $from, TRUE)
-          } //$form_state['values']['case_study_actions'] == 1
           elseif ($form_state->getValue(['case_study_actions']) == 2) {
             if (strlen(trim($form_state->getValue(['message']))) <= 30) {
               $form_state->setErrorByName('message', t(''));
@@ -341,29 +334,6 @@ FOSSEE, IIT Bombay', [
             } //$abstract_data = $abstracts_q->fetchObject()
             \Drupal::messenger()->addMessage(t('Resubmit the project files'), 'status');
             // email 
-            $email_subject = t('[!site_name][Case Study] Your uploaded Case Study have been marked as pending', [
-              '!site_name' => variable_get('site_name', '')
-              ]);
-            $email_body = [
-              0 => t('
-
-Dear ' . $user_info->contributor_name . ',
-
-Kindly resubmit the project files for the project: ' . $user_info->project_title . '.
-Description of the simulation: ' . $user_info->description . '
-
-Reason: ' . $form_state->getValue(['message']) . '
-
-Looking forward for the re-submission from you with the above suggested changes.
-
-Best Wishes,
-
-!site_name Team,
-FOSSEE, IIT Bombay', [
-                '!site_name' => variable_get('site_name', ''),
-                '!user_name' => $user_data->name,
-              ])
-              ];
             /** sending email when everything done **/
             $email_to = $user_data->mail;
             $from = variable_get('case_study_from_email', '');
@@ -398,37 +368,6 @@ FOSSEE, IIT Bombay', [
             if (case_study_abstract_delete_project($form_state->getValue(['case_study_project']))) //////
  {
               \Drupal::messenger()->addMessage(t('Dis-Approved and Deleted Entire Case Study.'), 'status');
-              $email_subject = t('[!site_name][Case Study] Your uploaded Case Study have been marked as dis-approved', [
-                '!site_name' => variable_get('site_name', '')
-                ]);
-              $email_body = [
-                0 => t('
-Dear ' . $user_info->contributor_name . ',
-
-We regret to inform you that your report and code files for Case Study Project at FOSSEE with the following details have been disapproved:
-
-Full Name: ' . $user_info->name_title . ' ' . $user_info->contributor_name . '
-Email : ' . $user_data->mail . '
-University/Institute : ' . $user_info->university . '
-City : ' . $user_info->city . '
-
-Project Title  : ' . $user_info->project_title . '
-Description of the Case Study: ' . $user_info->description . '
-
-Reason for dis-approval: ' . $form_state->getValue(['message']) . '
-
-Kindly note that the incorrect files will be deleted from all our databases.
-
-Thank you for participating in the Case Study Project. You are welcome to submit a new proposal.
-
-Best Wishes,
-
-!site_name Team,
-FOSSEE, IIT Bombay', [
-                  '!site_name' => variable_get('site_name', ''),
-                  '!user_name' => $user_data->name,
-                ])
-                ];
               $email_to = $user_data->mail;
               $from = variable_get('case_study_from_email', '');
               $bcc = variable_get('case_study_emails', '');
@@ -460,5 +399,5 @@ FOSSEE, IIT Bombay', [
     } //$form_state['clicked_button']['#value'] == 'Submit'
   }
 
-}
+
 ?>

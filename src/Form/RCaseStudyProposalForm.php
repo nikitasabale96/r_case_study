@@ -812,71 +812,78 @@ class RCaseStudyProposalForm extends FormBase {
 	/* sending email */
 
 // Load user safely
-$user = User::load($proposal_data->uid);
+// $user = User::load($proposal_data->uid);
 
 // Ensure recipient email exists
-$email_to = ($user && $user->getEmail()) ? $user->getEmail() : '';
+// $email_to = $user->getEmail();
+// $form = \Drupal::config('r_case_study.settings')->get('lab_migration_from_email');
+// $bcc = \Drupal::config('r_case_study.settings')->get('lab_migration_emails');
+// $cc = \Drupal::config('r_case_study.settings')->get('lab_migration_cc_emails');
 
-if (empty($email_to)) {
-  \Drupal::messenger()->addMessage('Recipient email is missing.', 'error');
-  return;
-}
 
-// Get config values with fallback
-$config = \Drupal::config('case_study.settings');
+// // Prepare params
+// $params['case_study_proposal_received']['proposal_id'] = $proposal_id;
+// $params['case_study_proposal_received']['user_id'] = $user->id();
 
-$form = $config->get('case_study_from_email') 
-  ?: \Drupal::config('system.site')->get('mail');
+// // Build headers safely (avoid NULL values)
+// $params['proposal_received']['headers'] = [
+//   'From' => $form,
+//   'MIME-Version' => '1.0',
+//   'Content-Type' => 'text/plain; charset=UTF-8; format=flowed; delsp=yes',
+//   'Content-Transfer-Encoding' => '8Bit',
+//   'X-Mailer' => 'Drupal',
+// ];
 
-$bcc = $config->get('case_study_emails') ?: '';
-$cc  = $config->get('case_study_cc_emails') ?: '';
 
-// Prepare params
-$params['case_study_proposal_received']['proposal_id'] = $proposal_id;
-$params['case_study_proposal_received']['user_id'] = $user->id();
+/** @var \Drupal\user\UserInterface $user */
+$email_to = $user->getEmail();
 
-// Build headers safely (avoid NULL values)
-$headers = [
-  'From' => $form,
-  'MIME-Version' => '1.0',
-  'Content-Type' => 'text/plain; charset=UTF-8; format=flowed; delsp=yes',
-  'Content-Transfer-Encoding' => '8Bit',
-  'X-Mailer' => 'Drupal',
+$config = \Drupal::config('r_case_study.settings');
+
+$from = $config->get('case_study_from_email') ?: \Drupal::config('system.site')->get('mail');
+$bcc = $config->get('case_study_emails');
+$cc  = $config->get('case_study_cc_emails');
+
+// ✅ IMPORTANT: Nest params correctly
+$params = [];
+$params['case_study_proposal_received'] = [
+  'proposal_id' => $proposal_id,
+  'user_id' => $user->id(),
+  'headers' => [
+    'From' => $from,
+    'MIME-Version' => '1.0',
+    'Content-Type' => 'text/plain; charset=UTF-8; format=flowed; delsp=yes',
+    'Content-Transfer-Encoding' => '8Bit',
+    'X-Mailer' => 'Drupal',
+    'Cc' => $cc,
+    'Bcc' => $bcc,
+  ],
 ];
 
-if (!empty($cc)) {
-  $headers['Cc'] = $cc;
-}
-if (!empty($bcc)) {
-  $headers['Bcc'] = $bcc;
-}
-
-$params['case_study_proposal_received']['headers'] = $headers;
-
 // Send mail
-$result = \Drupal::service('plugin.manager.mail')->mail(
+$mailManager = \Drupal::service('plugin.manager.mail');
+$langcode = $user->getPreferredLangcode();
+
+$result = $mailManager->mail(
   'case_study',
   'case_study_proposal_received',
   $email_to,
-  $user->getPreferredLangcode(),
+  $langcode,
   $params,
-  $form,
+  $from,
   TRUE
 );
-
-// Handle result properly
-if (!$result || empty($result['result'])) {
-  \Drupal::messenger()->addMessage('Error sending email message.', 'error');
+// Messages
+if (empty($result['result'])) {
+  \Drupal::messenger()->addMessage(' Sending email message.');
 }
 else {
-  \Drupal::messenger()->addMessage('Email sent successfully.');
-}  
-  \Drupal::messenger()->addMessage(t('We have received your case study proposal. We will get back to you soon.'), 'status');
-    // drupal_goto('');
-    $response = new RedirectResponse(Url::fromRoute('<front>')->toString());
-  
-// Send the redirect response
-  $response->send();
+  \Drupal::messenger()->addMessage('We have received your case study proposal. We will get back to you soon.');
+}
+
+// Redirect (example: front page)
+$response = new RedirectResponse(Url::fromRoute('<front>')->toString());
+$response->send();
   }
 
 }

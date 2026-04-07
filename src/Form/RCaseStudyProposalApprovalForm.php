@@ -307,18 +307,18 @@ class RCaseStudyProposalApprovalForm extends FormBase {
 
 /* sending email */
 $user_data = User::load($proposal_data->uid);
-
+// var_dump($uid);die;
 // Ensure $email_to is at least an empty string, not null
 $email_to = ($user_data && $user_data->getEmail()) ? $user_data->getEmail() : '';
 
 // Use null coalescing (?? '') to ensure these are never null
-$from = \Drupal::config('case_study.settings')->get('case_study_from_email') ?? '';
-$bcc  = \Drupal::config('case_study.settings')->get('case_study_emails') ?? '';
-$cc   = \Drupal::config('case_study.settings')->get('case_study_cc_emails') ?? '';
-
+$from = \Drupal::config('r_case_study.settings')->get('case_study_from_email') ?? '';
+$bcc  = \Drupal::config('r_case_study.settings')->get('case_study_emails') ?? '';
+$cc   = \Drupal::config('r_case_study.settings')->get('case_study_cc_emails') ?? '';
+// var_dump($cc);die;
 // Check if we even have a recipient and a sender before proceeding
 if (empty($email_to) || empty($from)) {
-  \Drupal::logger('case_study')->error('Cannot send email: Recipient or From address is missing.');
+  // \Drupal::logger('r_case_study')->error('Cannot send email: Recipient or From address is missing.');
   // Handle the error or return early
 } else {
   $params['case_study_proposal_approved']['proposal_id'] = $proposal_id;

@@ -431,19 +431,10 @@ $proposal_data = $query->execute()->fetchObject();
 	/* sending email */
 /* sending email */
 $email_to = $user->getEmail() ?? '';
-$from = \Drupal::config('case_study.settings')->get('case_study_from_email') ?? '';
-$bcc = \Drupal::config('case_study.settings')->get('case_study_emails') ?? '';
-$cc = \Drupal::config('case_study.settings')->get('case_study_cc_emails') ?? '';
+$from = \Drupal::config('r_case_study.settings')->get('case_study_from_email') ?? '';
+$bcc = \Drupal::config('r_case_study.settings')->get('case_study_emails') ?? '';
+$cc = \Drupal::config('r_case_study.settings')->get('case_study_cc_emails') ?? '';
 
-// // Basic validation: If there is no recipient or sender, stop before the crash.
-// if (empty($email_to) || empty($from)) {
-//   \Drupal::logger('case_study')->error('Email failed: Missing "To" (@to) or "From" (@from) address.', [
-//     '@to' => $email_to ?: 'NULL',
-//     '@from' => $from ?: 'NULL',
-//   ]);
-//   \Drupal::messenger()->addError(t('Unable to send email due to missing configuration.'));
-//   return; // Or handle logic flow accordingly
-// }
 
 $params['abstract_uploaded']['proposal_id'] = $proposal_id;
 $params['abstract_uploaded']['submitted_abstract_id'] = $submitted_abstract_id;
@@ -458,13 +449,6 @@ $headers = [
   'X-Mailer' => 'Drupal',
 ];
 
-// Only add Cc and Bcc if they actually contain a value
-if (!empty($cc)) {
-  $headers['Cc'] = $cc;
-}
-if (!empty($bcc)) {
-  $headers['Bcc'] = $bcc;
-}
 
 $params['abstract_uploaded']['headers'] = $headers;
 
@@ -483,7 +467,7 @@ $result = $mail_manager->mail(
 );
 
 if (!$result) {
-  \Drupal::messenger()->addMessage(t('Error sending email message.'), 'error');
+  \Drupal::messenger()->addMessage(t(' sending email message.'));
 }
 // drupal_goto('case-study-project/abstract-code');
     $response = new RedirectResponse(Url::fromRoute('r_case_study.abstract')->toString());
