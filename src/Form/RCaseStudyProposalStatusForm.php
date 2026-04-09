@@ -317,40 +317,110 @@ $form['student_email_id'] = [
         ":expected_completion_date" => time(),
       ];
       $result = \Drupal::database()->query($up_query, $args);
-      CreateReadmeFileCaseStudyProject($proposal_id);
+      \Drupal::service("r_case_study_global")->CreateReadmeFileCaseStudyProject($proposal_id);
       if (!$result) {
         \Drupal::messenger()->addMessage('Error in update status', 'error');
         return;
       } //!$result
       //   /* sending email */
-      // $user_data = user_load($proposal_data->uid);
-      // $email_to = $user_data->mail;
-      // $from = variable_get('case_study_from_email', '');
-      // $bcc = variable_get('case_study_emails', '');
-      // $cc = variable_get('case_study_cc_emails', '');
-      // $params['case_study_proposal_completed']['proposal_id'] = $proposal_id;
-      // $params['case_study_proposal_completed']['user_id'] = $proposal_data->uid;
-      // $params['case_study_proposal_completed']['headers'] = [
-      //   'From' => $from,
-      //   'MIME-Version' => '1.0',
-      //   'Content-Type' => 'text/plain; charset=UTF-8; format=flowed; delsp=yes',
-      //   'Content-Transfer-Encoding' => '8Bit',
-      //   'X-Mailer' => 'Drupal',
-      //   'Cc' => $cc,
-      //   'Bcc' => $bcc,
-      // ];
-      // if (!drupal_mail('case_study', 'case_study_proposal_completed', $email_to, language_default(), $params, $from, TRUE)) {
-      //   \Drupal::messenger()->addMessage('Error sending email message.', 'error');
-      // }
 
-      \Drupal::messenger()->addMessage('Congratulations! R Case Study proposal has been marked as completed. User has been notified of the completion.', 'status');
+/* sending email */
+$user_data = User::load($proposal_data->uid);
+// var_dump($uid);die;
+// Ensure $email_to is at least an empty string, not null
+$email_to = ($user_data && $user_data->getEmail()) ? $user_data->getEmail() : '';
+
+// Use null coalescing (?? '') to ensure these are never null
+$from = \Drupal::config('r_case_study.settings')->get('case_study_from_email') ?? '';
+$bcc  = \Drupal::config('r_case_study.settings')->get('case_study_emails') ?? '';
+$cc   = \Drupal::config('r_case_study.settings')->get('case_study_cc_emails') ?? '';
+// var_dump($cc);die;
+// Check if we even have a recipient and a sender before proceeding
+if (empty($email_to) || empty($from)) {
+  // \Drupal::logger('r_case_study')->error('Cannot send email: Recipient or From address is missing.');
+  // Handle the error or return early
+} else {
+  $params['case_study_proposal_completed']['proposal_id'] = $proposal_id;
+  $params['case_study_proposal_completed']['user_id'] = $proposal_data->uid;
+  
+  // Build headers, ensuring Cc and Bcc are only added if they aren't empty
+  $headers = [
+    'From' => $from,
+    'MIME-Version' => '1.0',
+    'Content-Type' => 'text/plain; charset=UTF-8; format=flowed; delsp=yes',
+    'Content-Transfer-Encoding' => '8Bit',
+    'X-Mailer' => 'Drupal',
+  ];
+
+  if (!empty($cc)) {
+    $headers['Cc'] = $cc;
+  }
+  if (!empty($bcc)) {
+    $headers['Bcc'] = $bcc;
+  }
+
+  $params['case_study_proposal_completed']['headers'] = $headers;
+
+  $result = \Drupal::service('plugin.manager.mail')->mail(
+    'case_study',
+    'case_study_proposal_completed',
+    $email_to,
+    \Drupal::languageManager()->getDefaultLanguage()->getId(),
+    $params,
+    $from,
+    TRUE
+  );
+
+ {
+  \Drupal::messenger()->addMessage(' sending email message.');
+}
+      $this->messenger()->addStatus($this->t('Congratulations! R Case Study proposal has been marked as completed. User has been notified of the completion.'));
+      \Drupal\Core\Cache\Cache::invalidateTags([
+        'case_study_proposal_list',
+        "case_study_proposal:$proposal_id",
+      ]);
     }
-    // drupal_goto('case-study-project/manage-proposal');
-    $response = new RedirectResponse(Url::fromRoute('r_case_study.proposal_all')->toString());
-$response->send();
-    return $response;
 
+    $form_state->setRedirect('r_case_study.proposal_all');
+  }
+
+  }
+  /**
+   * Loads a proposal record.
+   *
+   * @param int $proposal_id
+   *   The proposal identifier.
+   *
+   * @return object|null
+   *   The proposal record, or NULL if not found.
+   */
+  protected function loadProposal($proposal_id) {
+    $query = \Drupal::database()->select('case_study_proposal');
+    $query->fields('case_study_proposal');
+    $query->condition('id', $proposal_id);
+    $proposal_q = $query->execute();
+
+    return $proposal_q ? $proposal_q->fetchObject() : NULL;
+  }
+
+  /**
+   * Returns the proposal ID from the current request.
+   *
+   * @return int|null
+   *   The proposal identifier or NULL if not available.
+   */
+  protected function getProposalId() {
+    $route_match = \Drupal::routeMatch();
+    $proposal_id = $route_match->getParameter('id');
+
+    if (!$proposal_id) {
+      $proposal_id = \Drupal::request()->query->get('id');
+    }
+
+    return $proposal_id !== NULL ? (int) $proposal_id : NULL;
   }
 
 }
+
+
 ?>

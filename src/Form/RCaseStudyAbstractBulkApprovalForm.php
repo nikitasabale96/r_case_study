@@ -7,11 +7,10 @@
 
 namespace Drupal\r_case_study\Form;
 
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
-use Drupal\Core\Database\Database;
-use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Ajax\ReplaceCommand;
@@ -28,25 +27,28 @@ class RCaseStudyAbstractBulkApprovalForm extends FormBase {
   }
 
   public function buildForm(array $form, \Drupal\Core\Form\FormStateInterface $form_state) {
-    $options_first = $this->_bulk_list_of_case_study_project();
-    $selected = !$form_state->getValue(['case_study_project']) ? $form_state->getValue([
-      'case_study_project'
-      ]) : key($options_first);
+    $options_first = $this->getCaseStudyProjectOptions();
+    $selected = $form_state->getValue(['case_study_project']);
+    if ($selected === NULL || $selected === '') {
+      $selected = key($options_first);
+    }
     $form = [];
     $form['case_study_project'] = [
       '#type' => 'select',
-      '#title' => t('Title of the Case Study'),
-      '#options' => $this->_bulk_list_of_case_study_project(),
+      '#title' => t('Title of the case study project'),
+      '#options' => $options_first,
       '#default_value' => $selected,
       '#ajax' => [
-        'callback' => '::ajax_bulk_case_study_abstract_details_callback'
-        ],
+        'callback' => '::ajaxBulkCaseStudyAbstractDetailsCallback',
+        'event' => 'change',
+        'limit_validation_errors' => [['case_study_project']],
+      ],
       '#suffix' => '<div id="ajax_selected_case_study"></div><div id="ajax_selected_case_study_pdf"></div>',
     ];
     $form['case_study_actions'] = [
       '#type' => 'select',
-      '#title' => t('Please select action for Case Study'),
-      '#options' => $this->_bulk_list_case_study_actions(),
+      '#title' => t('Please select action for case study project'),
+      '#options' => $this->getCaseStudyActionOptions(),
       '#default_value' => 0,
       '#prefix' => '<div id="ajax_selected_case_study_action" style="color:red;">',
       '#suffix' => '</div>',
@@ -60,7 +62,7 @@ class RCaseStudyAbstractBulkApprovalForm extends FormBase {
     ];
     $form['message'] = [
       '#type' => 'textarea',
-      '#title' => t('Please specify the reason for marking resubmit/disapproval'),
+      '#title' => t('If Dis-Approved please specify reason for Dis-Approval'),
       '#prefix' => '<div id= "message_submit">',
       '#states' => [
         'visible' => [
@@ -70,198 +72,123 @@ class RCaseStudyAbstractBulkApprovalForm extends FormBase {
               ]
             ],
           'or',
-          [':input[name="case_study_actions"]' => ['value' => 2]],
+          [':input[name="case_study_actions"]' => ['value' => 4]],
         ]
         ],
     ];
     $form['submit'] = [
       '#type' => 'submit',
       '#value' => t('Submit'),
+      '#states' => [
+        'invisible' => [
+          ':input[name="case_study_project"]' => [
+            'value' => 0
+          ]
+        ]
+      ],
     ];
     return $form;
   }
 
-  
-  
-  
-  /**
-   * Ajax callback to update case study abstract details.
-   */
-  function ajax_bulk_case_study_abstract_details_callback(array &$form, FormStateInterface $form_state) {
-      $response = new AjaxResponse();
-  
-      $case_study_project_default_value = $form_state->getValue('case_study_project');
-  
-      if ($case_study_project_default_value != 0) {
-          // Update case study details
-          $response->addCommand(new HtmlCommand('#ajax_selected_case_study', $this->case_study_details($case_study_project_default_value)));
-  
-          // Update case study actions
-          $form['case_study_actions']['#options'] = $this->_bulk_list_case_study_actions();
-          $rendered_form = \Drupal::service('renderer')->render($form['case_study_actions']);
-          $response->addCommand(new ReplaceCommand('#ajax_selected_case_study_action', $rendered_form));
-      } 
-      else {
-          // Clear the selected case study
-          $response->addCommand(new HtmlCommand('#ajax_selected_case_study', ''));
-      }
-  
-      return $response;
-  }
-  
+  public function ajaxBulkCaseStudyAbstractDetailsCallback(array &$form, FormStateInterface $form_state) {
+    $form_state->setRebuild(TRUE);
+    $response = new AjaxResponse();
 
-  function _bulk_list_of_case_study_project() {
-      $database = Database::getConnection();
-      $project_titles = [
-          '0' => t('Please select...'),
-      ];
-  
-      // Fetch project details
-      $query = $database->select('case_study_proposal', 'csp')
-          ->fields('csp', ['id', 'project_title', 'contributor_name'])
-          ->condition('is_submitted', 1)
-          ->condition('approval_status', 1)
-          ->orderBy('creation_date', 'DESC')
-          ->execute()
-          ->fetchAll();
-  
-      // Process query results
-      foreach ($query as $project_titles_data) {
-          $project_titles[$project_titles_data->id] = $project_titles_data->project_title 
-              . ' (Proposed by ' . $project_titles_data->contributor_name . ')';
-      }
-  
-      return $project_titles;
-  }
-  
-
-
-function _bulk_list_case_study_actions() {
-    return [
-        0 => t('Please select...'),
-        1 => t('Approve Entire Case Study'),
-        2 => t('Resubmit Project files (This will enable resubmission for the contributor)'),
-        3 => t('Disapprove Entire Case Study (This will delete the Case Study files and the proposal from the database)'),
-        // 4 => t('Delete Entire Case Study Including Proposal'),
-    ];
-}
-
-
-
-/**
- * Retrieves case study details.
- *
- * @param int $case_study_proposal_id
- *   The ID of the case study proposal.
- *
- * @return string
- *   The formatted HTML containing case study details.
- */
-function case_study_details($case_study_proposal_id) {
-    $database = Database::getConnection();
-    $return_html = '';
-
-    // Fetch case study proposal details
-    $abstracts_pro = $database->select('case_study_proposal', 'csp')
-        ->fields('csp', ['name_title', 'contributor_name', 'project_title'])
-        ->condition('id', $case_study_proposal_id)
-        ->execute()
-        ->fetchAssoc();
-
-    // Fetch uploaded report
-    $abstracts_pdf = $database->select('case_study_submitted_abstracts_file', 'csaf')
-        ->fields('csaf', ['filename'])
-        ->condition('proposal_id', $case_study_proposal_id)
-        ->condition('filetype', 'R')
-        ->execute()
-        ->fetchAssoc();
-
-    $abstract_filename = (!empty($abstracts_pdf['filename']) && $abstracts_pdf['filename'] !== "NULL") 
-        ? $abstracts_pdf['filename'] 
-        : t('File not uploaded');
-
-    // Fetch uploaded data/code files
-    $abstracts_query_process = $database->select('case_study_submitted_abstracts_file', 'csaf')
-        ->fields('csaf', ['filename'])
-        ->condition('proposal_id', $case_study_proposal_id)
-        ->condition('filetype', 'C')
-        ->execute()
-        ->fetchAssoc();
-
-    $abstracts_query_process_filename = (!empty($abstracts_query_process['filename']) && $abstracts_query_process['filename'] !== "NULL") 
-        ? $abstracts_query_process['filename'] 
-        : t('File not uploaded');
-
-    // Upload abstract link (if applicable)
-    if (!$abstracts_query_process) {
-        $upload_url = Url::fromUri('internal:/case-study-project/abstract-code/upload');
-        $abstracts_query_process_filename = Link::fromTextAndUrl(t('Upload abstract'), $upload_url)->toString();
+    $case_study_project_default_value = $form_state->getValue('case_study_project');
+    if ($case_study_project_default_value) {
+      $response->addCommand(new HtmlCommand('#ajax_selected_case_study', $this->buildCaseStudyDetailsMarkup($case_study_project_default_value)));
+      $response->addCommand(new ReplaceCommand('#ajax_selected_case_study_action', $form['case_study_actions']));
+    }
+    else {
+      $response->addCommand(new HtmlCommand('#ajax_selected_case_study', ''));
     }
 
-    // Download Case Study link
-    $download_url = Url::fromUri('internal:/case-study-project/full-download/project/' . $case_study_proposal_id);
-    $download_case_study = Link::fromTextAndUrl(t('Download Case Study'), $download_url)->toString();
-
-    // Construct return HTML
-    $return_html .= '<strong>' . t('Contributor Name:') . '</strong><br />' 
-        . $abstracts_pro['name_title'] . ' ' . $abstracts_pro['contributor_name'] . '<br /><br />';
-    $return_html .= '<strong>' . t('Title of the Case Study:') . '</strong><br />' 
-        . $abstracts_pro['project_title'] . '<br /><br />';
-    $return_html .= '<strong>' . t('Uploaded Report of the project:') . '</strong><br />' 
-        . $abstract_filename . '<br /><br />';
-    $return_html .= '<strong>' . t('Uploaded data and code files of the project:') . '</strong><br />' 
-        . $abstracts_query_process_filename . '<br /><br />';
-    $return_html .= $download_case_study;
-
-    return $return_html;
-}
-
+    return $response;
+  }
 
   public function submitForm(array &$form, \Drupal\Core\Form\FormStateInterface $form_state) {
     $user = \Drupal::currentUser();
+    $config = \Drupal::config('r_case_study.settings');
+    $from = $config->get('case_study_from_email') ?: $config->get('from_email') ?: \Drupal::config('system.site')->get('mail');
+    if (empty($from)) {
+      $from = 'no-reply@localhost';
+    }
+    $bcc = $config->get('case_study_emails') ?: $config->get('emails');
+    $cc = $config->get('case_study_cc_emails') ?: $config->get('cc_emails');
+    $langcode = \Drupal::languageManager()->getDefaultLanguage()->getId();
+    $mail_manager = \Drupal::service('plugin.manager.mail');
     $msg = '';
-    $root_path = \Drupal::service("r_case_study_global")->r_case_study_path();
-    //var_dump($form_state['values']);die;
-    if ($form_state->get(['clicked_button', '#value']) == 'Submit') {
+    $trigger = $form_state->getTriggeringElement();
+    if (($trigger['#type'] ?? '') === 'submit') {
       if ($form_state->getValue(['case_study_project']))
+        //var_dump($form_state['values']['case_study_actions']);die;
         // case_study_abstract_del_lab_pdf($form_state['values']['case_study_project']);
  {
-        if (user_access('Case Study bulk manage abstract')) {
+        if (\Drupal::currentUser()->hasPermission('Case Study bulk manage abstract')) {
           $query = \Drupal::database()->select('case_study_proposal');
           $query->fields('case_study_proposal');
           $query->condition('id', $form_state->getValue(['case_study_project']));
           $user_query = $query->execute();
           $user_info = $user_query->fetchObject();
-          $user_data = User::load($user_info->uid);
+          // var_dump($query);die;
+          $user_data = \Drupal::entityTypeManager()->getStorage('user')->load($user_info->uid);
+          if ($user_data && $user_data->getPreferredLangcode()) {
+            $langcode = $user_data->getPreferredLangcode();
+          }
           if ($form_state->getValue(['case_study_actions']) == 1) {
             // approving entire project //
             $query = \Drupal::database()->select('case_study_submitted_abstracts');
             $query->fields('case_study_submitted_abstracts');
             $query->condition('proposal_id', $form_state->getValue(['case_study_project']));
             $abstracts_q = $query->execute();
+            // var_dump($abstracts_q);die;
             $experiment_list = '';
             while ($abstract_data = $abstracts_q->fetchObject()) {
-              db_query("UPDATE {case_study_submitted_abstracts} SET abstract_approval_status = 1, is_submitted = 1, approver_uid = :approver_uid WHERE id = :id", [
-                ':approver_uid' => $user->uid,
+              \Drupal::database()->query("UPDATE {case_study_submitted_abstracts} SET abstract_approval_status = 1, is_submitted = 1, approver_uid = :approver_uid WHERE id = :id", [
+                ':approver_uid' => $user->id(),
                 ':id' => $abstract_data->id,
               ]);
-              db_query("UPDATE {case_study_submitted_abstracts_file} SET file_approval_status = 1, approvar_uid = :approver_uid WHERE submitted_abstract_id = :submitted_abstract_id", [
-                ':approver_uid' => $user->uid,
+              \Drupal::database()->query("UPDATE {case_study_submitted_abstracts_file} SET file_approval_status = 1, approvar_uid = :approver_uid WHERE submitted_abstract_id = :submitted_abstract_id", [
+                ':approver_uid' => $user->id(),
                 ':submitted_abstract_id' => $abstract_data->id,
               ]);
-            } //$abstract_data = $abstracts_q->fetchObject()
-            // drupal_goto('case-study-project/manage-proposal/all');
+            }
+            // var_dump($user->uid());die;     
+                    //$abstract_data = $abstracts_q->fetchObject()
+            \Drupal::messenger()->addStatus(t('Approved case study project.'));
+            // email 
+            // @FIXME
+            // // @FIXME
+            // // This looks like another module's variable. You'll need to rewrite this call
+            // // to ensure that it uses the correct configuration object.
+            // $email_subject = t('[!site_name][case study Project] Your uploaded case study project have been approved', array(
+            // 						'!site_name' => variable_get('site_name', '')
+            // 					));
 
-            // Create a URL object for the path 'case-study-project/manage-proposal/all'
-$url = Url::fromUserInput('/case-study-project/manage-proposal/all');
+            // @FIXME
+            // // @FIXME
+            // // This looks like another module's variable. You'll need to rewrite this call
+            // // to ensure that it uses the correct configuration object.
+            // $email_body = array(
+            // 						0 => t('
+            // 
+            // Dear !user_name,
+            // 
+            // Your uploaded abstract for the case study project has been approved:
+            // 
+            // Title of case study project  : ' . $user_info->project_title . '
+            // 
+            // Best Wishes,
+            // 
+            // !site_name Team,
+            // FOSSEE,IIT Bombay', array(
+            // 							'!site_name' => variable_get('site_name', ''),
+            // 							'!user_name' => $user_data->name
+            // 						))
+            // 					);
 
-// Create a RedirectResponse object and send it
-$response = new RedirectResponse($url->toString());
-$response->send();
-
-            \Drupal::messenger()->addMessage(t('Approved Case Study.'), 'status');
-/** sending email when everything done **/
-            $mailManager = \Drupal::service('plugin.manager.mail');
+            /** sending email when everything done **/
+$mailManager = \Drupal::service('plugin.manager.mail');
 $langcode = \Drupal::languageManager()->getDefaultLanguage()->getId();
 
 $config = \Drupal::config('r_case_study.settings');
@@ -269,49 +196,55 @@ $from = $config->get('case_study_from_email') ?: \Drupal::config('system.site')-
 $cc   = $config->get('case_study_cc_emails');
 $bcc  = $config->get('case_study_emails');
 
-$email_to = $user_data ? $user_data->getEmail() : '';//$form_state['values']['case_study_actions'] == 1
-// Message handling
-if (empty($result['result'])) {
-  \Drupal::messenger()->addMessage(' Sending email message.');
-}            //!drupal_mail('case_study', 'standard', $email_to, language_default(), $params, $from, TRUE)
-          } 
-          if ($email_to) {
-  $params['bulk_project_approved'] = [
-    'proposal_id' => $form_state->getValue('case_study_project'),
-    'user_id' => $user_info->uid,
-    'headers' => [
-      'From' => $from,
-      'Cc' => $cc,
-      'Bcc' => $bcc,
-      'Content-Type' => 'text/html; charset=UTF-8',
-    ],
-  ];
+$email_to = ($user_data && $user_data->getEmail()) ? $user_data->getEmail() : '';
 
-  $result = $mailManager->mail(
-    'case_study',
-    'bulk_project_approved',
-    $email_to,
-    $langcode,
-    $params,
-    $from,
-    TRUE
-  );
 
+  // Add CC/BCC only if present
+  if (!empty($cc)) {
+    $params['standard']['headers']['Cc'] = $cc;
+  }
+  if (!empty($bcc)) {
+    $params['standard']['headers']['Bcc'] = $bcc;
+  }
+
+$mailManager = \Drupal::service('plugin.manager.mail');
+$langcode = \Drupal::languageManager()->getDefaultLanguage()->getId();
+
+$proposal_id = $form_state->getValue('case_study_project');
+
+$params = [
+  'proposal_id' => $proposal_id,
+  'user_id' => $user_info->uid,
+  'headers' => [
+    'From' => $from,
+    'Content-Type' => 'text/html; charset=UTF-8',
+  ],
+];
+
+\Drupal::logger('mail_debug')->notice('Sending proposal ID: ' . $proposal_id);
+
+$result = $mailManager->mail(
+  'r_case_study',
+  'bulk_project_approved',
+  $email_to,
+  $langcode,
+  $params,
+  $from,
+  TRUE
+);
   if (empty($result['result'])) {
-    \Drupal::messenger()->addMessage(' sending approval email.');
+    \Drupal::messenger()->addError('Email sending failed.');
+  }
+  else {
+    \Drupal::messenger()->addStatus('Email sent successfully.');
   }
 }
-        }
-          
-
-          //$form_state['values']['case_study_actions'] == 1
-
+else {
+  \Drupal::messenger()->addError('Missing email or from address.');
+}
+                              //!drupal_mail('r_case_study', 'standard', $email_to, language_default(), $params, $from, TRUE)
+          } //$form_state['values']['case_study_actions'] == 1
           elseif ($form_state->getValue(['case_study_actions']) == 2) {
-            if (strlen(trim($form_state->getValue(['message']))) <= 30) {
-              $form_state->setErrorByName('message', t(''));
-              $msg = \Drupal::messenger()->addMessage("Please mention the reason for marking resubmit. Minimum 30 character required", 'error');
-              return $msg;
-            }
             //pending review entire project 
             $query = \Drupal::database()->select('case_study_submitted_abstracts');
             $query->fields('case_study_submitted_abstracts');
@@ -319,85 +252,332 @@ if (empty($result['result'])) {
             $abstracts_q = $query->execute();
             $experiment_list = '';
             while ($abstract_data = $abstracts_q->fetchObject()) {
-              db_query("UPDATE {case_study_submitted_abstracts} SET abstract_approval_status = 0, is_submitted = 0, approver_uid = :approver_uid WHERE id = :id", [
-                ':approver_uid' => $user->uid,
+              \Drupal::database()->query("UPDATE {case_study_submitted_abstracts} SET abstract_approval_status = 0, is_submitted = 0, approver_uid = :approver_uid WHERE id = :id", [
+                ':approver_uid' => $user->id(),
                 ':id' => $abstract_data->id,
               ]);
-              db_query("UPDATE {case_study_proposal} SET is_submitted = 0, approver_uid = :approver_uid WHERE id = :id", [
-                ':approver_uid' => $user->uid,
+              \Drupal::database()->query("UPDATE {case_study_proposal} SET is_submitted = 0, approver_uid = :approver_uid WHERE id = :id", [
+                ':approver_uid' => $user->id(),
                 ':id' => $abstract_data->proposal_id,
               ]);
-              db_query("UPDATE {case_study_submitted_abstracts_file} SET file_approval_status = 0, approvar_uid = :approver_uid WHERE submitted_abstract_id = :submitted_abstract_id", [
-                ':approver_uid' => $user->uid,
+              \Drupal::database()->query("UPDATE {case_study_submitted_abstracts_file} SET file_approval_status = 0, approvar_uid = :approver_uid WHERE submitted_abstract_id = :submitted_abstract_id", [
+                ':approver_uid' => $user->id(),
                 ':submitted_abstract_id' => $abstract_data->id,
               ]);
             } //$abstract_data = $abstracts_q->fetchObject()
-            \Drupal::messenger()->addMessage(t('Resubmit the project files'), 'status');
+            \Drupal::messenger()->addStatus(t('Resubmit the project files'));
             // email 
+            // @FIXME
+            // // @FIXME
+            // // This looks like another module's variable. You'll need to rewrite this call
+            // // to ensure that it uses the correct configuration object.
+            // $email_subject = t('[!site_name][case study Project] Your uploaded case study project have been marked as pending', array(
+            // 						'!site_name' => variable_get('site_name', '')
+            // 					));
+
+            // @FIXME
+            // // @FIXME
+            // // This looks like another module's variable. You'll need to rewrite this call
+            // // to ensure that it uses the correct configuration object.
+            // $email_body = array(
+            // 						0 => t('
+            // 
+            // Dear !user_name,
+            // 
+            // Kindly resubmit the project files for the project : ' . $user_info->project_title . '.
+            // 
+            // 
+            // Best Wishes,
+            // 
+            // !site_name Team,
+            // FOSSEE,IIT Bombay', array(
+            // 							'!site_name' => variable_get('site_name', ''),
+            // 							'!user_name' => $user_data->name
+            // 						))
+            // 					);
+
             /** sending email when everything done **/
-            $email_to = $user_data->mail;
-            $from = variable_get('case_study_from_email', '');
-            $bcc = variable_get('case_study_emails', '');
-            $cc = variable_get('case_study_cc_emails', '');
-            $params['standard']['subject'] = $email_subject;
-            $params['standard']['body'] = $email_body;
-            $params['standard']['headers'] = [
-              'From' => $from,
-              'MIME-Version' => '1.0',
-              'Content-Type' => 'text/plain; charset=UTF-8; format=flowed; delsp=yes',
-              'Content-Transfer-Encoding' => '8Bit',
-              'X-Mailer' => 'Drupal',
-              'Cc' => $cc,
-              'Bcc' => $bcc,
-            ];
-            if (!drupal_mail('case_study', 'standard', $email_to, language_default(), $params, $from, TRUE)) {
-              \Drupal::messenger()->addMessage('Error sending email message.', 'error');
-            } //!drupal_mail('case_study', 'standard', $email_to, language_default(), $params, $from, TRUE)
+            $email_to = $user_data ? $user_data->getEmail() : '';
+            if ($email_to) {
+              $params = $this->buildBulkMailParams(
+                'case_study_bulk_project_resubmit',
+                $form_state->getValue(['case_study_project']),
+                (int) $user_info->uid,
+                $from,
+                $cc,
+                $bcc
+              );
+              $result = $mail_manager->mail('r_case_study', 'case_study_bulk_project_resubmit', $email_to, $langcode, $params, $from, TRUE);
+              if (empty($result['result'])) {
+                \Drupal::messenger()->addError('Error sending email message.');
+              }
+            } //!drupal_mail('r_case_study', 'standard', $email_to, language_default(), $params, $from, TRUE)
           } //$form_state['values']['case_study_actions'] == 2
-          elseif ($form_state->getValue(['case_study_actions']) == 3) //disapprove and delete entire Case Study
+          elseif ($form_state->getValue(['case_study_actions']) == 3) //disapprove and delete entire case study project
  {
             if (strlen(trim($form_state->getValue(['message']))) <= 30) {
               $form_state->setErrorByName('message', t(''));
-              $msg = \Drupal::messenger()->addMessage("Please mention the reason for disapproval. Minimum 30 character required", 'error');
+              $msg = \Drupal::messenger()->addError("Please mention the reason for disapproval. Minimum 30 character required");
               return $msg;
             } //strlen(trim($form_state['values']['message'])) <= 30
-            if (!user_access('Case Study bulk delete code')) {
-              $msg = \Drupal::messenger()->addMessage(t('You do not have permission to Bulk Dis-Approved and Deleted Entire Project.'), 'error');
+            if (!\Drupal::currentUser()->hasPermission('Case Study bulk delete abstract')) {
+              $msg = \Drupal::messenger()->addError(t('You do not have permission to Bulk Dis-Approved and Deleted Entire Lab.'));
               return $msg;
             } //!user_access('case_study bulk delete code')
-            if (case_study_abstract_delete_project($form_state->getValue(['case_study_project']))) //////
+            if ($this->deleteCaseStudyProject($form_state->getValue(['case_study_project']))) //////
  {
-              \Drupal::messenger()->addMessage(t('Dis-Approved and Deleted Entire Case Study.'), 'status');
-              $email_to = $user_data->mail;
-              $from = variable_get('case_study_from_email', '');
-              $bcc = variable_get('case_study_emails', '');
-              $cc = variable_get('case_study_cc_emails', '');
-              $params['standard']['subject'] = $email_subject;
-              $params['standard']['body'] = $email_body;
-              $params['standard']['headers'] = [
-                'From' => $from,
-                'MIME-Version' => '1.0',
-                'Content-Type' => 'text/plain; charset=UTF-8; format=flowed; delsp=yes',
-                'Content-Transfer-Encoding' => '8Bit',
-                'X-Mailer' => 'Drupal',
-                'Cc' => $cc,
-                'Bcc' => $bcc,
-              ];
-              if (!drupal_mail('case_study', 'standard', $email_to, language_default(), $params, $from, TRUE)) {
-                \Drupal::messenger()->addMessage('Error sending email message.', 'error');
+              \Drupal::messenger()->addStatus(t('Dis-Approved and Deleted Entire case study project.'));
+              // @FIXME
+              // // @FIXME
+              // // This looks like another module's variable. You'll need to rewrite this call
+              // // to ensure that it uses the correct configuration object.
+              // $email_subject = t('[!site_name][case study Project] Your uploaded case study project have been marked as dis-approved', array(
+              // 						'!site_name' => variable_get('site_name', '')
+              // 					));
+
+              // @FIXME
+              // // @FIXME
+              // // This looks like another module's variable. You'll need to rewrite this call
+              // // to ensure that it uses the correct configuration object.
+              // $email_body = array(
+              // 						0 => t('
+              // Dear !user_name,
+              // 
+              // Your uploaded case study project files for the case study project Title : ' . $user_info->project_title . ' have been marked as dis-approved.
+              // 
+              // Reason for dis-approval: ' . $form_state['values']['message'] . '
+              // 
+              // Best Wishes,
+              // 
+              // !site_name Team,
+              // FOSSEE,IIT Bombay', array(
+              // 						'!site_name' => variable_get('site_name', ''),
+              // 						'!user_name' => $user_data->name
+              // 											))
+              // 					);
+
+              $email_to = $user_data ? $user_data->getEmail() : '';
+              if ($email_to) {
+                $params = $this->buildBulkMailParams(
+                  'case_study_bulk_project_disapproved',
+                  $form_state->getValue(['case_study_project']),
+                  (int) $user_info->uid,
+                  $from,
+                  $cc,
+                  $bcc,
+                  ['reason' => trim((string) $form_state->getValue(['message']))]
+                );
+                $result = $mail_manager->mail('r_case_study', 'case_study_bulk_project_disapproved', $email_to, $langcode, $params, $from, TRUE);
+                if (empty($result['result'])) {
+                  \Drupal::messenger()->addError('Error sending email message.');
+                }
               }
-            } //case_study_abstract_delete_project($form_state['values']['case_study_project'])
+            }
             else {
-              \Drupal::messenger()->addMessage(t('Error Dis-Approving and Deleting Entire Case Study.'), 'error');
+              \Drupal::messenger()->addError(t('Error Dis-Approving and Deleting Entire case study project.'));
             }
             // email 
 
           } //$form_state['values']['case_study_actions'] == 3
+
         }
       } //user_access('case_study project bulk manage code')
+      \Drupal\Core\Cache\Cache::invalidateTags([
+        'case_study_proposal_list',
+        'case_study_project_titles_list',
+        'case_study_proposal:' . (int) $form_state->getValue(['case_study_project']),
+      ]);
       return $msg;
     } //$form_state['clicked_button']['#value'] == 'Submit'
+  
+
+  /**
+   * Returns the selectable list of submitted case study projects.
+   */
+  protected function getCaseStudyProjectOptions() {
+    $project_titles = [
+      0 => $this->t('Please select...'),
+    ];
+
+    $query = \Drupal::database()->select('case_study_proposal', 'csp')
+      ->fields('csp', ['id', 'project_title', 'contributor_name'])
+      ->condition('is_submitted', 1)
+      ->condition('approval_status', 1)
+      ->orderBy('project_title', 'ASC');
+
+    foreach ($query->execute() as $project) {
+      $project_titles[$project->id] = $project->project_title . ' (Proposed by ' . $project->contributor_name . ')';
+    }
+
+    return $project_titles;
   }
 
+  /**
+   * Returns the available bulk actions.
+   */
+  protected function getCaseStudyActionOptions() {
+    return [
+      0 => $this->t('Please select...'),
+      1 => $this->t('Approve Entire case study Project'),
+      2 => $this->t('Resubmit Project files'),
+      3 => $this->t('Dis-Approve Entire case study Project (This will delete case study Project)'),
+    ];
+  }
 
+  /**
+   * Builds the case study details HTML shown for the selected project.
+   */
+  protected function buildCaseStudyDetailsMarkup($proposal_id) {
+    $proposal = \Drupal::database()->select('case_study_proposal', 'csp')
+      ->fields('csp')
+      ->condition('id', (int) $proposal_id)
+      ->execute()
+      ->fetchObject();
+
+    if (!$proposal) {
+      return '';
+    }
+
+    $abstract_file = \Drupal::database()->select('case_study_submitted_abstracts_file', 'cssf')
+      ->fields('cssf', ['filename'])
+      ->condition('proposal_id', (int) $proposal_id)
+      ->condition('filetype', 'A')
+      ->execute()
+      ->fetchField();
+
+    $project_file = \Drupal::database()->select('case_study_submitted_abstracts_file', 'cssf')
+      ->fields('cssf', ['filename'])
+      ->condition('proposal_id', (int) $proposal_id)
+      ->condition('filetype', 'S')
+      ->execute()
+      ->fetchField();
+
+    $download_case_study = Link::fromTextAndUrl(
+      $this->t('Download case study project'),
+      Url::fromRoute('r_case_study.download_full_project', [], [
+        'query' => ['id' => (int) $proposal_id],
+      ])
+    )->toString();
+
+    return '<strong>' . $this->t('Proposer Name:') . '</strong><br />'
+      . Html::escape(trim($proposal->name_title . ' ' . $proposal->contributor_name)) . '<br /><br />'
+      . '<strong>' . $this->t('Title of the case study Project:') . '</strong><br />'
+      . Html::escape($proposal->project_title) . '<br /><br />'
+      . '<strong>' . $this->t('Uploaded an abstract (brief outline) of the project:') . '</strong><br />'
+      . Html::escape($this->normalizeUploadedFilename($abstract_file)) . '<br /><br />'
+      . '<strong>' . $this->t('Uploaded Case Directory Folder:') . '</strong><br />'
+      . Html::escape($this->normalizeUploadedFilename($project_file)) . '<br /><br />'
+      . '<strong>' . $this->t('Download Case Study Project:') . '</strong><br />'
+      . $download_case_study;
+  }
+
+  /**
+   * Returns a display value for an uploaded filename.
+   */
+  protected function normalizeUploadedFilename($filename) {
+    if ($filename === FALSE || $filename === NULL || $filename === '' || $filename === 'NULL') {
+      return $this->t('File not uploaded');
+    }
+
+    return $filename;
+  }
+
+  /**
+   * Deletes all files and records for a case study project.
+   */
+  protected function deleteCaseStudyProject($proposal_id) {
+    $proposal = \Drupal::database()->select('case_study_proposal', 'csp')
+      ->fields('csp')
+      ->condition('id', (int) $proposal_id)
+      ->execute()
+      ->fetchObject();
+
+    if (!$proposal) {
+      $this->messenger()->addError($this->t('Invalid Case Study Project.'));
+      return FALSE;
+    }
+
+    $directory = rtrim(r_case_study_path(), '/\\') . '/' . $proposal->directory_name;
+    if (is_dir($directory) && !$this->removeDirectory($directory)) {
+      $this->messenger()->addError($this->t('Unable to delete the case study project directory.'));
+      return FALSE;
+    }
+
+    \Drupal::database()->delete('case_study_submitted_abstracts_file')
+      ->condition('proposal_id', (int) $proposal_id)
+      ->execute();
+
+    \Drupal::database()->delete('case_study_submitted_abstracts')
+      ->condition('proposal_id', (int) $proposal_id)
+      ->execute();
+
+    \Drupal::database()->delete('case_study_proposal')
+      ->condition('id', (int) $proposal_id)
+      ->execute();
+
+    return TRUE;
+  }
+
+  /**
+   * Recursively removes a directory.
+   */
+  protected function removeDirectory($directory) {
+    $items = scandir($directory);
+    if ($items === FALSE) {
+      return FALSE;
+    }
+
+    foreach ($items as $item) {
+      if ($item === '.' || $item === '..') {
+        continue;
+      }
+
+      $path = $directory . '/' . $item;
+      if (is_dir($path)) {
+        if (!$this->removeDirectory($path)) {
+          return FALSE;
+        }
+      }
+      elseif (file_exists($path) && !unlink($path)) {
+        return FALSE;
+      }
+    }
+
+    return rmdir($directory);
+  }
+
+  /**
+   * Builds params for bulk approval notification emails.
+   */
+  protected function buildBulkMailParams($key, $proposal_id, $user_id, $from, $cc = '', $bcc = '', array $extra = []) {
+    $headers = [
+      'From' => $from,
+      'MIME-Version' => '1.0',
+      'Content-Type' => 'text/plain; charset=UTF-8; format=flowed; delsp=yes',
+      'Content-Transfer-Encoding' => '8Bit',
+      'X-Mailer' => 'Drupal',
+    ];
+    if (!empty($cc)) {
+      $headers['Cc'] = $cc;
+    }
+    if (!empty($bcc)) {
+      $headers['Bcc'] = $bcc;
+    }
+
+    $params = [
+      $key => [
+        'proposal_id' => (int) $proposal_id,
+        'user_id' => (int) $user_id,
+        'headers' => $headers,
+      ],
+    ];
+
+    if (!empty($extra)) {
+      $params[$key] = array_merge($params[$key], $extra);
+    }
+
+    return $params;
+  }
+
+}
 ?>

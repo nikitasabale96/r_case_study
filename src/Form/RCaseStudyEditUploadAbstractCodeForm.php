@@ -114,7 +114,7 @@ class RCaseStudyEditUploadAbstractCodeForm extends FormBase {
   public function submitForm(array &$form, \Drupal\Core\Form\FormStateInterface $form_state) {
     $user = \Drupal::currentUser();
     $v = $form_state->getValues();
-    $root_path = r_case_study_path();
+    $root_path = \Drupal::service("r_case_study_global")->r_case_study_path();
     $query = \Drupal::database()->select('case_study_proposal');
     $query->fields('case_study_proposal');
     $query->condition('id', $v['prop_id']);
@@ -180,39 +180,57 @@ class RCaseStudyEditUploadAbstractCodeForm extends FormBase {
       }
     } //$_FILES['files']['name'] as $file_form_name => $file_name
     /* sending email */
+
+$mailManager = \Drupal::service('plugin.manager.mail');
+$langcode = \Drupal::languageManager()->getDefaultLanguage()->getId();
+
+$config = \Drupal::config('r_case_study.settings');
+
 $email_to = $user->getEmail();
-$from = \Drupal::config('case_study.settings')->get('case_study_from_email');
-$bcc = \Drupal::config('case_study.settings')->get('case_study_emails');
-$cc = \Drupal::config('case_study.settings')->get('case_study_cc_emails');
-$params['abstract_edit_file_uploaded']['proposal_id'] = $proposal_id;
-$params['abstract_edit_file_uploaded']['user_id'] = $user->id();
-$params['abstract_edit_file_uploaded']['abs_file'] = $abs_file_name;
-$params['abstract_edit_file_uploaded']['proj_file'] = $proj_file_name;
-$params['abstract_edit_file_uploaded']['headers'] = [
-  'From' => $from,
-  'MIME-Version' => '1.0',
-  'Content-Type' => 'text/plain; charset=UTF-8; format=flowed; delsp=yes',
-  'Content-Transfer-Encoding' => '8Bit',
-  'X-Mailer' => 'Drupal',
-  'Cc' => $cc,
-  'Bcc' => $bcc,
+$from = $config->get('case_study_from_email') ?: \Drupal::config('system.site')->get('mail');
+$cc   = $config->get('case_study_cc_emails');
+$bcc  = $config->get('case_study_emails');
+
+$params = [
+  'proposal_id' => $proposal_id,
+  'user_id' => $user->id(),
+  'abs_file' => $abs_file_name,
+  'proj_file' => $proj_file_name,
+  'headers' => [
+    'From' => $from,
+    'MIME-Version' => '1.0',
+    'Content-Type' => 'text/plain; charset=UTF-8',
+    'Content-Transfer-Encoding' => '8Bit',
+    'X-Mailer' => 'Drupal',
+  ],
 ];
-if (!\Drupal::service('plugin.manager.mail')->mail(
-  'case_study',
+
+// Add CC/BCC only if present
+if (!empty($cc)) {
+  $params['headers']['Cc'] = $cc;
+}
+if (!empty($bcc)) {
+  $params['headers']['Bcc'] = $bcc;
+}
+
+$result = $mailManager->mail(
+  'r_case_study', // ✅ must match module name
   'abstract_edit_file_uploaded',
   $email_to,
-  \Drupal::languageManager()->getDefaultLanguage()->getId(),
+  $langcode,
   $params,
   $from,
   TRUE
-)) 
-{
-  \Drupal::messenger()->addMessage('Error sending email message.', 'error');
-}   
- \Drupal::messenger()->addMessage(t('Updated'), 'status');
-   
+);
+
+if (empty($result['result'])) {
+  \Drupal::messenger()->addError('Error sending email message.');
+}
+else {
+  \Drupal::messenger()->addStatus('Email sent successfully.');
+}
  // drupal_goto('case-study-project/abstract-code/edit-upload-files/' . $proposal_id);
-    $form_state->setRedirect('r_case_study.edit_upload_abstract_code_form', ['proposal_id' => $proposal_id]);
+    $form_state->setRedirect('r_case_study.proposal_edit_file_all', ['proposal_id' => $proposal_id]);
  
   }
 

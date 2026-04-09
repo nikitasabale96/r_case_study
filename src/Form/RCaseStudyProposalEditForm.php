@@ -364,36 +364,59 @@ class RCaseStudyProposalEditForm extends FormBase {
     if ($form_state->getValue(['delete_proposal']) == 1) {
       /* sending email */
 
+/* sending email */
 $user_data = User::load($proposal_data->uid);
-$email_to = $user_data ? $user_data->getEmail() : '';
-$from = \Drupal::config('case_study.settings')->get('case_study_from_email');
-$bcc = \Drupal::config('case_study.settings')->get('case_study_emails');
-$cc = \Drupal::config('case_study.settings')->get('case_study_cc_emails');
-$params['case_study_proposal_deleted']['proposal_id'] = $proposal_id;
-$params['case_study_proposal_deleted']['user_id'] = $proposal_data->uid;
-$params['case_study_proposal_deleted']['headers'] = [
-  'From' => $from,
-  'MIME-Version' => '1.0',
-  'Content-Type' => 'text/plain; charset=UTF-8; format=flowed; delsp=yes',
-  'Content-Transfer-Encoding' => '8Bit',
-  'X-Mailer' => 'Drupal',
-  'Cc' => $cc,
-  'Bcc' => $bcc,
-];
-if (!\Drupal::service('plugin.manager.mail')->mail(
-  'case_study',
-  'case_study_proposal_deleted',
-  $email_to,
-  $user_data ? $user_data->getPreferredLangcode() : \Drupal::languageManager()->getDefaultLanguage()->getId(),
-  $params,
-  $from,
-  TRUE
-)) {
-  \Drupal::messenger()->addMessage(' Sending email message.');
-}   
-   \Drupal::messenger()->addMessage(t('Case Study proposal has been deleted.'), 'status');
+// var_dump($uid);die;
+// Ensure $email_to is at least an empty string, not null
+$email_to = ($user_data && $user_data->getEmail()) ? $user_data->getEmail() : '';
 
-      if (rrmdir_project($proposal_id) == TRUE) {
+// Use null coalescing (?? '') to ensure these are never null
+$from = \Drupal::config('r_case_study.settings')->get('case_study_from_email') ?? '';
+$bcc  = \Drupal::config('r_case_study.settings')->get('case_study_emails') ?? '';
+$cc   = \Drupal::config('r_case_study.settings')->get('case_study_cc_emails') ?? '';
+// var_dump($cc);die;
+// Check if we even have a recipient and a sender before proceeding
+if (empty($email_to) || empty($from)) {
+  // \Drupal::logger('r_case_study')->error('Cannot send email: Recipient or From address is missing.');
+  // Handle the error or return early
+} else {
+  $params['case_study_proposal_deleted']['proposal_id'] = $proposal_id;
+  $params['case_study_proposal_deleted']['user_id'] = $proposal_data->uid;
+  
+  // Build headers, ensuring Cc and Bcc are only added if they aren't empty
+  $headers = [
+    'From' => $from,
+    'MIME-Version' => '1.0',
+    'Content-Type' => 'text/plain; charset=UTF-8; format=flowed; delsp=yes',
+    'Content-Transfer-Encoding' => '8Bit',
+    'X-Mailer' => 'Drupal',
+  ];
+
+  if (!empty($cc)) {
+    $headers['Cc'] = $cc;
+  }
+  if (!empty($bcc)) {
+    $headers['Bcc'] = $bcc;
+  }
+
+  $params['case_study_proposal_deleted']['headers'] = $headers;
+
+  $result = \Drupal::service('plugin.manager.mail')->mail(
+    'case_study',
+    'case_study_proposal_deleted',
+    $email_to,
+    \Drupal::languageManager()->getDefaultLanguage()->getId(),
+    $params,
+    $from,
+    TRUE
+  );
+
+ {
+  \Drupal::messenger()->addMessage(' sending email message.');
+}
+   \Drupal::messenger()->addMessage(t('Case Study proposal has been deleted.'), 'status');
+}
+      if (\Drupal::service("r_case_study_global")->rrmdir_project($proposal_id) == TRUE) {
         $query = \Drupal::database()->delete('case_study_proposals_file');
         $query->condition('proposal_id', $proposal_id);
         $proposals_file_deleted = $query->execute();
@@ -411,7 +434,7 @@ if (!\Drupal::service('plugin.manager.mail')->mail(
     $proposar_name = $v['name_title'] . ' ' . $v['contributor_name'];
     $university = $v['university'];
     $directory_names = \Drupal::service("r_case_study_global")->_r_case_study_dir_name($project_title, $proposar_name);
-    if (CaseStudy_RenameDir($proposal_id, $directory_names)) {
+    if (\Drupal::service("r_case_study_global")->CaseStudy_RenameDir($proposal_id, $directory_names)) {
       $directory_name = $directory_names;
     } //LM_RenameDir($proposal_id, $directory_names)
     else {
